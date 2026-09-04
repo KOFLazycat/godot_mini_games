@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://c3u5roi5rwks1"]
+
+[ext_resource type="Script" uid="uid://bisowd0k143yp" path="res://Entities/Characters/PlayerEntity.gd" id="1_boo6r"]
+[ext_resource type="PackedScene" uid="uid://dekgkos84sljm" path="res://Components/Visual/CameraComponent.tscn" id="2_u1hgs"]
+[ext_resource type="Texture2D" uid="uid://dlgr48hfwadef" path="res://Assets/Tiles/Kenney1Bit-Colored.png" id="2_ypl60"]
+[ext_resource type="PackedScene" uid="uid://1g4ypd7jsctc" path="res://Components/Control/TileBasedControlComponent.tscn" id="4_b6e0e"]
+[ext_resource type="PackedScene" uid="uid://bdmibnkkrpfhv" path="res://Components/Movement/TileBasedPositionComponent.tscn" id="5_8uggr"]
+[ext_resource type="PackedScene" uid="uid://cdq0dcwhcrm5p" path="res://Components/Control/InputComponent.tscn" id="6_8uggr"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_8uggr"]
+radius = 8.0
+
+[node name="Player-TileBased" type="CharacterBody2D" unique_id=379998366 node_paths=PackedStringArray("body", "sprite") groups=["entities", "players"]]
+editor_description = "A template for the player character in a TileMap-based game."
+collision_layer = 6
+collision_mask = 126
+motion_mode = 1
+wall_min_slide_angle = 0.0
+platform_on_leave = 2
+script = ExtResource("1_boo6r")
+body = NodePath(".")
+sprite = NodePath("Sprite2D")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=26736999]
+shape = SubResource("CircleShape2D_8uggr")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1282619220]
+use_parent_material = true
+texture = ExtResource("2_ypl60")
+region_enabled = true
+region_rect = Rect2(432, 128, 16, 16)
+
+[node name="CameraComponent" parent="." unique_id=1862470103 instance=ExtResource("2_u1hgs")]
+
+[node name="Camera2D" parent="CameraComponent" index="0" unique_id=1997418455]
+position_smoothing_enabled = true
+rotation_smoothing_enabled = true
+
+[node name="TileBasedControlComponent" parent="." unique_id=879116052 instance=ExtResource("4_b6e0e")]
+
+[node name="TileBasedPositionComponent" parent="." unique_id=928173984 instance=ExtResource("5_8uggr")]
+
+[node name="InputComponent" parent="." unique_id=1143964556 instance=ExtResource("6_8uggr")]
+
+[editable path="CameraComponent"]
+[editable path="TileBasedPositionComponent"]

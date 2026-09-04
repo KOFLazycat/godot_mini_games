@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://cqotmf4tu2urs"]
+
+[ext_resource type="Script" uid="uid://c7t5u7mhcfa6f" path="res://Game/Scenes/Welcome.gd" id="1_c7x7y"]
+[ext_resource type="FontFile" uid="uid://bkhnxruyird0e" path="res://Assets/Fonts/PixelOperator8.ttf" id="2_u0383"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_c7x7y"]
+font = ExtResource("2_u0383")
+font_size = 80
+
+[sub_resource type="LabelSettings" id="LabelSettings_u0383"]
+font = ExtResource("2_u0383")
+font_size = 22
+
+[node name="Welcome" type="Control" unique_id=1188096267]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_c7x7y")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1192125566]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 80
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 80
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1594949134]
+layout_mode = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=500605595]
+unique_name_in_owner = true
+layout_mode = 2
+text = "2048"
+label_settings = SubResource("LabelSettings_c7x7y")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Spacer1" type="Control" parent="MarginContainer/VBoxContainer" unique_id=1788210251]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=299322635]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 60)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_u0383")
+theme_override_font_sizes/font_size = 32
+text = "开始游戏"
+
+[node name="Spacer2" type="Control" parent="MarginContainer/VBoxContainer" unique_id=305331507]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="HintLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1509948008]
+unique_name_in_owner = true
+layout_mode = 2
+text = "方向键 / WASD 移动方块
+ESC 返回主菜单
+相同数字合并, 凑出 2048 即可胜利"
+label_settings = SubResource("LabelSettings_u0383")
+horizontal_alignment = 1
+vertical_alignment = 1

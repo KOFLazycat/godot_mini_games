@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://qnxbooamx3fw"]
+
+[ext_resource type="Script" uid="uid://csj506c6aa8yu" path="res://Game/Scenes/GameMain.gd" id="1_31sk7"]
+[ext_resource type="FontFile" uid="uid://bkhnxruyird0e" path="res://Assets/Fonts/PixelOperator8.ttf" id="2_m3vea"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_m3vea"]
+font = ExtResource("2_m3vea")
+font_size = 22
+
+[sub_resource type="LabelSettings" id="LabelSettings_gmx35"]
+font = ExtResource("2_m3vea")
+font_size = 22
+
+[node name="GameMain" type="Control" unique_id=1090530283]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_31sk7")
+debugMode = true
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1346948266]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 100.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1793915228]
+layout_mode = 2
+alignment = 1
+
+[node name="BackButton" type="Button" parent="MarginContainer/HBoxContainer" unique_id=869188811]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_m3vea")
+theme_override_font_sizes/font_size = 22
+text = "← 主菜单"
+
+[node name="Spacer1" type="Control" parent="MarginContainer/HBoxContainer" unique_id=1380858811]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScoreLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1349992191]
+unique_name_in_owner = true
+layout_mode = 2
+text = "得分: 2048"
+label_settings = SubResource("LabelSettings_m3vea")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Spacer2" type="Control" parent="MarginContainer/HBoxContainer" unique_id=1426079267]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RestartButton" type="Button" parent="MarginContainer/HBoxContainer" unique_id=432862195]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_m3vea")
+theme_override_font_sizes/font_size = 22
+text = "重新开始 (R)"
+
+[node name="MessageLabel" type="Label" parent="." unique_id=1419590753]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -8.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+label_settings = SubResource("LabelSettings_gmx35")
+horizontal_alignment = 1
+vertical_alignment = 1

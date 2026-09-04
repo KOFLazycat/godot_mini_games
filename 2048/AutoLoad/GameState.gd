@@ -1,0 +1,255 @@
+## AutoLoad
+## Global game-specific state and "signal/event bus" available to all scenes and nodes at all times.
+## Extend to manage the state of each game "campaign", such as the difficulty level, character class, and current map etc.
+## NOTE: Use the `Settings.gd` to store the "system environment" (like player preferences such as buttons and volume etc.)
+
+# class_name GameState
+extends Node
+
+
+#region Game State
+# TBD: @export_storage?
+
+var projectSettings:	ComedotProjectSettings = ComedotProjectSettings.loaded
+
+## A [GlobalData] [Resource] containing values that may be accessed and modified by any node/script at any time.
+## EXAMPLE: `GameState.globalData.difficultyScale = 42` or `GameState.globalData[&"questItems"]`
+## TIP: Call [method GameState.getGlobalValue] & [method GameState.setGlobalValue] to avoid typing `.globalData.`
+## TIP: Use `/Scripts/Data/ApplyGlobalData.gd` to create bindings from [member globalData] to node properties that get automatically updated at runtime.
+var globalData:			GlobalData
+
+## The list of active players, each represented by a [PlayerEntity] or [TurnBasedPlayerEntity].
+## WARNING: Do NOT modify this property directly; use [method addPlayer] and [method removePlayer] to ensure that signals are emitted and proper cleanup is performerd.
+## ALERT: To avoid an error or crash when there is no player, access players with [method getPlayer] NOT `players.front()` or `player[0]`
+var players:			Array[Entity] = [] # TBD: Should we use separate arrays for PlayerEntity and TurnBasedPlayerEntity? # But a generic Entity type also allows for game-specific custom subclasses.
+
+## A shared random number generator for gameplay-affecting randomness
+## so seeds can be reused to roll the same numbers throughout the runtime, useful for debugging, saves, and replays etc.
+## TIP: Save and restore [member RandomNumberGenerator.state] to restore the generator to a previous state.
+## WARNING: Do NOT use for purely "cosmetic" effects such as random colors etc. because that will affect the stream of random numbers for gameplay behaviors.
+## e.g. `rollDamage() → randomizeColor() → spawnLoot()` means `spawnLoot()` will get a different number if `randomizeColor()` is removed.
+var randomNumberGenerator: RandomNumberGenerator = RandomNumberGenerator.new()
+
+#endregion
+
+
+#region Signals
+# DESIGN: The names of the signals start with the names of the related types/objects, instead of "did/will" etc., because GameState is a global object.
+signal playersChanged
+signal playerAdded(  player: Entity) ## May be a [PlayerEntity] or [TurnBasedPlayerEntity]
+@warning_ignore("unused_signal")
+signal playerReady(  player: Entity) ## Emitted by a [PlayerEntity] or [TurnBasedPlayerEntity] at the end of its [method Node._ready], indicating that all of its components are also ready.
+signal playerRemoved(player: Entity)
+#endregion
+
+#region Signal Event Bus
+# These signals may be emitted by any object and connected to any object at any time, usually via scripts.
+# IGNORE Godot Warning; these signals are used by other classes.
+
+@warning_ignore("unused_signal")
+signal statUpdated(stat: Stat) ## Emitted when a [Stat] is changed, so that any UI elements which depend on that Stat may be updated, such as a [ManualStatsList]
+
+@warning_ignore("unused_signal")
+signal gameDidOver ## Emitted when You Died. NOTE: Multiplayer games must check if other players are still "alive".
+
+@warning_ignore("unused_signal")
+signal gameWillRestart ## Emitted when the player chooses to restart the game or level etc.
+
+#endregion
+
+
+#region Setup
+
+func _notification(what: int) -> void: # This happens earlier than _enter_tree()
+	if what != NOTIFICATION_PARENTED: return
+	Debug.printAutoLoadLog("NOTIFICATION_PARENTED")
+
+
+func _enter_tree() -> void:
+	# NOTE: This must be _enter_tree() instead of _ready() because nodes are readied from the bottom-up, children-first,
+	# so we need to prepare up the global state earlier, in case other scripts depend on it in their _ready()
+	setupGameState()
+
+
+## @experimental
+func setupGameState() -> void:
+	# Data
+	if not projectSettings.globalDataPath.is_empty():
+		self.globalData = load(projectSettings.globalDataPath) as GlobalData
+	if not self.globalData: # Shouldn't be a nested `if` so we can catch empty paths too
+		# Don't emit error/warning if the path was empty, as that may be intentional
+		if not projectSettings.globalDataPath.is_empty(): Debug.printError("Unable to find or load GlobalData Resource at ComedotProjectSettings.globalDataPath: " + projectSettings.globalDataPath, self)
+		self.globalData = GlobalData.new()
+
+	# Nodes
+	for path: String in projectSettings.gameStateNodes:
+		self.createNode(path)
+
+
+## Instantiates a scene and adds it as a new child node to the GameState AutoLoad, which may act as an additional game-specific global state "manager" script or UI layers etc.
+## @experimental
+func createNode(scenePath: String) -> Node:
+	# TBD: Function name
+	Debug.printDebug("createNode(): " + scenePath, self)
+	var newNode: Node = SceneManager.loadSceneAndAddInstance(scenePath, self)
+	if is_instance_valid(newNode):
+		Debug.printAutoLoadLog("Added GameState node: " + scenePath + " → " + newNode.name)
+		return newNode
+	else:
+		Debug.printError("Unable to create GameState node: " + scenePath, self)
+		return null
+
+#endregion
+
+
+#region Player Management
+
+## Adds a player if it is not already in the [member GameState.players] array, emits the related signals, and returns the new size of the [member players] array.
+func addPlayer(newPlayer: Entity) -> int:
+	if not newPlayer in self.players:
+		self.players.append(newPlayer)
+		Debug.printLog("addPlayer(): [b]" + str(newPlayer.logFullName) + "[/b] → GameState.players → size: " + str(GameState.players.size()), self)
+		playerAdded.emit(newPlayer)
+		playersChanged.emit()
+	else:
+		Debug.printWarning("Tried to re-add player already in GameState.players: " + str(newPlayer))
+
+	return self.players.size()
+
+
+## Returns the requested entity from the global [member players] array, if present.
+## TIP: To avoid an error or crash when there is no player, access players with this method, do NOT access the array directly via `players.front()` or `player[0]` etc.
+func getPlayer(playerIndex: int = 0) -> Entity:
+	if self.players.is_empty() or not Tools.validateArrayIndex(self.players, playerIndex): # TBD: Remove is_empty() because it's checked by validateArrayIndex() anyway?
+		Debug.printWarning(str("getPlayer(", playerIndex, "): Invalid index"), self)
+		return null
+
+	return GameState.players[playerIndex]
+
+
+## Removes a player, emits the related signals, and returns `true` if the removal was successful.
+func removePlayer(playerToRemove: Entity) -> bool:
+	var indexToRemove: int = self.players.find(playerToRemove)
+
+	# NOTE: Do NOT use `indexToRemove` as a boolean check, because 0 is a valid index but would be considered `false`!
+	# Therefore, compare with `-1` which is returned if [Array.find] fails.
+
+	if indexToRemove != -1:
+		Debug.printLog("removePlayer(): " + str(playerToRemove.logFullName) + " ・ Removing from GameState.players → size: " + str(GameState.players.size() - 1), self)
+		self.players.remove_at(indexToRemove)
+		playerRemoved.emit(playerToRemove)
+		playersChanged.emit()
+
+		# Did everyone die?
+		if players.is_empty() \
+		and not SceneManager.ongoingTransitionScene: # NOTE: Don't end the game if players were removed because of a scene transition!
+			gameDidOver.emit()
+
+		return true
+
+	elif indexToRemove == -1:
+		Debug.printWarning("removePlayer(): Player to remove not found in GameState.players: " + str(playerToRemove), self)
+
+	return false
+
+#endregion
+
+
+#region Game Cycle
+
+## Transitions to the [member Settings.mainGameScenePath] and returns the result of [method SceneManager.transitionToScene]
+func startMainScene() -> bool:
+	if not Settings.mainGameScenePath:
+		Debug.printError("Settings.mainGameScenePath not set!", self)
+		return false
+		
+	var mainGameScene: PackedScene = load(Settings.mainGameScenePath)
+	if not mainGameScene:
+		Debug.printError("Cannot load mainGameScenePath: " + Settings.mainGameScenePath, self)
+		return false
+
+	var didTransitionSucceed: bool = await SceneManager.transitionToScene(mainGameScene) # `await` to let the transition complete before allowing pause
+	if  didTransitionSucceed: GlobalInput.isPauseShortcutAllowed = true # Just in case
+	return didTransitionSucceed
+
+
+## Called when the user or a condition like Game Over causes the game (or level) to be restarted.
+## By default, returns to the Main Menu.
+## Override for game-specific functionality.
+## @experimental
+func restart() -> void:
+	SceneManager.transitionToScene(load("res://Scenes/Launch/GameFrame.tscn"))
+
+
+#endregion
+
+
+#region Global Data
+# TBD: Make `static func`?
+
+## A shorthand wrapper for [method GlobalData.getValue] on [member globalData]
+func getGlobalValue(key: StringName, defaultValue: Variant = null) -> Variant:
+	return globalData.getValue(key, defaultValue)
+
+
+## A shorthand wrapper for [method GlobalData.setValue] on [member globalData]
+func setGlobalValue(key: StringName, newValue: Variant) -> bool:
+	return globalData.setValue(key, newValue)
+
+
+## A shorthand wrapper for [method GlobalData.eraseValue] on [member globalData]
+func eraseGlobalValue(key: StringName) -> bool:
+	return globalData.eraseValue(key)
+
+#endregion
+
+
+#region Save & Load
+
+## A very rudimentary implementation of saving the entire game state.
+## @experimental
+func saveGame() -> void: # NOTE: Cannot be `static` because of `self.process_mode`
+	# TODO: Implement properly :(
+	# BUG:  Does not save all state of all nodes
+	# TBD:  Is it necessary to `await` & pause to ensure a reliable & deterministic save?
+
+	GlobalUI.createTemporaryLabel("Saving...") # NOTE: Don't `await` here or it will wait for the animation to finish.
+	@warning_ignore("redundant_await")
+	await Debug.printLog("Saving state → " + Settings.saveFilePath) # TBD: await or not?
+
+	var sceneTree: SceneTree = get_tree()
+	self.process_mode = Node.PROCESS_MODE_ALWAYS
+	sceneTree.paused = true
+
+	await Global.screenshot("Save") # DEBUG: Take a screenshop for comparison
+
+	var packedSceneToSave: PackedScene = PackedScene.new()
+	packedSceneToSave.pack(sceneTree.get_current_scene())
+	ResourceSaver.save(packedSceneToSave, Settings.saveFilePath)
+
+	sceneTree.paused = false
+
+
+## A very rudimentary implementation of loading the entire game state.
+## @experimental
+func loadGame() -> void:  # NOTE: Cannot be `static` because of `self.process_mode`
+	# TODO: Implement properly :(
+	# BUG:  Does not restore all state of all nodes
+	# TBD:  Is it necessary to `await` & pause to ensure a reliable & deterministic load?
+
+	GlobalUI.createTemporaryLabel("Loading...")  # NOTE: Don't `await` here or it will wait for the animation to finish.
+	@warning_ignore("redundant_await")
+	await Debug.printLog("Loading state ← " + Settings.saveFilePath) # TBD: await or not?
+
+	var sceneTree: SceneTree = get_tree()
+	self.process_mode = Node.PROCESS_MODE_ALWAYS
+	sceneTree.paused = true
+
+	var packedSceneLoaded := ResourceLoader.load(Settings.saveFilePath)
+
+	sceneTree.paused = false
+	sceneTree.change_scene_to_packed(packedSceneLoaded)
+	await sceneTree.scene_changed
+	if OS.is_debug_build(): await Global.screenshot("Load") # DEBUG: Take a screenshop for comparison
+
+#endregion
