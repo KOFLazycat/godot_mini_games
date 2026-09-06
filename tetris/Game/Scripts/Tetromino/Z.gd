@@ -1,7 +1,8 @@
 ## Z型方块
 ## 颜色：红色(RED)
 ## 形状：3x3矩阵
-class_name Z extends Tetromino
+class_name Z 
+extends Tetromino
 
 ## 方块颜色
 const COLOR: Color = Color.RED

@@ -1,7 +1,8 @@
 ## I型方块（长条）
 ## 颜色：青色(CYAN)
 ## 形状：4x4矩阵
-class_name I extends Tetromino
+class_name I 
+extends Tetromino
 
 ## 方块颜色
 const COLOR: Color = Color.CYAN

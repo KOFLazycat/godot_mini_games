@@ -1,7 +1,8 @@
 ## T型方块
 ## 颜色：紫色(PURPLE)
 ## 形状：3x3矩阵
-class_name T extends Tetromino
+class_name T 
+extends Tetromino
 
 ## 方块颜色
 const COLOR: Color = Color.PURPLE

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ckrinjenphq1c"]
+
+[ext_resource type="Script" uid="uid://hjolkjlnr1s1" path="res://Game/Scenes/PlayField.gd" id="1_xf1l5"]
+
+[node name="PlayField" type="Node2D" unique_id=1707947829]
+script = ExtResource("1_xf1l5")

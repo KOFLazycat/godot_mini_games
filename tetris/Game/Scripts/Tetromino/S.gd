@@ -1,7 +1,8 @@
 ## S型方块
 ## 颜色：绿色(GREEN)
 ## 形状：3x3矩阵
-class_name S extends Tetromino
+class_name S 
+extends Tetromino
 
 ## 方块颜色
 const COLOR: Color = Color.GREEN

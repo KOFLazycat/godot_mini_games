@@ -1,7 +1,8 @@
 ## L型方块
 ## 颜色：橙色(ORANGE)
 ## 形状：3x3矩阵
-class_name L extends Tetromino
+class_name L 
+extends Tetromino
 
 ## 方块颜色
 const COLOR: Color = Color.ORANGE

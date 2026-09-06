@@ -2,7 +2,7 @@
 ## 实现俄罗斯方块的墙踢（Wall Kick）功能
 ## 当旋转可能导致方块越界或重叠时，通过预定义的测试点尝试将方块推回合法位置
 class_name RotationSystem
-extends RefCounted
+extends Object
 
 # 普通方块（J、L、S、T、Z）的墙踢偏移表
 # 格式：key表示旋转方向转换（如"0_to_R"表示从0度转到90度）

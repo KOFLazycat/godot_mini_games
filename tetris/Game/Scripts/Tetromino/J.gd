@@ -1,7 +1,8 @@
 ## J型方块
 ## 颜色：蓝色(BLUE)
 ## 形状：3x3矩阵
-class_name J extends Tetromino
+class_name J 
+extends Tetromino
 
 ## 方块颜色
 const COLOR: Color = Color.BLUE
