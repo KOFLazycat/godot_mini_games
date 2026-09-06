@@ -1,0 +1,47 @@
+## A subclass of [Spawner] that spawns a random scene from a "weighted" [Dictionary] on each [method spawn] call.
+## TIP: To use a non-random sequential list of scenes, use [SpawnerList]
+## TIP: To use with a [SpawnPoint] or [SpawnArea] etc., enable "Editable Children" and replace the [Spawner] script with this script.
+
+@warning_ignore("missing_tool")
+class_name SpawnerRandom extends Spawner
+
+
+#region Parameters
+
+## A [Dictionary] of scene paths and their "relative weights" used to randomly pick which scene to spawn.
+## EXAMPLE: `{ "res://Common.tscn": 3.0, "res://Rare.tscn": 1.0 }` = 75% chance for Common, 25% for Rare
+## NOTE: Entries with weights <= 0 are ignored.
+## IMPORTANT: [member spawnChance] is rolled BEFORE this list is used; if the roll doesn't succeed, then NO scene is spawned.
+@export var scenes: Dictionary[String, float]
+
+## The chance percent rolled on every [method spawn] call BEFORE a scene is randomly chosen from [member scenes]
+@export_range(0, 100, 1, "suffix:%") var spawnChance: int = 100 # TBD: Should this be a float 0.0 to 1.0? or will that cause float comparison effery?
+
+#endregion
+
+
+## Checks [member spawnChance] then picks a random scene from [member scenes] to "inject" into [member sceneToSpawn]
+func setupSpawn() -> bool:
+	# `isEnabled` checked by spawn()
+	# sceneToSpawn = "" # TBD: Clear `sceneToSpawn` by default or on failed validation?
+
+	if scenes.is_empty():
+		Debug.printWarning("spawn(): `scenes` is empty", self)
+		return false
+
+	# Before choosing a random scene, roll to see if we should spawn anything at all or not
+	if spawnChance >= 100 \
+	or GameState.randomNumberGenerator.randi_range(1, 100) <= spawnChance: # i.e. if the chance is 10%, then any number from 1-10 should succeed. If 0 then never succeed.
+		# Success
+		if debugMode: Debug.printDebug(str("spawn(): roll <= spawnChance: ", spawnChance), self)
+	else:
+		return false
+
+	# Choose a random scene
+	var randomScenePath: String = Tools.pickRandomFromWeightsDictionary(scenes, "") as String
+	if  randomScenePath.is_empty(): # Avoid a call to super.spawn() → validateSceneToSpawn()
+		if debugMode: Debug.printWarning("spawn(): Tools.pickRandomFromWeightsDictionary() did not return a non-empty path from `scenes`", self)
+		return false
+
+	sceneToSpawn = randomScenePath
+	return true

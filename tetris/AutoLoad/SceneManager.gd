@@ -1,0 +1,312 @@
+## AutoLoad
+## Manages transitions between different scenes via a "navigation stack".
+## For visuals and sounds that must be present in every scene, see [GlobalUI].
+
+# class_name SceneManager
+extends Node
+
+
+#region Constants
+const logName: String = "SceneManager" # Because we can't have class_name :')
+#endregion
+
+
+#region State
+
+## A first-in=last-out stack of scenes that can be navigated within via [method pushSceneToStack] and [method popSceneFromStack].
+## Stores paths instead of [PackedScene] to save memory and improve performance.
+## IMPORTANT: The END of the array (i.e. the last element) is the TOP of the "stack" and the PREVIOUS scene; [member SceneTree.current_scene] is not stored on the stack.
+## New items are "pushed" and "popped" from the end/back of the array, NOT the front, to improve performance by not rearranging the rest of the array.
+static var sceneStack: PackedStringArray # Better performance than Array[String]
+
+var sceneTree: SceneTree:
+	get:
+		if not sceneTree: sceneTree = self.get_tree()
+		return sceneTree
+
+## Stores the scene from any previous call to [method transitionToScene] to prevent bugs from multiple calls during animations etc.
+var ongoingTransitionScene: PackedScene # CHECK: PERFORMANCE: PackedScene is probably quicker to compare than String, right?
+
+## A [Dictionary] of [StringName]s associated with [Node]s, set by `RegisterGlobalNodeName.gd`
+## This may provide more convenient access to any node than `%` names.
+var globalNodeNames: Dictionary[StringName, Node]
+
+#endregion
+
+
+#region Parameters
+@export var animateDefault: bool = true ## The default value for the `animate` argument in [method transitionToScene] and other methods.
+#endregion
+
+
+
+#region Signals
+signal willTransitionToScene(scene: PackedScene)
+signal didTransitionToScene(scene:  PackedScene)
+
+signal willPushScene(scenePath: String) ## TIP: May be used to modify the stack before a new scene is pushed.
+signal didPushScene(scenePath:  String)
+
+signal willPopScene ## TIP: May be used to modify the stack before a scene is popped, for example, pushing a scene if there is none, to make sure a "Back" Button always works.
+signal didPopScene(scenePath: String)
+
+signal willSetPause(willPause: bool) ## TIP: May be used to modify visuals etc. before the game is paused.
+signal didSetPause(isPaused:   bool) ## TIP: May be used to modify UI such as [PauseButton.gd] after the game is paused.
+#endregion
+
+
+#region Transition & Stack Management
+
+## Transitions to the specified scene with an optional animation and returns `true` after the transition is successful.
+## NOTE: Does NOT use the [member sceneStack]; see [method pushCurrentSceneAndTransition] and [method popSceneFromStack].
+func transitionToScene(nextScene: PackedScene, shouldPauseSceneTree: bool = true, shouldUnpauseSceneTree: bool = shouldPauseSceneTree, animate: bool = animateDefault) -> bool:
+	# TODO: Support cancellation/interruptible transitions
+
+	# TBD: Should we return some value? bool or scene?
+	if not is_instance_valid(nextScene):
+		Debug.printError(str("transitionToScene(): Invalid scene: ", nextScene), logName)
+		return false
+
+	# Prevent multiple transitions to the same scene
+	# DESIGN: Transitions to different scenes are allowed during an ongoing transition to enable quick menu screen navigation etc.
+	# TBD: Should transitions to different scenes be allowed during an ongoing transition?
+	if ongoingTransitionScene == nextScene:
+		Debug.printWarning(str("transitionToScene() called for the same scene during a transition: ", nextScene, " ", nextScene.resource_path), logName)
+		return false
+	elif ongoingTransitionScene != null: # Log an interrupted transition in case it is or leads to a bug
+		Debug.printWarning(str("transitionToScene() called during an ongoing transition: ", nextScene, " ", nextScene.resource_path), logName)
+		return false # Abort previous ongoing transition to avoid "re-entrancy race" or return without starting new transition
+	
+	# Capture the pre-transition state to restore on failure,
+	# or in case we cancel/abort an ongoing transition later
+	var sceneBeforeTransition:			Node = sceneTree.current_scene
+	var previousPauseState:				bool = sceneTree.paused
+	
+	Debug.printAutoLoadLog(str("transitionToScene(): ", sceneBeforeTransition, " → ", nextScene, " ", nextScene.resource_path))
+	
+	# Track the scene to prevent bugs from multiple calls to transition to the same scene during animations etc.
+	ongoingTransitionScene = nextScene
+
+	willTransitionToScene.emit(nextScene)
+
+	# Pause
+	
+	# NOTE: TRIED: Do NOT mess with `GlobalInput.isPauseShortcutAllowed`
+	# Let the scenes themselves decide if they want to dis/allow pause, such as MainMenuButtons or cutscenes etc.
+	# GlobalInput checks for `SceneManager.ongoingTransitionScene` before pausing anyway 
+
+	sceneTree.paused = shouldPauseSceneTree
+	if animate: await GlobalUI.fadeInTintRect().finished # Fade the overlay in, fade the game out.
+
+	# Transition
+
+	var error: Error = sceneTree.change_scene_to_packed(nextScene)
+	if  error != OK:
+		Debug.printError(str("transitionToScene(): ", nextScene, " failed: ", error), logName)
+		# Restore previous state on failure
+		self.ongoingTransitionScene = null
+		sceneTree.paused = previousPauseState # Unpause if needed, or leave it paused if the previous scene was paused
+		if animate: await GlobalUI.fadeOutTintRect().finished
+		return false
+
+	await sceneTree.scene_changed # IMPORTANT: Because change_scene_to_packed() is async
+
+	# Repause just in case the new scene unpaused before we fade-in
+	# NOTE: If this method was called without an intent to pause, leave the paused state as whatever the new scene has set.
+	# TBD: Should this always be `true`?
+	if shouldPauseSceneTree: sceneTree.paused = true
+
+	# Unpause
+	await sceneTree.create_timer(0.1).timeout # A little breath before showing the next scene
+	if shouldUnpauseSceneTree: sceneTree.paused = false # Unpause to begin the gameplay motion before the overlay fades-out for a smoother feel, instead of an abrupt movement.
+	if animate: await GlobalUI.fadeOutTintRect().finished # Fade the overlay out, fade the game in.
+
+	ongoingTransitionScene = null # Clear the transition tracker
+	if Debug.shouldPrintDebugLogs: Debug.printDebug(str("SceneTree.current_scene: ", sceneTree.current_scene), logName)
+	didTransitionToScene.emit(nextScene)
+
+	# GlobalInput.isPauseShortcutAllowed = true # Reenable the Pause Overlay # TBD: Restore previousIsPauseShortcutAllowed?
+	return true
+
+
+## Shortcut for calling [method pushCurrentSceneToStack] then [method transitionToScene].
+## TIP: Call [method popSceneFromStack] from the [param nextScene] to return to the previous scene.
+func pushCurrentSceneAndTransition(nextScene: PackedScene, shouldPauseSceneTree: bool = true, shouldUnpauseSceneTree: bool = shouldPauseSceneTree, animate: bool = animateDefault) -> bool:
+	# DESIGN: Push BEFORE transition, in case the upcoming scene inspects or accesses `SceneManager.sceneStack`
+	self.pushCurrentSceneToStack()	
+
+	var didTransitionSucceed: bool = await self.transitionToScene(nextScene, shouldPauseSceneTree, shouldUnpauseSceneTree, animate) # IMPORTANT: await for animations
+	
+	if not didTransitionSucceed:
+		# TBD: Rollback and pop the pushed scene?
+		return false
+
+	return true
+
+
+
+## Adds a scene path to the [member sceneStack] and returns the resulting stack size.
+func pushSceneToStack(scenePath: String) -> int:
+	if scenePath.is_empty():
+		Debug.printWarning("pushSceneToStack(): Path empty!", logName)
+		return sceneStack.size()
+
+	willPushScene.emit(scenePath)
+
+	# Check if we're pushing the same scene more than once
+	if not sceneStack.is_empty() and sceneStack[sceneStack.size() - 1] == scenePath:
+		Debug.printWarning("pushSceneToStack(): Scene already on top of stack: " + scenePath, logName)
+
+	sceneStack.append(scenePath) # NOTE: PERFORMANCE: Don't use push_front() because of slower performance.
+
+	if Debug.shouldPrintDebugLogs:
+		Debug.printDebug(str("pushSceneToStack(): ", scenePath, " → ", sceneStack.size(), ": ", sceneStack), logName)
+
+	didPushScene.emit(scenePath)
+	return sceneStack.size()
+
+
+## Pushes the current scene's path to [member sceneStack] and returns the stack size.
+func pushCurrentSceneToStack() -> int:
+	var currentScene: Node = sceneTree.current_scene
+
+	if not is_instance_valid(currentScene):
+		Debug.printWarning("pushCurrentSceneToStack(): No valid current scene", logName)
+		return sceneStack.size()
+
+	var currentScenePath: String = currentScene.scene_file_path
+
+	if not currentScenePath.is_empty():
+		pushSceneToStack(currentScenePath)
+	else:
+		Debug.printWarning("pushCurrentSceneToStack(): Cannot get path for current scene", logName)
+
+	return sceneStack.size()
+
+
+## Transitions to the PREVIOUS scene from the top/end of the [member sceneStack], if any, and returns that scene,
+## or returns `null` if the transition was not successful.
+func popSceneFromStack(pauseSceneTree: bool = true, unpauseSceneTree: bool = pauseSceneTree, animate: bool = animateDefault) -> PackedScene:
+
+	if sceneStack.is_empty(): # Can't pop if there are no scenes on the stack.
+		Debug.printWarning("popSceneFromStack(): sceneStack is empty!", logName)
+		return null
+
+	# Get the previous scene from the top of the stack
+
+	willPopScene.emit()
+
+	# GODOT: Why is there no pop_back() for PackedArrays??
+	# PERFORMANCE: Don't use pop_front() because of slower performance.
+	var previousScenePathFromStack: String  = sceneStack[sceneStack.size() - 1]
+	var previousSceneFromStack: PackedScene = load(previousScenePathFromStack)
+	
+	if not previousSceneFromStack:
+		Debug.printError("popSceneFromStack(): Cannot load path: " + previousScenePathFromStack, logName)
+		return null
+
+	await self.transitionToScene(previousSceneFromStack, pauseSceneTree, unpauseSceneTree, animate) # IMPORTANT: await for animations
+
+	# Make sure there IS a scene after the transition.
+	var scenePathAfterTransition: String = sceneTree.current_scene.scene_file_path if sceneTree.current_scene else "null"
+
+	# Verify the transition
+	if scenePathAfterTransition == previousScenePathFromStack:
+		# NOTE: Make sure the transition succeeded before popping the stack
+		sceneStack.remove_at(sceneStack.size() - 1) # TBD: Pop stack even on failure?
+		Debug.printAutoLoadLog(str("popSceneFromStack() → ", previousScenePathFromStack, " → stack size: ", sceneStack.size()))
+		didPopScene.emit(previousScenePathFromStack)
+		return previousSceneFromStack
+	else:
+		Debug.printWarning(str("SceneTree.current_scene.scene_file_path: ", scenePathAfterTransition, " != previousScenePathFromStack: ", previousScenePathFromStack), logName)
+		return null
+
+#endregion
+
+
+#region Pause/Unpause
+
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_PAUSED, NOTIFICATION_UNPAUSED:
+			didSetPause.emit(sceneTree.paused)
+
+
+## Sets [member SceneTree.paused] and returns the resulting paused status.
+func setPause(shouldPause: bool) -> bool:
+	# TBD: Emit signal only if changing?
+	willSetPause.emit(shouldPause)
+	sceneTree.paused = shouldPause
+
+	GlobalUI.showPauseVisuals(sceneTree.paused)
+	# NOTE: Do not emit didSetPause here; let _notification() handle pause/unpause from ANY source.
+	return sceneTree.paused
+
+
+## Toggles [member SceneTree.paused] and returns the resulting paused status.
+func togglePause() -> bool:
+	# TBD: Should this be more efficient instead of so many function calls?
+	return setPause(not sceneTree.paused)
+
+#endregion
+
+
+#region General Functions
+
+## Returns the path for a scene from a class type.
+## Convenient for getting the scene for a component.
+## e.g. [JumpComponent] i.e. `getScenePathFromClass(JumpComponent)` returns "res://Components/Control/JumpComponent.tscn"
+## ALERT: This assumes that the Scene's name is the same as the Script's `class_name`
+## e.g. "Entity" → "Entity.gd" → "Entity.tscn"
+func getScenePathFromClass(type: Script) -> String: # TBD: Make `static`?
+	# TBD: Cache frequent paths?
+	# var className: String = type.get_global_name()
+	var scriptPath:	String = type.resource_path
+	var scenePath:	String = scriptPath.replace(".gd", ".tscn")
+	return scenePath
+
+
+## Returns a new instance (Node) of a scene from the specified path.
+## Shortcut for [method @GDScript.load] + [method PackedScene.instantiate]
+func instantiateSceneFromPath(path: String) -> Node: # TBD: Make `static`?
+	# TBD: Cache frequent scenes?
+	var scene: PackedScene = load(path) as PackedScene
+
+	if is_instance_valid(scene):
+		var instance := scene.instantiate()
+		if is_instance_valid(instance): return instance
+		else: Debug.printWarning(str("SceneManager.instantiateSceneFromPath(): Cannot instantiate ", scene, " from ", path))
+	else:
+		Debug.printWarning("SceneManager.instantiateSceneFromPath(): Cannot load " + path)
+
+	return null
+
+
+## Loads the specified Scene path and adds a new copy of it as a child node of the specified parent.
+## Shortcut for [method @GDScript.load] + [method addSceneInstance].
+## Returns: The new instance.
+func loadSceneAndAddInstance(path: String, parent: Node, position: Vector2 = Vector2.ZERO) -> Node: # TBD: Make `static`?
+	var scene: PackedScene = load(path)
+	return addSceneInstance(scene, parent, position)
+
+
+## Instantiates a new copy of the specified Scene and adds it as a child node of the specified parent.
+## Shortcut for [method PackedScene.instantiate] + [method Node.add_child].
+## ALERT: Some situations may cause the error: "Parent node is busy setting up children". To solve, use `addSceneInstance.call_deferred(…)`
+## Returns: The new instance.
+func addSceneInstance(scene: PackedScene, parent: Node, position: Vector2 = Vector2.ZERO) -> Node: # TBD: Make `static`?
+	if scene == null:
+		Debug.printWarning(str("SceneManager.addSceneInstance(): scene is null!"))
+		return null
+
+	var newChild := scene.instantiate()
+
+	if not is_instance_valid(newChild):
+		Debug.printWarning(str("SceneManager.addSceneInstance(): Cannot instantiate ", scene))
+		return null
+
+	if newChild is Node2D or newChild is Control: newChild.position = position
+	NodeTools.addChildAndSetOwner(newChild, parent) # Ensure persistence
+	return newChild
+
+#endregion

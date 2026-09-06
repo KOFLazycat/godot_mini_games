@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ComedotProjectSettings" format=3 uid="uid://btmixnm02184u"]
+
+[ext_resource type="Script" uid="uid://dllivj2uw8l8r" path="res://addons/Comedot/ComedotProjectSettings.gd" id="1_8yny2"]
+
+[resource]
+script = ExtResource("1_8yny2")
+mainGameScenePath = "uid://dbwiosb1xulu5"
+debugAutoLoads = null
+shouldPrintDebugLogs = null
+showDebugWindow = null
+showDebugLabels = null
+metadata/_custom_type_script = "uid://dllivj2uw8l8r"

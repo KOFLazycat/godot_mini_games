@@ -691,11 +691,11 @@ func _drawBoard() -> void:
 			continue
 
 		# 位置插值：从旧位置 lerp 到新位置
-		var displayCol := lerpf(t.prevCol, t.col, slideEased)
-		var displayRow := lerpf(t.prevRow, t.row, slideEased)
+		var displayCol: float = lerpf(t.prevCol, t.col, slideEased)
+		var displayRow: float = lerpf(t.prevRow, t.row, slideEased)
 
 		# 缩放计算：弹出动画
-		var tileScale := 1.0
+		var tileScale: float = 1.0
 		if inPop:
 			if t.justMerged:
 				tileScale = _mergeScale(popT)

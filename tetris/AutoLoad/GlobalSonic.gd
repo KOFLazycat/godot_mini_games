@@ -1,0 +1,424 @@
+## AutoLoad
+## A scene for playing music or sound effects which are not dependent on any node or entity's lifetime.
+## Also contains a "synthesizer" for generating sounds via script code, through the [method beep] function.
+## The [member process_mode] is set to [enum ProcessMode.PROCESS_MODE_ALWAYS] which ignores the [meember SceneTree.paused] flag in order to manage audio while the actual gameplay is paused.
+## Why not GlobalAudio? Because "sonic" is more cool ;)
+
+#class_name GlobalSonic
+extends Node
+
+
+#region Parameters
+var projectSettings: ComedotProjectSettings	= ComedotProjectSettings.loaded
+
+## The folder from which to load all ".mp3" files on [method _ready] and list them in the [member musicFiles] list.
+@export var musicFolder: String = projectSettings.musicFolder
+
+## ALERT: Overrides [member musicIndexToPlayOnStart]
+@export_file("*.mp3") var musicFileToPlayOnStart: String = projectSettings.musicFileToPlayOnStart
+
+## If [member musicFileToPlayOnStart] is unspecified, then a random song is played from the list of files found in [member musicFolder].
+@export var shouldPlayRandomMusicOnStart: bool = projectSettings.shouldPlayRandomMusicOnStart
+
+## If [member musicFileToPlayOnStart] is unspecified and [member shouldPlayRandomMusicOnStart] is `false`, then this is the index of the first song from the list of files found in [member musicFolder].
+@export var musicIndexToPlayOnStart: int	= projectSettings.musicIndexToPlayOnStart
+
+@export var shouldShuffleMusic:		bool	= true ## Affects [method skipMusic] and the next track that plays after the current track finishes. Supersedes [member shouldAutoPlayNext]
+@export var shouldAutoPlayNext:		bool	= true ## Plays the next music track, if any, after a track finishes [method skipMusic] and the next track that plays after the current track finishes and [signal AudioStreamPlayer.finished] is emitted. Superseded by [member shouldShuffleMusic]
+
+@export_range(0, 100, 1) var maximumNumberOfSounds:	int  = 10 # TBD:
+
+@export var debugMode:				bool	= projectSettings.debugAutoLoads
+
+const muteVolumeThreshold:			float	= -60.0 ## The minimum volume in decibels at and below which an audio bus will be muted.
+
+#endregion
+
+
+#region State
+var audioPlayers: Array[AudioStreamPlayer2D]
+var currentAudioPlayerIndex: int
+
+var musicFiles: PackedStringArray ## An array that is populated by all the ".mp3" files found in the [constant musicFolder] on [method _ready].
+var currentMusicIndex: int = -1 ## The index in the [member musicFiles] array of the currently playing song. Defaults to -1 to indicate no song.
+#endregion
+
+
+#region Dependencies
+@onready var sounds:		Node = $Sounds
+@onready var musicPlayer:	AudioStreamPlayer = $MusicPlayer
+@onready var synthesizer:	AudioStreamPlayer = %Synthesizer ## Plays sounds generated via script code.
+#endregion
+
+
+#region Signals
+## Emits the path of the new file played by the [member musicPlayer] [AudioStreamPlayer] node.
+## If the music player has finished, then [signal musicPlayerDidStop] is emitted.
+signal musicPlayerDidPlay(fileName: String)
+
+## Emitted when the [member musicPlayer] [AudioStreamPlayer] node emits its [signal AudioStreamPlayer.finished] signal.
+## ALERT: Calling [method AudioStreamPlayer.stop] directly on [member musicPlayer] does NOT emit these signals, or when the node is removed from the scene tree.
+signal musicPlayerDidStop
+#endregion
+
+
+#region Initialization
+
+func _ready() -> void:
+	self.loadAudioSettings()
+	self.loadMusicFolder()
+	self.playInitialMusic.call_deferred() # Don't start too soon before the first scene is ready etc.
+
+
+func loadAudioSettings() -> void:
+	const settingSuffix: StringName = &"Volume" 
+	loadBusVolumeSetting(Global.AudioBuses.music, Global.AudioBuses.music.to_lower() + settingSuffix) # "musicVolume"
+	loadBusVolumeSetting(Global.AudioBuses.sfx,   Global.AudioBuses.sfx.to_lower()   + settingSuffix)   # "sfxVolume"
+
+
+func loadBusVolumeSetting(busName: StringName, settingsKey: StringName) -> float:
+	var busIndex: int = AudioServer.get_bus_index(busName)
+	if  busIndex < 0:
+		Debug.printWarning("loadBusVolumeSetting() cannot find index for audio bus: " + busName, self)
+		return 0
+
+	var volume: float = Settings.getSetting(settingsKey, 0.0)
+	AudioServer.set_bus_volume_db(busIndex, volume)
+	AudioServer.set_bus_mute(busIndex, volume <= muteVolumeThreshold) # Just mute if too low
+	return volume
+
+#endregion
+
+
+#region SFX
+
+## Creates an [AudioStreamPlayer2D], plays the specified sound, then deletes the node.
+## Used for playing sound effects for nodes and entities that may be deleted before the audio finishes playing,
+## such as enemy destruction or collectible pickups etc.
+## If [param stream] is `null`, then a [AudioStreamPlayer2D] node will be created only, but not played or automatically removed later.
+## Returns: The newly created [AudioStreamPlayer2D] node.
+## @experimental
+func createAudioPlayer(
+	stream:   AudioStream,
+	position: Vector2 = Vector2.ZERO,
+	bus:	  StringName = Global.AudioBuses.sfx) -> AudioStreamPlayer2D:
+
+	# Check the limit on maximum number of sounds
+	# TODO: A better implementation, like [TemporaryLabelList]'s?
+	# TBD: PERFORMANCE: Reuse the oldest player instead of potentially-slow destroy/recreate "churn"?
+
+	if maximumNumberOfSounds < 1:
+		if debugMode: Debug.printDebug("createAudioPlayer(): maximumNumberOfSounds < 1", self)
+		return null
+
+	if sounds.get_child_count() >= maximumNumberOfSounds:
+		# Delete the oldest sound (the one at the top of the subtree)
+		var oldestAudioPlayer: AudioStreamPlayer2D = sounds.get_child(0)
+		oldestAudioPlayer.stop() # Also stop any playing sounds so the cap also limits concurrent playback
+		audioPlayers.erase(oldestAudioPlayer) # Update the pool
+		if currentAudioPlayerIndex >= audioPlayers.size(): currentAudioPlayerIndex = 0 # TBD: What should be the fallback index?
+		sounds.remove_child(oldestAudioPlayer)
+		oldestAudioPlayer.queue_free() # Free manually instead of depending on the `finished` signal
+
+	# Create the new sound
+	var audioPlayer: AudioStreamPlayer2D = AudioStreamPlayer2D.new()
+	audioPlayer.bus		 = bus
+	audioPlayer.stream	 = stream
+	audioPlayer.position = position
+
+	sounds.add_child(audioPlayer, self.debugMode) # PERFORMANCE: force_readable_name is slow so use only if debugging
+	audioPlayer.owner = sounds # Necessary for persistence to a [PackedScene] for save/load.
+	audioPlayer.add_to_group(Global.Groups.audio, true) # persistent
+
+	if stream:
+		audioPlayer.play() # TBD: Add playback position argument? TBD: Find a way to move along with node and continue playing after the node is destroyed?
+		audioPlayer.finished.connect(audioPlayer.queue_free)
+
+	return audioPlayer
+
+
+## Creates a "pool" of reusable [AudioStreamPlayer2D] nodes for [method playAudioPlayerPool]
+## May provide better performance compared to [method createAudioPlayer]
+## NOTE: Deletes all existing children already in the [member sounds] node.
+func createAudioPlayerPool() -> Array[AudioStreamPlayer2D]:
+	# Delete existing children
+	self.audioPlayers.clear()
+	NodeTools.removeAllChildren(sounds)
+
+	# Fill the pool
+	for count in maximumNumberOfSounds:
+		var newAudioPlayer: AudioStreamPlayer2D = createAudioPlayer(null)
+		self.audioPlayers.append(newAudioPlayer)
+
+	currentAudioPlayerIndex = 0 # Reset the index
+	return self.audioPlayers
+
+
+## Plays a sound via one of the existing [AudioStreamPlayer2D] nodes from the "pool" in the `Sounds` parent node.
+## May provide better performance compared to [method createAudioPlayer].
+## Used for playing sound effects for nodes and entities that may be deleted before the audio finishes playing,
+## such as enemy destruction or collectible pickups etc.
+## Returns: The [AudioStreamPlayer2D] node which was used.
+## @experimental
+func playAudioPlayerPool(
+	stream:   AudioStream,
+	position: Vector2 = Vector2.ZERO,
+	bus:	  StringName = Global.AudioBuses.sfx) -> AudioStreamPlayer2D:
+
+	# Cycle through the available AudioStreamPlayer2D nodes,
+	# so we can have a pool of simultaneous sounds up to a limit.
+
+	if maximumNumberOfSounds < 1:
+		if debugMode: Debug.printDebug("playAudioPlayerPool(): maximumNumberOfSounds < 1", self)
+		return null
+
+	var audioPlayer: AudioStreamPlayer2D
+
+	if audioPlayers.is_empty():
+		createAudioPlayerPool()
+		# TBD: Debug.printWarning("No AudioStreamPlayer2D in audioPlayers pool", self)
+		# return null
+
+	audioPlayer = audioPlayers[currentAudioPlayerIndex]
+
+	currentAudioPlayerIndex += 1
+	if  currentAudioPlayerIndex >= audioPlayers.size():
+		currentAudioPlayerIndex = 0
+
+	# Configure the new sound
+	audioPlayer.bus		 = bus
+	audioPlayer.stream	 = stream
+	audioPlayer.position = position
+	audioPlayer.play() # TBD: Add playback position argument? TBD: Find a way to move along with node and continue playing after the node is destroyed?
+
+	return audioPlayer
+
+#endregion
+
+
+#region Music
+
+func playInitialMusic() -> AudioStream:
+	if not musicFileToPlayOnStart.is_empty():
+		return self.playMusicFile(musicFileToPlayOnStart)
+	elif shouldPlayRandomMusicOnStart:
+		return self.playRandomMusicIndex(true) # allowRepeats to allow index 0 to be included :')
+	else:
+		currentMusicIndex = musicIndexToPlayOnStart
+		return self.playMusicIndex(musicIndexToPlayOnStart)
+
+
+## Replaces and returns the [member musicFiles] array with the list returned by calling [method getMusicFilesFromFolder] on the [member musicFolder].
+func loadMusicFolder() -> PackedStringArray:
+	self.musicFiles = getMusicFilesFromFolder(self.musicFolder)
+	return self.musicFiles
+
+
+## Plays and returns the specified file on the "MusicPlayer" [AudioStreamPlayer] node.
+## The file does not have to be included in the [member musicFiles] array.
+func playMusicFile(path: String) -> AudioStream:
+	var newMusicStream: AudioStream = load(path)
+	if newMusicStream == null:
+		Debug.printWarning("playMusicFile() cannot load " + path, self)
+		return null
+
+	# Convert any UIDs to the actual text path
+	var fileName: String
+	if ResourceUID.has_id(ResourceUID.text_to_id(path)):
+		fileName = ResourceUID.get_id_path(ResourceUID.text_to_id(path))
+	else:
+		fileName = path
+
+	# Update the current index if the song is in our playlist
+	self.currentMusicIndex = self.musicFiles.find(fileName) # NOTE: Do NOT call findMusicFile() because it logs a warning if failed, but this playMusicFile() method allows ad-hoc files that are not in our `musicFiles` list.
+
+	musicPlayer.stream = newMusicStream
+	musicPlayer.play()
+	self.musicPlayerDidPlay.emit(fileName)
+	return newMusicStream
+
+
+## Returns a list of all the ".mp3" files found at [param path], which defaults to [member musicFolder].
+func getMusicFilesFromFolder(path: String = self.musicFolder) -> PackedStringArray:
+	var files: PackedStringArray = FileSystemTools.getResourcesInFolder(path, ".mp3") # TBD: Allow other extensions?
+	if debugMode: Debug.printAutoLoadLog(str("getMusicFilesFromFolder(", path, "): ", files.size(), " ", files))
+	return files
+
+
+## Searches for the specified song name and returns its index in the [member musicFiles] array if found, otherwise -1
+func findMusicFile(fileName: String) -> int:
+	var matchingIndex: int = self.musicFiles.find(fileName)
+	if matchingIndex < 0: Debug.printWarning("findMusicFile() cannot find: " + fileName, self)
+	return matchingIndex
+
+
+## Plays the song found at the specified index in the [member musicFiles] array.
+func playMusicIndex(index: int = self.currentMusicIndex) -> AudioStream:
+	if currentMusicIndex == 0 and self.musicFiles.is_empty(): # Silence warning for the default state of new projects: No music files.
+		if debugMode: Debug.printWarning("playMusicIndex(): musicFiles is empty!", self)
+		return null
+
+	if Tools.validateArrayIndex(self.musicFiles, index):
+		self.currentMusicIndex = index
+		return self.playMusicFile(self.musicFiles[index])
+	else:
+		Debug.printWarning(str("playMusicIndex() invalid index: ", index, ", musicFiles size: ", musicFiles.size()), self)
+		return null
+
+
+## Plays the next track from [member musicFiles] after [member currentMusicIndex].
+## If the playlist only has 1 track, then it is repeated.
+## If the playlist is empty, then the music is stopped.
+## Returns: The newly played [AudioStream].
+func playNextMusicIndex() -> AudioStream:
+	if self.musicFiles.is_empty():
+		musicPlayer.stop()
+		return null
+	elif self.musicFiles.size() == 1:
+		# NOTE: Manually replay the stream, in case some other script played a different track that is not the `currentMusicIndex`
+		return self.playMusicFile(self.musicFiles[self.currentMusicIndex])
+	else:
+		var nextIndex: int = self.currentMusicIndex + 1
+		if nextIndex >= self.musicFiles.size(): nextIndex = 0 # The last valid index is size-1
+		return self.playMusicFile(self.musicFiles[nextIndex])
+
+
+## Shuffles/plays and returns a random song from the [member musicFiles] array.
+## If [param allowRepeats] is `true` the same song as the current/previous song may be played again. Such is the nature of true randomness.
+## NOTE: If this is the first music to be played e.g. from [Start].gd then [param allowRepeats] should be set to `true` to allow the index 0 to be included in the shuffle.
+func playRandomMusicIndex(allowRepeats: bool = false) -> AudioStream:
+	# TBD: A better way to include index 0 on the first call?
+	if self.musicFiles.is_empty():
+		return null
+	elif allowRepeats or self.musicFiles.size() == 1: # No need to random if there's only 1 song!
+		return self.playMusicIndex(randi_range(0, self.musicFiles.size() - 1)) # randi_range() is inclusive and size() is +1 > maximum valid array index.
+	else:
+		var newMusicIndex: int = self.currentMusicIndex
+		var tries: int = 0 # Limit the number of tries so we don't get stuck in an infinite loop during pauses etc.
+		while newMusicIndex == self.currentMusicIndex and tries < 100: # 100 should be enough to ensure no repeats, right?
+			newMusicIndex = randi_range(0, self.musicFiles.size() - 1)
+			tries += 1
+		return self.playMusicIndex(newMusicIndex)
+
+
+## Plays the next sequential or random music from the [members musicFiles] list.
+## If the list is empty, the currently playing track is rewound & repeated.
+func skipMusic() -> AudioStream:
+	# Repeat the current track if there are no other tracks
+	if self.musicFiles.is_empty() and musicPlayer.playing:
+		musicPlayer.play(0.0)
+		return null
+	else:
+		self.stopMusic() # Emit the signals and stuff in case some script is tracking each track
+		if shouldShuffleMusic: return self.playRandomMusicIndex()
+		else: return self.playNextMusicIndex()
+
+
+## IMPORTANT: Call this method instead of [method AudioStreamPlayer.stop] to ensure cleanup and emit the [signal AudioStreamPlayer.finished] & [signal musicPlayerDidStop] signals.
+## NOTE: Does not reset [member currentMusicIndex]
+## Returns `false` if the [member musicPlayer] was not playing anything i.e. if the [member AudioStreamPlayer.playing] is `false`
+func stopMusic() -> bool:
+	# TBD: An option to fade out?
+	if not musicPlayer.playing: return false
+	musicPlayer.stop() # NOTE: Godot does NOT emit the `finished` signal if stop() is called.
+	self.musicPlayerDidStop.emit()
+	# NOTE: Do NOT call `onMusicPlayer_finished()` because we don't want to perform its auto-next/repeat behavior.
+	return true
+
+
+## ALERT: This signal is NOT emitted when calling [method AudioStreamPlayer.stop], or when the [member musicPlayer] node exits the scene tree while sounds are playing.
+## NOTE: Does not reset [member currentMusicIndex]
+func onMusicPlayer_finished() -> void:
+	self.musicPlayerDidStop.emit()
+	if shouldShuffleMusic: self.playRandomMusicIndex()
+	elif shouldAutoPlayNext: self.playNextMusicIndex()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	# BUG: Gets called twice in the same frame??
+	if event.is_action(GlobalInput.Actions.skipMusic) and Input.is_action_just_pressed(GlobalInput.Actions.skipMusic):
+		self.get_viewport().set_input_as_handled()
+		self.skipMusic()
+
+#endregion
+
+
+#region Synthesized Sounds
+
+@onready var synthesizerSampleHz: float = synthesizer.stream.mix_rate
+var phase: float = 0.0 # TBD: Should this be a class property or a local function variable?
+var playback: AudioStreamGeneratorPlayback ## Plays code-generated audio for the [member synthesizer].
+
+## Generates a sound via script code to play through the [member synthesizer] [AudioStreamPlayer] [AudioStreamGeneratorPlayback]
+## TIP: May be used for debugging via audio cues!
+## @experimental
+func beep(pulseHz: float = 440.0, duration: float = 1.0, volume: float = 0.5) -> void: # TBD: Should Hz come before duration or vice versa?
+	# TODO: Multiple concurrent waveforms (chords/harmonies etc.)
+
+	# NOTE: PERFORMANCE: Godot Documentation:
+	# Due to performance constraints, AudioStreamGenerator is best used from a compiled language.
+	# If you still want to use this class from GDScript, consider using a lower `mix_rate` such as 11,025 Hz or 22,050 Hz.
+
+	# Clamp & Validate
+	pulseHz  = clamp(pulseHz,  20,   22050) # Human hearing range, apprently
+	duration = clamp(duration, 0.01, 10)  # 10 milliseconds to 10 seconds
+	volume   = clamp(volume,   0,    1)   # 0% to 100%
+
+	if is_zero_approx(volume) or is_zero_approx(duration):
+		return # TBD: Play "silent" sounds?
+
+	# Prep the player
+	# CHECK: LEARN: No idea how any of this actually works. Just copied it from various sources :')
+
+	# var sampleHz:	float = synthesizer.stream.mix_rate # TBD: Set once @onready or on each call?
+	var totalSamples:	  int = int(duration * synthesizerSampleHz)
+	var samplesGenerated: int = 0
+	var framesThisChunk:  int
+	var time:			float
+	var sample:			float
+	var fadeTime:		float
+
+	# IMPORTANT: The `playback_type` must be `PLAYBACK_TYPE_STREAM` otherwise there is a Godot warning: "/root/GlobalSonic/Synthesizer is trying to play a sample from a stream that cannot be sampled."
+	if not synthesizer.playing: synthesizer.play() # Needed for AudioStreamPlayer.get_stream_playback()
+	if not playback: playback = synthesizer.get_stream_playback() # TBD: Set once @onready or on each call?
+	# playback.clear_buffer() # CHECK: Necessary? # BUG: Causes Godot Error: "beep(): Condition "active" is true." @ servers/audio/effects/audio_stream_generator.cpp:164
+
+	# Generate the sample
+
+	var framesAvailable:  int = playback.get_frames_available() # PERFORMANCE: Init this just before starting the loop
+
+	while samplesGenerated < totalSamples and framesAvailable > 0:
+		framesThisChunk = min(framesAvailable, totalSamples - samplesGenerated)
+
+		for i in range(framesThisChunk):
+			time = float(samplesGenerated + i) / synthesizerSampleHz
+			sample = sin(time * pulseHz * TAU) * volume
+
+			# Apply fade in/out to prevent clicks
+			fadeTime = min(0.01, duration * 0.1) # 10 milliseconds or 10% of duration
+			if   time < fadeTime: sample *= time / fadeTime
+			elif time > duration - fadeTime: sample *= (duration - time) / fadeTime
+
+			# NOTE: PERFORMANCE: Godot Documentation:
+			# Pushes a single audio data frame to the buffer. This is usually less efficient than push_buffer() in compiled languages,
+			# but push_frame() may be more efficient in GDScript.
+			playback.push_frame(Vector2(sample, sample)) # Stereo
+
+		samplesGenerated += framesThisChunk
+
+		# Small delay to allow audio processing
+		await get_tree().process_frame
+		framesAvailable = playback.get_frames_available()
+
+	# UNUSED: Alternative Implementation:
+	# var increment:		float = pulseHz / synthesizerSampleHz
+	# var phase:		float # TBD: Should `phase` be reset here?
+	# for i in range(min(totalSamples, framesAvailable)):
+	# 	playback.push_frame(Vector2.ONE * sin(phase * TAU) * volume) # Stereo
+	# 	phase = fmod(phase + increment, 1.0)
+
+	# TBD: Stop manually? NO: Causes problems with the next beep()
+	# await get_tree().create_timer(duration).timeout
+	# synthesizer.stop()
+
+#endregion
