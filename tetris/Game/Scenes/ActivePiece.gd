@@ -98,8 +98,8 @@ func hard_down() -> void:
 
 
 func fall() -> void:
-	if not _playfield.is_overlap(tetromino, coordinates + Coordinates.DOWN):
-		coordinates += Coordinates.DOWN
+	if not _playfield.is_overlap(tetromino, coordinates + Coordinates.down):
+		coordinates += Coordinates.down
 		queue_redraw()
 
 
@@ -148,7 +148,7 @@ func hold() -> void:
 
 
 func _draw() -> void:
-	TetrominoTools.draw_tetromino(self, tetromino, coordinates)
+	TetrominoTools.drawTetromino(self, tetromino, coordinates)
 
 
 # 向左旋转是-1， 向右旋转是1
@@ -172,10 +172,10 @@ func _m_rotate(_rotate_orientation: int) -> bool:
 ## 获取所有踢墙测试点
 func get_test_points(_rotate_orientation: int) -> Array[Vector2i]:
 	var format_string: String = "%s_to_%s"
-	var _1: String = RotationSystem.get_state_string(tetromino.orientation)
-	var _2: String = RotationSystem.get_state_string((tetromino.orientation + _rotate_orientation + 4) % 4)
+	var _1: String = RotationSystem.getStateString(tetromino.orientation)
+	var _2: String = RotationSystem.getStateString((tetromino.orientation + _rotate_orientation + 4) % 4)
 	var key: String = format_string % [_1, _2]
-	return RotationSystem.get_test_points(tetromino, key)
+	return RotationSystem.getTestPoints(tetromino, key)
 
 
 func _init_timer() -> void:
@@ -206,7 +206,7 @@ func _set_coordinates(value: Vector2i) -> void:
 	coordinatesChanged.emit()
 	queue_redraw()
 	
-	is_landing = _playfield.is_overlap(tetromino, coordinates + Coordinates.DOWN)
+	is_landing = _playfield.is_overlap(tetromino, coordinates + Coordinates.down)
 
 
 func _on_move_timer_time_out() -> void:

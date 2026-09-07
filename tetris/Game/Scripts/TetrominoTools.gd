@@ -2,8 +2,8 @@ class_name TetrominoTools
 extends Object
 
 enum GameOverType {
-	Overlapped,
-	Overflow
+	OVERLAPPED,
+	OVERFLOW
 }
 
 static func drawTetromino(canvasItem: CanvasItem, tetromino: Tetromino,
@@ -18,7 +18,7 @@ static func drawTetromino(canvasItem: CanvasItem, tetromino: Tetromino,
 		for col: int in blocks[row].size():
 			if blocks[row][col]:
 				var point: Vector2 = Vector2(col + coordinates.x, -row + 1 + coordinates.y) \
-					* Vector2(PlayField.cellWidth, -PlayField.cellWidth)
-				var size: Vector2 = Vector2(PlayField.cellWidth, PlayField.cellWidth)
+					* Vector2(PlayField.CELL_WIDTH, -PlayField.CELL_WIDTH)
+				var size: Vector2 = Vector2(PlayField.CELL_WIDTH, PlayField.CELL_WIDTH)
 				var rect: Rect2 = Rect2(point, size).grow(-1)
 				canvasItem.draw_rect(rect, color)

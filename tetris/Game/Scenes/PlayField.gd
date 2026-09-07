@@ -118,7 +118,7 @@ func _draw_blocks() -> void:
 ## @param tetromino 俄罗斯方块对象
 ## @param coordinates 方块的位置坐标
 func add_blocks(tetromino: Tetromino, coordinates: Vector2i) -> void:
-	var blocks: Array = tetromino.get_blocks()
+	var blocks: Array = tetromino.getBlocks()
 	for row: int in blocks.size():
 		for col: int in blocks[row].size():
 			# 只处理方块占据的位置（值为1）
@@ -137,7 +137,7 @@ func add_blocks(tetromino: Tetromino, coordinates: Vector2i) -> void:
 ## @param coordinates 待检查的位置坐标
 ## @return true表示重叠/越界，false表示位置合法
 func is_overlap(tetromino: Tetromino, coordinates: Vector2i) -> bool:
-	var blocks: Array = tetromino.get_blocks()
+	var blocks: Array = tetromino.getBlocks()
 	for row: int in blocks.size():
 		for col: int in blocks[row].size():
 			if (blocks[row][col]):
@@ -168,12 +168,12 @@ func get_lock_position(tetromino: Tetromino, start_coordinates: Vector2i) -> Vec
 	# 从起始位置开始向下探测，直到遇到阻碍
 	# I型方块从第23行到第1行需要移动22次，加1次原地判定共23次循环
 	for i in V_CAPACITY + 1:
-		if is_overlap(tetromino, start_coordinates + i * Coordinates.DOWN):
+		if is_overlap(tetromino, start_coordinates + i * Coordinates.down):
 			if i == 0:
 				break
 
 			# 返回上一次合法的位置
-			return start_coordinates + (i - 1) * Coordinates.DOWN
+			return start_coordinates + (i - 1) * Coordinates.down
 	return start_coordinates
 
 
@@ -182,7 +182,7 @@ func get_lock_position(tetromino: Tetromino, start_coordinates: Vector2i) -> Vec
 ## @param tetromino 俄罗斯方块对象
 ## @param coordinates 方块的位置坐标
 func clear(tetromino: Tetromino, coordinates: Vector2i) -> void:
-	var blocks: Array = tetromino.get_blocks()
+	var blocks: Array = tetromino.getBlocks()
 	var cleared_lines: int = 0
 
 	# 检查方块占据的每一行
