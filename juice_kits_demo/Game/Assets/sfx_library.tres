@@ -1,0 +1,86 @@
+[gd_resource type="Resource" script_class="SfxLibrary" format=3 uid="uid://b0pp1w54741ew"]
+
+[ext_resource type="Script" uid="uid://htlb0iy5bsjr" path="res://Game/Scripts/core/sfx_bank.gd" id="1_xyqhy"]
+[ext_resource type="AudioStream" uid="uid://codm607jx1aea" path="res://Game/Assets/audio/sfx/click/click_001.ogg" id="2_0crcv"]
+[ext_resource type="AudioStream" uid="uid://kp8tw2ucfm3f" path="res://Game/Assets/audio/sfx/click/click_002.ogg" id="3_t417a"]
+[ext_resource type="AudioStream" uid="uid://ce0qon7nbvb1k" path="res://Game/Assets/audio/sfx/click/click_003.ogg" id="4_v4g3n"]
+[ext_resource type="AudioStream" uid="uid://dkth1d465x1dy" path="res://Game/Assets/audio/sfx/click/click_004.ogg" id="5_j7nv2"]
+[ext_resource type="AudioStream" uid="uid://bsfigyguh8oqx" path="res://Game/Assets/audio/sfx/confirm/confirmation_001.ogg" id="6_kui1j"]
+[ext_resource type="AudioStream" uid="uid://dc4yb6gmxk6pu" path="res://Game/Assets/audio/sfx/confirm/confirmation_002.ogg" id="7_rsv45"]
+[ext_resource type="AudioStream" uid="uid://bckrqya7coiwl" path="res://Game/Assets/audio/sfx/confirm/confirmation_003.ogg" id="8_5gsks"]
+[ext_resource type="AudioStream" uid="uid://bwvr8w2wf0q52" path="res://Game/Assets/audio/sfx/error/error_001.ogg" id="9_tcy32"]
+[ext_resource type="AudioStream" uid="uid://graaw76f1yh7" path="res://Game/Assets/audio/sfx/error/error_002.ogg" id="10_jpv24"]
+[ext_resource type="AudioStream" uid="uid://clws4p5uk2f6e" path="res://Game/Assets/audio/sfx/error/error_003.ogg" id="11_v3hse"]
+[ext_resource type="AudioStream" uid="uid://1fp30c4c2q7p" path="res://Game/Assets/audio/sfx/explode/impactPlate_heavy_000.ogg" id="12_e1vvl"]
+[ext_resource type="AudioStream" uid="uid://e52rgvbcm5nd" path="res://Game/Assets/audio/sfx/explode/impactPlate_heavy_001.ogg" id="13_qltt4"]
+[ext_resource type="AudioStream" uid="uid://cgpk6ih71ec0w" path="res://Game/Assets/audio/sfx/explode/impactPlate_heavy_002.ogg" id="14_u270f"]
+[ext_resource type="AudioStream" uid="uid://prsb4xqgek1h" path="res://Game/Assets/audio/sfx/explode/impactPlate_heavy_003.ogg" id="15_xr3aj"]
+[ext_resource type="AudioStream" uid="uid://tbqneibwwvow" path="res://Game/Assets/audio/sfx/footstep/footstep_concrete_000.ogg" id="16_ikseb"]
+[ext_resource type="AudioStream" uid="uid://c53e0v0rdnxya" path="res://Game/Assets/audio/sfx/footstep/footstep_concrete_001.ogg" id="17_87tae"]
+[ext_resource type="AudioStream" uid="uid://dbsnqh0pxusc4" path="res://Game/Assets/audio/sfx/footstep/footstep_concrete_002.ogg" id="18_fddm8"]
+[ext_resource type="AudioStream" uid="uid://pomjr2ekcxt" path="res://Game/Assets/audio/sfx/footstep/footstep_concrete_003.ogg" id="19_sfryr"]
+[ext_resource type="AudioStream" uid="uid://bv4lrk2cb51c8" path="res://Game/Assets/audio/sfx/hit_heavy/impactPunch_heavy_000.ogg" id="20_3l7cl"]
+[ext_resource type="AudioStream" uid="uid://k6fkqaaj65h7" path="res://Game/Assets/audio/sfx/hit_heavy/impactPunch_heavy_001.ogg" id="21_tgftv"]
+[ext_resource type="AudioStream" uid="uid://cjpm23eyryxsc" path="res://Game/Assets/audio/sfx/hit_heavy/impactPunch_heavy_002.ogg" id="22_oapaa"]
+[ext_resource type="AudioStream" uid="uid://bs24dd5dfhhh1" path="res://Game/Assets/audio/sfx/hit_heavy/impactPunch_heavy_003.ogg" id="23_u8eic"]
+[ext_resource type="AudioStream" uid="uid://cqjfrwj0ip27c" path="res://Game/Assets/audio/sfx/hit_light/impactGeneric_light_000.ogg" id="24_hjiqm"]
+[ext_resource type="AudioStream" uid="uid://qccc8xhlvct1" path="res://Game/Assets/audio/sfx/hit_light/impactGeneric_light_001.ogg" id="25_4f6c6"]
+[ext_resource type="AudioStream" uid="uid://6vu8hcyg2pxh" path="res://Game/Assets/audio/sfx/hit_light/impactGeneric_light_002.ogg" id="26_w6sn6"]
+[ext_resource type="AudioStream" uid="uid://vvkfcvqp6wp0" path="res://Game/Assets/audio/sfx/hit_light/impactGeneric_light_003.ogg" id="27_7tugj"]
+[ext_resource type="AudioStream" uid="uid://bfm5aufxyb84u" path="res://Game/Assets/audio/sfx/hit_metal/impactMetal_medium_000.ogg" id="28_jxsbw"]
+[ext_resource type="AudioStream" uid="uid://dk86rrn4ul14u" path="res://Game/Assets/audio/sfx/hit_metal/impactMetal_medium_001.ogg" id="29_t8bu3"]
+[ext_resource type="AudioStream" uid="uid://0l7o78q4grof" path="res://Game/Assets/audio/sfx/hit_metal/impactMetal_medium_002.ogg" id="30_4kv4r"]
+[ext_resource type="AudioStream" uid="uid://c8eu3r0lfuj5i" path="res://Game/Assets/audio/sfx/hit_metal/impactMetal_medium_003.ogg" id="31_nexa5"]
+[ext_resource type="AudioStream" uid="uid://cwskclpb1wc4w" path="res://Game/Assets/audio/sfx/pickup/pluck_001.ogg" id="32_bptri"]
+[ext_resource type="AudioStream" uid="uid://duiake7p40n2" path="res://Game/Assets/audio/sfx/pickup/pluck_002.ogg" id="33_5feie"]
+[ext_resource type="Script" uid="uid://c78fabx7be6uu" path="res://Game/Scripts/core/sfx_library.gd" id="34_21ury"]
+
+[sub_resource type="Resource" id="Resource_xyqhy"]
+script = ExtResource("1_xyqhy")
+streams = Array[AudioStream]([ExtResource("2_0crcv"), ExtResource("3_t417a"), ExtResource("4_v4g3n"), ExtResource("5_j7nv2")])
+
+[sub_resource type="Resource" id="Resource_0crcv"]
+script = ExtResource("1_xyqhy")
+streams = Array[AudioStream]([ExtResource("6_kui1j"), ExtResource("7_rsv45"), ExtResource("8_5gsks")])
+
+[sub_resource type="Resource" id="Resource_t417a"]
+script = ExtResource("1_xyqhy")
+streams = Array[AudioStream]([ExtResource("9_tcy32"), ExtResource("10_jpv24"), ExtResource("11_v3hse")])
+
+[sub_resource type="Resource" id="Resource_v4g3n"]
+script = ExtResource("1_xyqhy")
+streams = Array[AudioStream]([ExtResource("12_e1vvl"), ExtResource("13_qltt4"), ExtResource("14_u270f"), ExtResource("15_xr3aj")])
+
+[sub_resource type="Resource" id="Resource_j7nv2"]
+script = ExtResource("1_xyqhy")
+streams = Array[AudioStream]([ExtResource("16_ikseb"), ExtResource("17_87tae"), ExtResource("18_fddm8"), ExtResource("19_sfryr")])
+
+[sub_resource type="Resource" id="Resource_kui1j"]
+script = ExtResource("1_xyqhy")
+streams = Array[AudioStream]([ExtResource("20_3l7cl"), ExtResource("21_tgftv"), ExtResource("22_oapaa"), ExtResource("23_u8eic")])
+
+[sub_resource type="Resource" id="Resource_rsv45"]
+script = ExtResource("1_xyqhy")
+streams = Array[AudioStream]([ExtResource("24_hjiqm"), ExtResource("25_4f6c6"), ExtResource("26_w6sn6"), ExtResource("27_7tugj")])
+
+[sub_resource type="Resource" id="Resource_5gsks"]
+script = ExtResource("1_xyqhy")
+streams = Array[AudioStream]([ExtResource("28_jxsbw"), ExtResource("29_t8bu3"), ExtResource("30_4kv4r"), ExtResource("31_nexa5")])
+
+[sub_resource type="Resource" id="Resource_tcy32"]
+script = ExtResource("1_xyqhy")
+streams = Array[AudioStream]([ExtResource("32_bptri"), ExtResource("33_5feie")])
+
+[resource]
+script = ExtResource("34_21ury")
+banks = {
+&"click": SubResource("Resource_xyqhy"),
+&"confirm": SubResource("Resource_0crcv"),
+&"error": SubResource("Resource_t417a"),
+&"explode": SubResource("Resource_v4g3n"),
+&"footstep": SubResource("Resource_j7nv2"),
+&"hit_heavy": SubResource("Resource_kui1j"),
+&"hit_light": SubResource("Resource_rsv45"),
+&"hit_metal": SubResource("Resource_5gsks"),
+&"pickup": SubResource("Resource_tcy32")
+}

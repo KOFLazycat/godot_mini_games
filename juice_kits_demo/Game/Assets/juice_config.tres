@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="JuiceConfig" format=3 uid="uid://nndc1pq28fkv"]
+
+[ext_resource type="Script" uid="uid://bn1hr4i6knrki" path="res://Game/Scripts/core/juice_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")

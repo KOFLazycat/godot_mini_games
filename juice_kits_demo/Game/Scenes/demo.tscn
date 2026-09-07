@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://vicf3sxq1xix"]
+
+[ext_resource type="Script" uid="uid://c0u8fyhas4ren" path="res://Game/Scripts/demo.gd" id="1_demo"]
+[ext_resource type="Script" uid="uid://drthiu73huu1u" path="res://Game/Scripts/core/shake_camera_2d.gd" id="2_camera"]
+
+[node name="Demo" type="Control" unique_id=2047414763]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_demo")
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1713057596]
+anchor_mode = 0
+script = ExtResource("2_camera")

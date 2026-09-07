@@ -1,0 +1,612 @@
+## AutoLoad
+## Displays a list of variables updated per frame. To watch a variable, add it to the `watchList` property
+
+#class_name Debug
+extends Node
+
+
+#region Parameters
+
+var projectSettings: ComedotProjectSettings = ComedotProjectSettings.loaded
+
+## Sets the visibility of "debug"-level messages in the log.
+## NOTE: Does NOT affect normal logging.
+@export var shouldPrintDebugLogs: bool = projectSettings.shouldPrintDebugLogs # TBD: Should this be a constant to improve performance?
+
+## NOTE: Only applicable in debug builds (i.e. running from the Godot Editor)
+@export var showDebugWindow: bool = projectSettings.showDebugWindow:
+	set(newValue):
+		showDebugWindow = newValue
+		if debugWindow: debugWindow.visible = newValue if OS.is_debug_build() else false # Always hide in release builds
+
+## Sets the visibility of the debug information overlay text, as well as the [member watchList]
+## NOTE: Does NOT affect the visibility of the framework warning label.
+@export var showDebugLabels: bool = projectSettings.showDebugLabels:
+	set(newValue):
+		showDebugLabels = newValue
+		setVisibility()
+		self.set_process(showDebugLabels) # PERFORMANCE: Don't update per-frame if not needed
+
+## Displays a checkered grid parallax background, to assist with pixel-perfect alignment etc.
+@export var showDebugBackground: bool = projectSettings.showDebugBackground:
+	set(newValue):
+		showDebugBackground = newValue
+		setVisibility()
+
+## A [Dictionary] of variables to monitor at runtime. The keys are the names of the variables or properties from other nodes.
+## Updating the value of an existing key will update the label for that property i.e. to show its value at runtime.
+## EXAMPLE: `Debug.watchList.velocity = characterBody.velocity`
+## ALERT: Replace "[" & "]" in variable values to avoid BBCode injection! Tags like "[color]" or "[url]" may wonk the entire [member watchListLabel] and may even be intentionally malicious!
+## `watchList[value].replace("[", "[lb]")`
+@export var watchList: Dictionary[StringName, Variant]
+
+## Affects the `force_readable_name` parameter of [method Node.add_child] at some call sites such as [method NodeTools.addChildAndSetOwner].
+## If `true`, each child node added dynamically at runtime will have a unique and "readable" name to aid debugging etc.
+## WARNING: PERFORMANCE: `force_readable_name` may be "very slow" according to Godot documentation.
+@export var shouldForceReadableName: bool	= OS.is_debug_build()
+
+const customLogEntryScene:		PackedScene	= preload("res://UI/CustomLogEntryUI.tscn")
+const customLogMaximumEntries:	int			= 100
+
+# NOTE: Using Apple's SF Symbols, currently only supported on macOS/iOS/etc.
+const entityLogSymbol:		String = "􀕽"
+const componentLogSymbol:	String = "􀥭"
+const initLogSymbol:		String = "􀈅"
+const exitLogSymbol:		String = "􀈃"
+const deleteLogSymbol:		String = "􀆄"
+
+#endregion
+
+
+#region State
+
+@onready var debugWindow:	 Window = %DebugWindow
+@onready var logWindow:		 Window = %CustomLogWindow
+
+@onready var labels:		 Node   = %Labels
+@onready var label:			 Label  = %Label
+@onready var warningLabel:	 Label  = %WarningLabel
+@onready var watchListLabel: RichTextLabel	= %WatchListLabel # TBD: PERFORMANCE: Should we stick to a regular [Label]? or performance doesn't matter anyway while debugging?
+@onready var customLogList:	 Container		= %CustomLogList
+
+@onready var debugBackground: Node2D		= %DebugBackground
+
+static var lastFrameLogged:			int  = -1 # Start at -1 so the first frame 0 can be printed.
+static var isTraceLogAlternateRow:	bool = false ## Used by [method printTrace] to alternate the row background etc. for clarity.
+
+## A custom log that holds extra on-demand information for each component and its parent entity etc.
+## @experimental
+static var customLog:				Array[Dictionary]
+static var customLogColorFlag:		bool
+
+const debugWindowSpacing:			int = 10
+static var nextChartWindowPosition:	Vector2i ## For [Chart] & `ChartWindow.tscn`
+
+static var testMode:				bool ## Set by [TestMode].gd for use by other scripts, for temporary gameplay testing.
+
+#endregion
+
+
+#region Initialization
+
+func _notification(what: int) -> void: # This happens earlier than _enter_tree()
+	if what != NOTIFICATION_PARENTED: return
+	Debug.printAutoLoadLog("NOTIFICATION_PARENTED")
+
+
+func _ready() -> void:
+	# Debug.printLog("_ready()", self.get_script().resource_path.get_file(), "", "WHITE")
+	# .call_deferred() to allow the main window to be positioned and displayed first etc.
+	initializeLogWindow.call_deferred()
+	initializeDebugWindow.call_deferred()
+	displayInitializationMessage("_ready()")
+	resetLabels()
+	setVisibility()
+	performFrameworkChecks()
+	self.set_process(showDebugLabels) # Apply setter because Godot doesn't on initialization
+
+
+func resetLabels() -> void:
+	label.text			= ""
+	warningLabel.text	= ""
+	watchListLabel.text	= ""
+
+
+func setVisibility() -> void:
+	# NOTE: The warning label must always be visible
+	if label:			label.visible			= self.showDebugLabels
+	if watchListLabel:	watchListLabel.visible	= self.showDebugLabels
+	if debugBackground:	debugBackground.visible	= self.showDebugBackground
+
+
+func performFrameworkChecks() -> void:
+	var warnings: PackedStringArray
+
+	# Verify both the shared Resource provided by ComedotProjectSettings
+	# as well as the actual Resource file at the expected path
+	# because ComedotProjectSettings may have created a new Resource as a fallback.
+	var projectSettingsCheck: ComedotProjectSettings = ComedotProjectSettings.loadSettingsResource()
+	Global.hasComedotProjectSettings = is_instance_valid(self.projectSettings) and is_instance_valid(projectSettingsCheck)
+
+	if not Global.hasComedotProjectSettings:
+		warnings.append("! ComedotProjectSettings.tres missing")
+
+	warningLabel.text = "\n".join(warnings)
+
+
+func displayInitializationMessage(initialText: String = "") -> void:
+	# Get the actual input key if any for the Debug Window
+	var debugWindowInputs:	PackedStringArray = GlobalInput.getInputEventText(GlobalInput.Actions.debugWindow)
+	var debugWindowInput:	String = debugWindowInputs[0] if not debugWindowInputs.is_empty() else "(unbound)"
+	var scriptFileName:		String = self.get_script().resource_path.get_file()
+	var message:			String = \
+		initialText + "\n" + \
+		"\t" + debugWindowInput + ": Toggle Debug Window\n" + \
+		"\tSee Input Map for more shortcuts"
+
+	Debug.printAutoLoadLog(message)
+	self.addTemporaryLabel(Global.frameworkTitle, scriptFileName + " " + message)
+
+#endregion
+
+
+#region Watchlist
+
+func _process(_delta: float) -> void:
+	# TODO: PERFORMANCE: Disable per-frame updates when `watchList` is empty. Use [Timer]?
+	if not is_instance_valid(debugWindow) or not debugWindow.visible: return # `showDebugLabels` property setter updates _set_process()
+
+	if  watchList.is_empty() and not watchListLabel.text.is_empty():
+		watchListLabel.text = ""
+		return
+
+	var text:  String = ""
+	for value: Variant in watchList:
+		# NOTE: Do not replace "[" & "]" in variable values; BBCode must be allowed for addCombinedWatchList()
+		text += str("[color=deepskyblue]", value, "[/color]: ", watchList[value], "\n")
+
+	watchListLabel.text = text
+
+
+## Adds a temporary entry to the [member watchList] for the specified number of seconds.
+## TIP: For gameplay related messages, use [method GlobalUI.createTemporaryLabel]
+## NOTE: Does NOT use [FadingLabel.tscn]
+func addTemporaryLabel(key: StringName, text: String, duration: float = 3.0) -> void:
+	watchList[key] = text
+
+	# Create a temporary timer to remove the key
+	await self.get_tree().create_timer(duration, false, false, true).timeout
+	watchList.erase(key)
+
+
+## Adds a set of different variables and formats them as a single watchlist entry.
+## Makes it easier to monitor multiple variables from a single object at runtime by visually grouping them together.
+## TIP: The [param variables] [Dictionary] may be written in a "Lua-style table syntax" with `=` instead of `:` to quickly add properties.
+## EXAMPLE: `{velocity = body.velocity}` where "velocity" is the text string for the property name to show in the watchlist label.
+## WARNING: Calling this method again with the same [param key] but with different [param variables] will remove the previous variables.
+## This method should be called once for each specific object with the same set of variables, e.g. in a `showDebugInfo()` method.
+func addCombinedWatchList(key: StringName, variables: Dictionary[String, Variant]) -> void:
+	var variablesText: String = ""
+	for variableName:  String in variables:
+		variablesText   += str(" [color=lightgray]", variableName, ": [color=gray]", variables[variableName], "\n")
+	Debug.watchList[key] = "\n" + variablesText
+
+
+## Adds a set of properties from a [Component] to the [member watchList] and formats them as a single watchlist entry along with the component & entity's name.
+## Calls [method Debug.addCombinedWatchList]. See the documentation for that method for more details.
+func addComponentWatchList(component: Component, variables: Dictionary[String, Variant]) -> void:
+	Debug.addCombinedWatchList(str(component.entity.name, ".", component.name), variables)
+
+#endregion
+
+
+#region Windows
+
+func initializeLogWindow() -> void:
+	# TBD: # logWindow.visible = OS.is_debug_build()
+	# Position the Log Window to the bottom of the main window
+	var mainWindow: Window = self.get_window()
+	logWindow.position	   = mainWindow.position
+	logWindow.position.y  += mainWindow.size.y + 75
+	logWindow.size.x	   = mainWindow.size.x
+
+
+func initializeDebugWindow() -> void:
+	var mainWindow: Window			 = self.get_window()
+	debugWindow.current_screen		 = mainWindow.current_screen
+	debugWindow.content_scale_factor = DisplayServer.screen_get_scale(mainWindow.current_screen) # For Mac/Retina/HiDPI displays
+
+	# Position the Debug Window to the right of the main window
+	# TBD: Support for Right-To-Left locales? :')
+	debugWindow.position	= mainWindow.position
+	debugWindow.position.x += mainWindow.size.x + debugWindowSpacing
+	debugWindow.visible		= self.showDebugWindow if OS.is_debug_build() else false # Display after positioning
+	nextChartWindowPosition = mainWindow.position + Vector2i(0, mainWindow.size.y + debugWindowSpacing)
+
+
+## Returns: The resulting state of the debug window's visibility.
+func toggleDebugWindow() -> bool:
+	var isDebugWindowShown: bool
+
+	if is_instance_valid(debugWindow):
+		debugWindow.visible = not debugWindow.visible
+		isDebugWindowShown  = debugWindow.visible
+	else:
+		isDebugWindowShown  = false
+		# TODO: Recreate the window
+
+	return isDebugWindowShown
+
+
+## Creates a new window with a [Chart] to graph the specified node's property.
+## Returns: The new chart, or an existing chart if one already exists for the same node & property combination.
+func createChartWindow(nodeToMonitor: NodePath, propertyToMonitor: NodePath, height: float = 100, yScale: float = 0.5) -> Chart:
+	if not nodeToMonitor.is_absolute():
+		printWarning("createChartWindow(): nodeToMonitor should be an absolute path", nodeToMonitor)
+
+	# IMPORTANT: Avoid creating duplicate charts for the same node/property
+	# which may happen if a node/script that creates charts for itself on _ready() is instantiated multiple times
+	for child: Node in self.get_children(): # Get the actual runtime state instead of relying on an Array or Dictionary to manually track windows
+		if child is not Window or child.is_queued_for_deletion(): continue # Get an active Window
+		var existingChart: Chart = NodeTools.findFirstChildOfType(child, Chart) # Get the [Chart] in that Window
+		if not existingChart: continue
+
+		# Close stale chart windows that monitor nodes from a previous scene
+		if not is_instance_valid(self.get_tree().root.get_node_or_null(existingChart.nodeToMonitor)):
+			child.queue_free() # TBD: Find a more specific method for closing a `Window`?
+			continue
+
+		# Return an existing chart if there is one monitoring the same parameters
+		if  existingChart.nodeToMonitor		== nodeToMonitor \
+		and existingChart.propertyToMonitor	== propertyToMonitor:
+			existingChart.height = height # TBD: Should we update `height` & `yScale` or should these values remain fixed from window initialization?
+			existingChart.yScale = yScale
+			child.visible		 = true
+			return existingChart
+
+	# If this will be a unique chart, prepare the new window
+
+	var node := self.get_tree().root.get_node_or_null(nodeToMonitor) # get_node() may raise an error, so we use get_node_or_null()
+	if not is_instance_valid(node):
+		printWarning(str("Invalid node or nodeToMonitor path: ", nodeToMonitor, " = ", node), self)
+		return null
+
+	var newChartWindow:	Window = preload("res://UI/ChartWindow.tscn").instantiate()
+	var newChart:		Chart  = NodeTools.findFirstChildOfType(newChartWindow, Chart)
+	if not is_instance_valid(newChart):
+		printError("ChartWindow.tscn instance has no Chart node!", newChartWindow)
+		return null
+
+	newChart.nodeToMonitor		= nodeToMonitor
+	newChart.propertyToMonitor	= propertyToMonitor
+	newChart.height				= height
+	newChart.yScale 			= yScale
+
+	newChartWindow.title		= str(node.name, propertyToMonitor)
+	newChartWindow.close_requested.connect(newChartWindow.queue_free) # TODO: Verify
+
+	# Resize the window and center the chart
+
+	newChartWindow.content_scale_factor = DisplayServer.screen_get_scale() # For Mac/Retina/HiDPI displays
+	newChartWindow.size.x = int(newChart.maxHistorySize * newChartWindow.content_scale_factor) # TBD: Should we apply `content_scale_factor` again? Otherwise the windows are too small on Retina displays.
+	newChartWindow.size.y = int((newChart.height * 2) * newChartWindow.content_scale_factor) # NOTE: Twice the height to include both the positive and negative Y axis
+	newChart.position.y   = newChart.height # NOTE: No scaling here, because it's the "raw" position before scaling.
+
+	# Shift each window so they don't all overlap
+	newChartWindow.position		= nextChartWindowPosition
+	nextChartWindowPosition.x  += newChartWindow.size.x + debugWindowSpacing
+
+	# Wrap around the screen if there's too many windows
+	var screenRect: Rect2i = DisplayServer.screen_get_usable_rect(self.get_window().current_screen)
+	if  nextChartWindowPosition.x >= screenRect.position.x + screenRect.size.x:
+		nextChartWindowPosition.x  = screenRect.position.x # Wrap to `screenRect` instead of 0 to account for multi-monitors etc.
+		nextChartWindowPosition.y += debugWindowSpacing
+		# TODO: Cap vertical offsets!
+
+	# Make sure to close window when the node is removed
+	# CHECK: Although this doesn't seem to be needed
+	Tools.connectSignal(node.tree_exited, newChartWindow.queue_free)
+
+	# Display the window
+	self.add_child(newChartWindow, true) # force_readable_name
+	return newChart
+
+#endregion
+
+
+#region Logging
+
+func printLog(message: String = "", object: Variant = null, messageColor: String = "", objectColor: String = "") -> void:
+	updateLastFrameLogged()
+	print_rich(str("[color=", objectColor, "]", object, "[/color] [color=", messageColor, "]", message)) # [/color] not necessary
+
+
+## Prints a log message for an AutoLoad script without using any state variables such as the current frame.
+## Useful for logging entries before the framework is completely ready.
+func printAutoLoadLog(message: String = "") -> void:
+	var caller: String = get_stack()[1].source.get_file().get_basename()
+	print_rich(str("[color=", Global.Colors.logAutoload, "]", caller, "[/color]\t", message))
+
+
+## Prints a log message for [Resource]s such as [Ability] etc. in a distinct color.
+func printResourceLog(message: String = "", object: Variant = null) -> void:
+	updateLastFrameLogged()
+	print_rich(str("[color=", Global.Colors.logResource, "]", object, "[/color] ", message)) # [/color] not necessary
+
+
+## Prints a faded message to reduce visual clutter.
+## Affected by [member shouldPrintDebugLogs]
+func printDebug(message: String = "", object: Variant = null, _objectColor: String = "") -> void:
+	if Debug.shouldPrintDebugLogs:
+		#updateLastFrameLogged() # OMIT: Do not print frames on a separate line, to reduce clutter.
+		#print_debug(str(Engine.get_frames_drawn()) + " " + message) # OMIT: Not useful because it will always say it was called from this Debug script.
+		print_rich(str("[right][color=dimgray]F", Engine.get_frames_drawn(), " ", object, " ", message)) # [/color] not necessary
+
+
+## Prints a warning message in the Output Log and Godot Debugger Console.
+## TIP: To see the chain of recent function calls which led to a warning, use [method Debug.printTrace]
+func printWarning(message: String = "", object: Variant = null, _objectColor: String = "") -> void:
+	updateLastFrameLogged()
+	var callerOfLogger: String = " ← " + getCaller(3) # Get the stack index 3 for the function that called the function which called this print function :)
+	push_warning(str("⚠️ ", object, " ", message, callerOfLogger)) # push_warning() does not add a line to the output log, so we can add a color-formatted message ourselves.
+	print_rich(str("[indent]􀇿 [color=yellow]", object, " ", message, "[color=orange]", callerOfLogger)) # [/color] not necessary
+
+
+## Prints an error message in the Output Log and Godot Debugger Console. Includes the caller's file and method.
+## NOTE: In release builds, if [member Settings.shouldAlertOnError] is true, displays an OS alert which blocks engine execution.
+## TIP: To see the chain of recent function calls which led to an error, use [method Debug.printTrace]
+func printError(message: String = "", object: Variant = null, _objectColor: String = "") -> void:
+	updateLastFrameLogged()
+	var plainText: String = str("❗️ ", object, " ", message, " ← ", getCaller(3)) # Get the stack index 3 for the function that called the function which called this print function :)
+	push_error(plainText)
+	printerr(plainText)
+	# Don't print a duplicate line, to reduce clutter.
+	#print_rich("[indent]❗️ [color=red]" + objectName + " " + message) # [/color] not necessary
+
+	# WARNING: Crash on error if not developing in the editor.
+	if Settings.shouldAlertOnError and not OS.is_debug_build():
+		OS.alert(message, "Framework Error")
+
+
+## Prints the message in bold and a bright color, with empty lines on each side.
+## Helpful for finding important messages quickly in the debug console.
+func printHighlight(message: String = "", object: Variant = null, _objectColor: String = "") -> void:
+	print_rich(str("\n[indent]􀢒 [b][color=white]", object, " ", message, "\n")) # [/color][/b] not necessary
+
+
+## Prints an array of variables in a highlighted color.
+## Affected by [member shouldPrintDebugLogs]
+func printVariables(values: Array[Variant], separator: String = "\t ", color: String = "orange") -> void:
+	if shouldPrintDebugLogs:
+		print_rich(str("[color=", color, "][b]", separator.join(values)))
+
+
+## Logs and returns a string showing a variable's previous and new values, IF there is a change and [member shouldPrintDebugLogs]
+## TIP: [param logAsTrace] lists recent function calls to assist in tracking what caused the variable to change.
+## Affected by [member shouldPrintDebugLogs]
+func printChange(variableName: String, previousValue: Variant, newValue: Variant, logAsTrace: bool = false) -> String:
+	# TODO: Optional charting? :)
+	if shouldPrintDebugLogs \
+	and (typeof(previousValue) != typeof(newValue) or previousValue != newValue): # Compare types first because some different Variant types can't be compared with `!=`
+		var difference: String
+		if (newValue is int or newValue is float) and (previousValue is int or previousValue is float):
+			difference = " (%+f" % (newValue - previousValue) + ")"
+		var string: String = str(previousValue, " → ", newValue, difference) # TBD: Write difference after previousValue?
+		if not logAsTrace: printLog(string, variableName, "dimgray", "gray")
+		else: printTrace([string], variableName, 3)
+		return string
+	else:
+		return ""
+
+
+## Prints an array of variables in a highlighted color, along with a "stack trace" of the 3 most recent functions and their filenames before the log method was called.
+## TIP: Helpful for quick/temporary debugging of bugs currently under attention.
+## NOTE: NOT affected by [member shouldPrintDebugLogs] but only prints if running in a debug build.
+func printTrace(values: Array[Variant] = [], object: Variant = null, stackPosition: int = 2, separator: String = " [color=dimgray]・[/color] ") -> void:
+	if OS.is_debug_build():
+		const textColorA1: String = "[color=FF80FF]"
+		const textColorA2: String = "[color=C060C0]"
+		const textColorB1: String = "[color=8080FF]"
+		const textColorB2: String = "[color=6060C0]"
+
+		var textColor1:	   String = textColorA1 if not isTraceLogAlternateRow else textColorB1
+		var textColor2:    String = textColorA2 if not isTraceLogAlternateRow else textColorB2
+
+		var backgroundColor: String = "[bgcolor=101020]" if not isTraceLogAlternateRow else "[bgcolor=001030]"
+		var bullet: String = " ⬦ " if not isTraceLogAlternateRow else " ⬥ "
+
+		print_rich(str(backgroundColor, textColor1, bullet, "F", Engine.get_frames_drawn(), " ", float(Time.get_ticks_msec()) / 1000, " [b]", object if object else "", "[/b] @ ", getCaller(stackPosition), textColor2, " ← ", getCaller(stackPosition+1), " ← ", getCaller(stackPosition+2)))
+
+		if not values.is_empty():
+			# SORRY: This mess instead of just `separator.join(values)` is so we can alternate color between values for better readability
+			# PERFORMANCE: Watch out for any FPS impact! :')
+			var joinedValues: String = ""
+			var isAlternateValueColor: bool
+			var valueColor: String
+			for value: Variant in values:
+				if not isTraceLogAlternateRow: valueColor = textColorA1 if not isAlternateValueColor else textColorA2
+				else: valueColor = textColorB1 if not isAlternateValueColor else textColorB2
+				joinedValues += str(valueColor, value, separator)
+				isAlternateValueColor = not isAlternateValueColor
+			print_rich(str(backgroundColor, " 　 ", joinedValues.trim_suffix(separator)))
+		isTraceLogAlternateRow = not isTraceLogAlternateRow
+
+
+## Prints a pretty stack dump, including all child nodes and variables.
+func printStackDump(object: Variant, includeChildNodes: bool = true, includeLocalVariables: bool = true, includeMemberVariables: bool = false, includeGlobalVariables: bool = false) -> void:
+	const globalVariableColor:	String = "[color=dimgray]"
+	const memberVariableColor:	String = "[color=dimgray]"
+	const localVariableColor:	String = "[color=gray]"
+	const backgroundColor:		String = "[bgcolor=201030]"
+	var stack: Array[ScriptBacktrace]  = Engine.capture_script_backtraces(includeGlobalVariables or includeMemberVariables or includeLocalVariables)
+
+	print_rich(str("\n\n", backgroundColor, "[color=orange]↦ [b]STACK DUMP[/b] @ Rendering Frame:", Engine.get_frames_drawn(), " Time:", float(Time.get_ticks_msec()) / 1000),
+	"\n\t[color=cyan][b]", object, "[/b] ← ", object.get_parent() if object is Node else null)
+
+	if includeChildNodes and object is Node:
+		print_rich(str("\t[color=lightblue]", object.get_children(true))) # include_internal
+
+	var backtrace: ScriptBacktrace
+	for backtraceIndex in stack.size():
+		backtrace = stack[backtraceIndex]
+		if stack.size() > 1: print(str("Backtrace ", backtraceIndex))
+
+		if includeGlobalVariables:
+			for globalVariableIndex in backtrace.get_global_variable_count():
+				print_rich(str(globalVariableColor, "\t[b]", backtrace.get_global_variable_name(globalVariableIndex), "[/b]:\t", backtrace.get_global_variable_value(globalVariableIndex)))
+
+		# The function calls
+
+		print_rich("\t[color=dimgray]0: The logging function")
+
+		var topColor: String
+		for frameIndex in backtrace.get_frame_count():
+			if frameIndex == 0: continue # Skip this logging function
+			topColor = "[color=FF80FF]" if frameIndex == 1 else "[color=white]"
+
+			print_rich(str("\t", frameIndex, ": ", topColor, backtrace.get_frame_file(frameIndex), " [b]", backtrace.get_frame_function(frameIndex), "[/b]()[/color]\t Line:", backtrace.get_frame_line(frameIndex)))
+
+			if includeLocalVariables:
+				for localVariableIndex in backtrace.get_local_variable_count(frameIndex):
+					print_rich(str(localVariableColor, "\t\t[b]", backtrace.get_local_variable_name(frameIndex, localVariableIndex), "[/b]:\t", backtrace.get_local_variable_value(frameIndex, localVariableIndex)))
+
+			if includeMemberVariables:
+				for memberVariableIndex in backtrace.get_member_variable_count(frameIndex):
+					print_rich(str(memberVariableColor, "\t\t[b]", backtrace.get_member_variable_name(frameIndex, memberVariableIndex), "[/b]:\t", backtrace.get_member_variable_value(frameIndex, memberVariableIndex)))
+
+
+## Returns a string denoting the script file & function name from the specified [param stackPosition] on the call stack.
+## Default: 2 which is the function that called the CALLER of this method.
+## Example: If `_ready()` in `Component.gd` calls [method Debug.printError], then `printError()` calls `getCaller()`, then `get_stack()[2]` is `Component.gd:_ready()`
+## [0] is `getCaller()` itself, [1] would be `printError()` and so on.
+## If the position is larger than the stack, a "?" is returned.
+## NOTE: Does NOT include function arguments.
+static func getCaller(stackPosition: int = 2) -> String:
+	if stackPosition > get_stack().size() - 1: return "?" # TBD: Return an empty string or what?
+	var caller: Dictionary = get_stack()[stackPosition] # CHECK: Get the caller of the caller (function that wants to log → log function → this function)
+	return caller.source.get_file() + ":" + caller.function + "()"
+
+
+## Updates the frame counter and prints an extra line between logs from different frames for clarity of readability.
+static func updateLastFrameLogged() -> void:
+	if not lastFrameLogged == Engine.get_frames_drawn():
+		lastFrameLogged = Engine.get_frames_drawn()
+		print_rich(str("\n[right][u][b]Frame ", lastFrameLogged, "[/b] ", float(Time.get_ticks_msec()) / 1000))
+
+#endregion
+
+
+#region Logging in Editor for @tool Scripts
+
+## [method printLog] equivalent for `@tool` scripts running in the Godot Editor.
+static func printEditorLog(message: String = "", object: Variant = null, messageColor: String = "lightgray", objectColor: String = "white") -> void:
+	if Engine.is_editor_hint(): print_rich(str("[color=", objectColor, "]", object, "[/color] [color=", messageColor, "]", message))
+	else: Debug.printLog(message, object, messageColor, objectColor)
+
+
+## [method printResourceLog] equivalent for `@tool` scripts running in the Godot Editor.
+static func printEditorResourceLog(message: String = "", object: Variant = null) -> void:
+	if Engine.is_editor_hint(): print_rich(str("[color=", Global.Colors.logResource, "]", object, "[/color] ", message))
+	else: Debug.printResourceLog(message, object)
+
+
+## [method printWarning] equivalent for `@tool` scripts running in the Godot Editor.
+static func printEditorWarning(message: String = "", object: Variant = null, objectColor: String = "white") -> void:
+	if Engine.is_editor_hint():
+		var callerOfLogger: String = " ← " + getCaller(2)
+		push_warning(str("⚠️ ", object, " ", message, callerOfLogger))
+		print_rich(str("[indent]􀇿 [color=yellow]", object, " ", message, "[color=orange]", callerOfLogger))
+	else:
+		Debug.printWarning(message, object, objectColor)
+
+
+## [method printError] equivalent for `@tool` scripts running in the Godot Editor.
+static func printEditorError(message: String = "", object: Variant = null, objectColor: String = "white") -> void:
+	if Engine.is_editor_hint():
+		var plainText: String = str("❗️ ", object, " ", message, " ← ", getCaller(2))
+		push_error(plainText)
+		printerr(plainText)
+	else:
+		Debug.printError(message, object, objectColor)
+
+#endregion
+
+
+#region Custom Log UI
+
+class CustomLogKeys:
+	# NOTE: Must be all lower case for `Tools.setLabelsWithDictionary()`
+	const message	= &"message"
+	const frameTime	= &"frametime"
+	const object	= &"object"
+	const instance	= &"instance"
+	const name		= &"name"
+	const type		= &"type"
+	const nodeClass	= &"nodeclass"
+	const baseScript = &"basescript"
+	const className	= &"classname"
+	const parent	= &"parent"
+
+
+## @experimental
+func addCustomLog(object: Variant, parent: Variant, message: String) -> void:
+	var customLogEntry: Dictionary[StringName, Variant] = getObjectDetails(object)
+
+	# Unless the object specified a custom parent, like a Component mentioning its Entity, just get the parent Node in the scene
+	if parent: customLogEntry[CustomLogKeys.parent] = parent
+	elif object is Node: customLogEntry[CustomLogKeys.parent] = object.get_parent()
+
+	customLogEntry[CustomLogKeys.message] = message
+
+	# customLog.append(customLogEntry) # No need to take up memory for an array when we already have the visual UI.
+	addCustomLogUIItem(customLogEntry)
+
+
+## @experimental
+func addCustomLogUIItem(customLogEntry: Dictionary) -> void:
+	if not logWindow or not logWindow.visible or not customLogList or customLogEntry.is_empty(): return
+
+	var listChildCount: int = customLogList.get_child_count()
+
+	if  listChildCount >= customLogMaximumEntries:
+		var childToDelete: Node = customLogList.get_child(0)
+		customLogList.remove_child(childToDelete)
+		childToDelete.queue_free() # CHECK: Is this needed?
+
+	var newLogEntryUI: CustomLogEntryUI = customLogEntryScene.instantiate()
+	newLogEntryUI.logEntry = customLogEntry
+
+	if  customLogColorFlag: # Alternate the color of rows starting from the 2nd row.
+		newLogEntryUI.self_modulate = Color(.5, 0, .5)
+	customLogColorFlag = not customLogColorFlag
+
+	customLogList.add_child(newLogEntryUI) # Don't call Tools, for performance
+	newLogEntryUI.owner = customLogList # CHECK: Is this needed for emphemeral controls?
+	# TBD: Return newLogEntryUI?
+
+
+## Returns a dictionary of almost all details about an object, using the [Debug.CustomLogKeys]
+static func getObjectDetails(object: Variant) -> Dictionary[StringName, Variant]:
+	# TBD: Should the values be actual variables or Strings?
+	if object == null: return {} # TBD: A better way to handle invalid objects?
+
+	var dictionary: Dictionary[StringName, Variant] = {
+		CustomLogKeys.frameTime:	str("F", Engine.get_frames_drawn(), " ", float(Time.get_ticks_msec()) / 1000),
+		CustomLogKeys.object:		object,
+		CustomLogKeys.instance:		object.get_instance_id() if object is Node else 0,
+		CustomLogKeys.name:			object.name if object is Node else "",
+		CustomLogKeys.type:			type_string(typeof(object)),
+		CustomLogKeys.nodeClass:	object.get_class()
+	}
+
+	var script: Script = object.get_script()
+
+	if  script:
+		dictionary[CustomLogKeys.className] = script.get_global_name()
+
+		var baseScript: Script = script.get_base_script()
+		if baseScript:  dictionary[CustomLogKeys.baseScript] = baseScript.get_global_name()
+
+	return dictionary
+
+#endregion

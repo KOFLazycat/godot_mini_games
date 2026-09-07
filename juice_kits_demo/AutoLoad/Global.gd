@@ -1,0 +1,115 @@
+## AutoLoad
+## Global data and code provided by the framework for all games, such as constants, flags and helper functions etc.
+## For scene management & transitions: see SceneManager.gd
+## For player control & input actions: see GlobalInput.gd
+## For window management, & visuals & sounds that must be present in every scene: see GlobalUI.gd
+## To save & load the game state: see GameState.gd
+
+# class_name Global
+extends Node
+
+
+#region Project-Specific Flags
+
+## ATTENTION: This flag is set by [method Debug.performFrameworkChecks] if the `ComedotProjectSettings.tres` is present. See [ComedotProjectSettings]
+static var hasComedotProjectSettings: bool = false
+
+#endregion
+
+
+#region Constants
+# DESIGN: Classes containing a list of constants are named plural, so as to be more intuitive and not be confused with a more general type, e.g. `GlobalInput.Actions` vs an Input "Action" etc.
+
+const frameworkTitle	:= &"Comedot"
+
+
+class Groups:
+	const components	:= &"components"
+	const entities		:= &"entities"
+
+	const players		:= &"players"
+	const enemies		:= &"enemies"
+	const hazards		:= &"hazards"		## Areas & objects such as spikes or pools of lava etc.
+	const collectibles	:= &"collectibles"	## Loot, powerups, inventory items etc. See [CollectibleComponent]
+	const interactions	:= &"interactions"	## Objects such as switches, doors, chests etc. See [InteractionComponent]
+	const targetables	:= &"targetables"	## Objects that can be the target of an explicit/special [Ability]. See [AbilityTargetableComponent]
+	const climbable		:= &"climbable"		## Areas & objects representing ladders, ropes or cliffs etc. See [ClimbComponent]
+	const props			:= &"props"			## Miscellaneous objects & superfluous decorations etc.
+	const spawners		:= &"spawners"		## Nodes that spawn other nodes: [Spawner], [SpawnPoint] etc.
+	const zones			:= &"zones"			## Special game-specific areas representing different maps, regions or sections of the gameplay.
+	
+	const turnBased		:= &"turnBased"
+	const audio			:= &"audio"			## Temporary sound effects
+
+
+class AudioBuses:
+	const master:= &"Master"
+	const sfx	:= &"SFX"
+	const music	:= &"Music"
+
+
+## A list of names for the custom data layer types that [TileMapLayer] Tile Sets may set on Tiles.
+## For dynamic runtime data on CELLS, use [TileMapLayerWithCellData] or [TileMapCellData].
+class TileMapCustomData:
+	const isWalkable		:= &"isWalkable"	## Tile is vacant; may be occupied by a character # TBD: Rename to isOccupiable?
+	const isBlocked			:= &"isBlocked"		## Impassable terrain or object
+	const isOpaque			:= &"isOpaque"		## Tile blocks character vision & line of sight. May be used by [TileBasedSightComponent] etc. ## @experimental
+
+	const isOccupied		:= &"isOccupied"	## Is occupied by a character
+	const occupant			:= &"occupant"		## The entity occupying the tile
+
+	const isDestructible	:= &"isDestructible"	## Tile may be damaged by a [TileDamageComponent]
+	const nextTileOnDamage	:= &"nextTileOnDamage"	## If [member isDestructible], the Cell will be changed to the Tile coordinates specified here. If there is no next tile, the Cell will be destroyed/removed from the Map.
+
+
+class Colors:
+	const logAutoload		:= "orange"
+	const logEntity			:= "lightGreen"
+	const logEntityName		:= "green"
+	const logComponent		:= "lightBlue"
+	const logComponentName	:= "cyan"
+	const logResource		:= "pink"
+
+#endregion
+
+
+#region Initialization
+
+static func _static_init() -> void:
+	print_rich("[color=white]Global.gd[/color] _static_init()")
+	printInitializationMessage()
+
+
+static func printInitializationMessage() -> void:
+	print_rich("[color=white][b]" + Global.frameworkTitle)
+
+	var projectTitle: String = ProjectSettings.get_setting("application/config/name", "Comedot")
+	if  projectTitle.to_upper() != Global.frameworkTitle.to_upper():
+		print_rich("[color=white]Project: " + projectTitle)
+
+#endregion
+
+
+#region Save & Load
+
+## Takes a screenshot and saves it as a JPEG file in the "user://" folder.
+## @experimental
+func screenshot(titleSuffix: String = "") -> void:  # NOTE: Cannot be `static` because of `self.get_viewport()`
+	# THANKS: CREDIT: https://stackoverflow.com/users/4423341/bugfish — https://stackoverflow.com/questions/77586404/take-screenshots-in-godot-4-1-stable
+
+	await RenderingServer.frame_post_draw # CHECK: Does this fix or CAUSE a frame delay?
+
+	var date:	String = Time.get_date_string_from_system().replace(".","-")
+	var time:	String = Time.get_time_string_from_system().replace(":","-")
+	
+	# Adding a frame count also disambiguates multiple screenshots taken within the same second
+	# DESIGN: BONUS: Also, multiple screenshots of the same frame should overwrite and be saved to only 1 file
+	var screenshotPath: String = str("user://", ProjectSettings.get_setting("application/config/name", "Comedot"), " screenshot ", date, " ", time, " F", Engine.get_frames_drawn())
+	if not titleSuffix.is_empty(): screenshotPath += " " + titleSuffix
+	screenshotPath += ".jpeg"
+
+	var screenshotImage: Image = self.get_viewport().get_texture().get_image() # Capture what the player sees
+	if  screenshotImage.save_jpg(screenshotPath) == OK:
+		GlobalUI.createTemporaryLabel(str("Screenshot ", time + " " + titleSuffix))
+
+#endregion
