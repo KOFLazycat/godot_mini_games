@@ -17,10 +17,10 @@ position = Vector2(282, 601)
 _playfield = NodePath("..")
 _entity = NodePath("../ActivePiece")
 
-[node name="ActivePiece" parent="PlayField" unique_id=869726199 node_paths=PackedStringArray("_playfield", "next_queue", "hold_piece") instance=ExtResource("3_6c1eg")]
+[node name="ActivePiece" parent="PlayField" unique_id=869726199 node_paths=PackedStringArray("_playfield", "nextQueue", "holdPiece") instance=ExtResource("3_6c1eg")]
 _playfield = NodePath("..")
-next_queue = NodePath("../../NextQueue")
-hold_piece = NodePath("../../HoldPiece")
+nextQueue = NodePath("../../NextQueue")
+holdPiece = NodePath("../../HoldPiece")
 
 [node name="NextQueue" parent="." unique_id=337881007 instance=ExtResource("5_6clsc")]
 position = Vector2(600, 250)

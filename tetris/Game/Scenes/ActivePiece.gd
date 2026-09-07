@@ -16,8 +16,8 @@ signal coordinatesChanged
 signal gameovered(type: TetrominoTools.GameOverType)
 
 @export var _playfield: PlayField
-@export var next_queue: NextQueue
-@export var hold_piece: HoldPiece
+@export var nextQueue: NextQueue
+@export var holdPiece: HoldPiece
 
 @onready var fall_timer: Timer = $FallTimer
 @onready var move_timer: Timer = $MoveTimer
@@ -41,7 +41,7 @@ var is_can_move: bool = false :
 var can_hold: bool = true:
 	set(value):
 		can_hold = value
-		hold_piece.ghost(!can_hold)
+		holdPiece.setGhost(!can_hold)
 
 
 func _ready() -> void:
@@ -115,7 +115,7 @@ func lock() -> void:
 
 
 func next_tetromino() -> void:
-	tetromino = next_queue.provice()
+	tetromino = nextQueue.provide()
 	if tetromino is I:
 		coordinates = Vector2i(3, 23)
 	else:
@@ -137,7 +137,7 @@ func hold() -> void:
 	
 	can_hold = false
 	
-	tetromino = hold_piece.hold(tetromino)
+	tetromino = holdPiece.hold(tetromino)
 	if tetromino == null:
 		next_tetromino()
 	else:
