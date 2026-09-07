@@ -5,7 +5,7 @@ class_name Randomizer
 extends RefCounted
 
 ## 所有方块类类型的数组（7种标准方块）
-var tetromino_class_array: Array = [Z, L, O, S, I, J, T]
+var tetromino_class_array: Array[Variant] = [Z, L, O, S, I, J, T]
 ## 当前包中的方块数组
 var tetromino_array: Array[Tetromino] = []
 ## 临时存储数组，用于补充方块
@@ -39,8 +39,8 @@ func _get_shuffle_array() -> Array[Tetromino]:
 	var result: Array[Tetromino] = []
 
 	# 创建每种方块类的实例
-	for i: Tetromino in tetromino_class_array:
-		result.push_back(i.new())
+	for tetromino_class: GDScript in tetromino_class_array:
+		result.push_back(tetromino_class.new())
 
 	# 打乱数组顺序
 	result.shuffle()

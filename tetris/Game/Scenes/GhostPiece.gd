@@ -30,4 +30,4 @@ func _draw() -> void:
 	color.a = 0.6
 
 	# 绘制半透明的幽灵方块
-	Global.draw_tetromino(self, _entity.tetromino, coordinate, color)
+	TetrominoTools.draw_tetromino(self, _entity.tetromino, coordinate, color)

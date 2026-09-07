@@ -7,46 +7,80 @@ extends Object
 # 普通方块（J、L、S、T、Z）的墙踢偏移表
 # 格式：key表示旋转方向转换（如"0_to_R"表示从0度转到90度）
 # value是5个测试点的数组，按顺序尝试，每个点都是一个Vector2i表示的偏移量
-const tick_table_common = {
-					&"0_to_R" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,1),Vector2i(0,-2),Vector2i(-1,2)],
-					&"R_to_0" : [Vector2i(0,0),Vector2i(1,0),Vector2i(1,-1),Vector2i(0,2),Vector2i(1,2)],
-					&"R_to_2" : [Vector2i(0,0),Vector2i(1,0),Vector2i(1,-1),Vector2i(0,2),Vector2i(1,2)],
-					&"2_to_R" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,1),Vector2i(0,-2),Vector2i(-1,-2)],
-					&"2_to_L" : [Vector2i(0,0),Vector2i(1,0),Vector2i(1,1),Vector2i(0,-2),Vector2i(1,-2)],
-					&"L_to_2" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,-1),Vector2i(0,2),Vector2i(-1,2)],
-					&"L_to_0" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,-1),Vector2i(0,2),Vector2i(-1,2)],
-					&"0_to_L" : [Vector2i(0,0),Vector2i(1,0),Vector2i(1,1),Vector2i(0,-2),Vector2i(1,-2)]
-	}
+const tick_table_common: Dictionary = {
+	&"0_to_R" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,1),Vector2i(0,-2),Vector2i(-1,2)],
+	&"R_to_0" : [Vector2i(0,0),Vector2i(1,0),Vector2i(1,-1),Vector2i(0,2),Vector2i(1,2)],
+	&"R_to_2" : [Vector2i(0,0),Vector2i(1,0),Vector2i(1,-1),Vector2i(0,2),Vector2i(1,2)],
+	&"2_to_R" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,1),Vector2i(0,-2),Vector2i(-1,-2)],
+	&"2_to_L" : [Vector2i(0,0),Vector2i(1,0),Vector2i(1,1),Vector2i(0,-2),Vector2i(1,-2)],
+	&"L_to_2" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,-1),Vector2i(0,2),Vector2i(-1,2)],
+	&"L_to_0" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,-1),Vector2i(0,2),Vector2i(-1,2)],
+	&"0_to_L" : [Vector2i(0,0),Vector2i(1,0),Vector2i(1,1),Vector2i(0,-2),Vector2i(1,-2)]
+}
 
 # I型方块的墙踢偏移表
 # I型方块由于形状特殊，有更大的偏移范围
-const tick_table_i = {
-					&"0_to_R" : [Vector2i(0,0),Vector2i(-2,0),Vector2i(1,0),Vector2i(-2,-1),Vector2i(1,2)],
-					&"R_to_0" : [Vector2i(0,0),Vector2i(2,0),Vector2i(-1,0),Vector2i(2,1),Vector2i(-1,-2)],
-					&"R_to_2" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(2,0),Vector2i(-1,2),Vector2i(2,-1)],
-					&"2_to_R" : [Vector2i(0,0),Vector2i(1,0),Vector2i(-2,0),Vector2i(1,-2),Vector2i(-2,1)],
-					&"2_to_L" : [Vector2i(0,0),Vector2i(2,0),Vector2i(-1,0),Vector2i(2,1),Vector2i(-1,-2)],
-					&"L_to_2" : [Vector2i(0,0),Vector2i(-2,0),Vector2i(1,0),Vector2i(-2,-1),Vector2i(1,2)],
-					&"L_to_0" : [Vector2i(0,0),Vector2i(1,0),Vector2i(-2,0),Vector2i(+1,-2),Vector2i(-2,1)],
-					&"0_to_L" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(2,0),Vector2i(-1,2),Vector2i(2,-1)]
-	}
+const tick_table_i: Dictionary = {
+	&"0_to_R" : [Vector2i(0,0),Vector2i(-2,0),Vector2i(1,0),Vector2i(-2,-1),Vector2i(1,2)],
+	&"R_to_0" : [Vector2i(0,0),Vector2i(2,0),Vector2i(-1,0),Vector2i(2,1),Vector2i(-1,-2)],
+	&"R_to_2" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(2,0),Vector2i(-1,2),Vector2i(2,-1)],
+	&"2_to_R" : [Vector2i(0,0),Vector2i(1,0),Vector2i(-2,0),Vector2i(1,-2),Vector2i(-2,1)],
+	&"2_to_L" : [Vector2i(0,0),Vector2i(2,0),Vector2i(-1,0),Vector2i(2,1),Vector2i(-1,-2)],
+	&"L_to_2" : [Vector2i(0,0),Vector2i(-2,0),Vector2i(1,0),Vector2i(-2,-1),Vector2i(1,2)],
+	&"L_to_0" : [Vector2i(0,0),Vector2i(1,0),Vector2i(-2,0),Vector2i(+1,-2),Vector2i(-2,1)],
+	&"0_to_L" : [Vector2i(0,0),Vector2i(-1,0),Vector2i(2,0),Vector2i(-1,2),Vector2i(2,-1)]
+}
 
+# 预定义的测试点数组 - 避免从 Dictionary 取值的类型问题
+const _TICK_COMMON: Array[Vector2i] = [
+	Vector2i(0,0), Vector2i(-1,0), Vector2i(-1,1), Vector2i(0,-2), Vector2i(-1,2)
+]
 
 ## 获取指定方块和旋转方向的墙踢测试点
 ## @param tetromino 俄罗斯方块对象
 ## @param key 旋转方向键（如"0_to_R"）
 ## @return 测试点数组
-static func get_test_points(tetromino: Tetromino, key: String) -> Array:
+static func get_test_points(tetromino: Tetromino, key: String) -> Array[Vector2i]:
+	# 直接根据 tetromino 类型返回对应数组，避免 Dictionary 取值的类型问题
 	match typeof(tetromino):
-		# I型方块使用专门的墙踢表
-		I:
-			return tick_table_i[key]
-		# O型方块不会越界，不需要墙踢
-		O:
-			return [Vector2i.ZERO]
-		# 其他方块使用通用墙踢表
+		TYPE_OBJECT:
+			# I型方块
+			if tetromino is I:
+				return _get_i_test_points(key)
+			# O型方块
+			elif tetromino is O:
+				return [Vector2i.ZERO]
+			# 其他方块（J、L、S、T、Z）
+			else:
+				return _get_common_test_points(key)
 		_:
-			return tick_table_common[key]
+			return [Vector2i.ZERO]
+
+
+static func _get_common_test_points(key: String) -> Array[Vector2i]:
+	match key:
+		&"0_to_R": return [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,1),Vector2i(0,-2),Vector2i(-1,2)]
+		&"R_to_0": return [Vector2i(0,0),Vector2i(1,0),Vector2i(1,-1),Vector2i(0,2),Vector2i(1,2)]
+		&"R_to_2": return [Vector2i(0,0),Vector2i(1,0),Vector2i(1,-1),Vector2i(0,2),Vector2i(1,2)]
+		&"2_to_R": return [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,1),Vector2i(0,-2),Vector2i(-1,-2)]
+		&"2_to_L": return [Vector2i(0,0),Vector2i(1,0),Vector2i(1,1),Vector2i(0,-2),Vector2i(1,-2)]
+		&"L_to_2": return [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,-1),Vector2i(0,2),Vector2i(-1,2)]
+		&"L_to_0": return [Vector2i(0,0),Vector2i(-1,0),Vector2i(-1,-1),Vector2i(0,2),Vector2i(-1,2)]
+		&"0_to_L": return [Vector2i(0,0),Vector2i(1,0),Vector2i(1,1),Vector2i(0,-2),Vector2i(1,-2)]
+		_: return [Vector2i.ZERO]
+
+
+static func _get_i_test_points(key: String) -> Array[Vector2i]:
+	match key:
+		&"0_to_R": return [Vector2i(0,0),Vector2i(-2,0),Vector2i(1,0),Vector2i(-2,-1),Vector2i(1,2)]
+		&"R_to_0": return [Vector2i(0,0),Vector2i(2,0),Vector2i(-1,0),Vector2i(2,1),Vector2i(-1,-2)]
+		&"R_to_2": return [Vector2i(0,0),Vector2i(-1,0),Vector2i(2,0),Vector2i(-1,2),Vector2i(2,-1)]
+		&"2_to_R": return [Vector2i(0,0),Vector2i(1,0),Vector2i(-2,0),Vector2i(1,-2),Vector2i(-2,1)]
+		&"2_to_L": return [Vector2i(0,0),Vector2i(2,0),Vector2i(-1,0),Vector2i(2,1),Vector2i(-1,-2)]
+		&"L_to_2": return [Vector2i(0,0),Vector2i(-2,0),Vector2i(1,0),Vector2i(-2,-1),Vector2i(1,2)]
+		&"L_to_0": return [Vector2i(0,0),Vector2i(1,0),Vector2i(-2,0),Vector2i(+1,-2),Vector2i(-2,1)]
+		&"0_to_L": return [Vector2i(0,0),Vector2i(-1,0),Vector2i(2,0),Vector2i(-1,2),Vector2i(2,-1)]
+		_: return [Vector2i.ZERO]
 
 
 ## 获取旋转状态字符串表示

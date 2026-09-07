@@ -53,4 +53,4 @@ func _draw() -> void:
 			color.a = 0.3
 
 		# 绘制方块在暂存区中央位置
-		Global.draw_tetromino(self, hold_piece, Vector2i(1, -2), color)
+		TetrominoTools.draw_tetromino(self, hold_piece, Vector2i(1, -2), color)

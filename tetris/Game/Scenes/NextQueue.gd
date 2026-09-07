@@ -35,7 +35,7 @@ func _draw() -> void:
 	# 绘制队列中的每个方块
 	for i in next_queue.size():
 		# 每个方块之间间隔3行
-		Global.draw_tetromino(self, next_queue[i], Vector2i(1, HIGHT - 2 - i * 3))
+		TetrominoTools.draw_tetromino(self, next_queue[i], Vector2i(1, HIGHT - 2 - i * 3))
 
 
 ## 提供下一个方块
