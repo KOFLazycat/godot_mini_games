@@ -19,7 +19,7 @@ func _ready() -> void:
 ## 绘制幽灵方块
 func _draw() -> void:
 	# 计算方块落地后的锁定位置
-	var coordinate: Vector2i = _playfield.get_lock_position(_entity.tetromino, _entity.coordinates)
+	var coordinate: Vector2i = _playfield.getLockPosition(_entity.tetromino, _entity.coordinates)
 
 	# 如果锁定位置与当前位置相同（已经落地），不绘制
 	if coordinate == _entity.coordinates:

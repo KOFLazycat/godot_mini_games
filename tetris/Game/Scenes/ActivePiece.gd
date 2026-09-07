@@ -79,7 +79,7 @@ func move(orientation: Vector2i) -> void:
 	if not is_can_move:
 		return
 	
-	if not _playfield.is_overlap(tetromino, coordinates + orientation):
+	if not _playfield.isOverlap(tetromino, coordinates + orientation):
 		coordinates += orientation
 		is_can_move = false
 		queue_redraw()
@@ -94,11 +94,11 @@ func soft_down(is_enable: bool) -> void:
 
 
 func hard_down() -> void:
-	coordinates = _playfield.get_lock_position(tetromino, coordinates)
+	coordinates = _playfield.getLockPosition(tetromino, coordinates)
 
 
 func fall() -> void:
-	if not _playfield.is_overlap(tetromino, coordinates + Coordinates.down):
+	if not _playfield.isOverlap(tetromino, coordinates + Coordinates.down):
 		coordinates += Coordinates.down
 		queue_redraw()
 
@@ -110,7 +110,7 @@ func lock() -> void:
 		
 	fall_timer.stop()
 	is_landing = false
-	_playfield.add_blocks(tetromino, coordinates)
+	_playfield.addBlocks(tetromino, coordinates)
 	next_tetromino()
 
 
@@ -122,7 +122,7 @@ func next_tetromino() -> void:
 		coordinates = Vector2i(3, 22)
 	
 	
-	if _playfield.is_overlap(tetromino, coordinates):
+	if _playfield.isOverlap(tetromino, coordinates):
 		gameovered.emit(Global.GameOverType.OVERLAPPED)
 	
 	await get_tree().create_timer(ENTRY_DELAY).timeout
@@ -160,7 +160,7 @@ func _m_rotate(_rotate_orientation: int) -> bool:
 	tetromino.orientation = (tetromino.orientation + _rotate_orientation + 4) % 4
 
 	for point: Vector2i in test_points:
-		if not _playfield.is_overlap(tetromino, coordinates + point):
+		if not _playfield.isOverlap(tetromino, coordinates + point):
 			coordinates += point
 			return true
 	
@@ -206,7 +206,7 @@ func _set_coordinates(value: Vector2i) -> void:
 	coordinatesChanged.emit()
 	queue_redraw()
 	
-	is_landing = _playfield.is_overlap(tetromino, coordinates + Coordinates.down)
+	is_landing = _playfield.isOverlap(tetromino, coordinates + Coordinates.down)
 
 
 func _on_move_timer_time_out() -> void:
