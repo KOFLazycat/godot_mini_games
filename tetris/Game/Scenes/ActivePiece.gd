@@ -2,98 +2,104 @@ class_name ActivePiece
 extends Node2D
 
 ## 锁定延迟 单位：秒
-const LOCK_DELAY = 0.5
+const LOCK_DELAY: float = 0.5
 ## 移动节流 如：0.1s/次，表示每0.1秒内只能移动一次
-const MOVE_THROTTLE = 0.1
+const MOVE_THROTTLE: float = 0.1
 ## 进入延迟 当新砖块生成后延迟一段时间才能活动（移动和下落，但能旋转），
 ## 独立于下落，仅在新砖块中有效。 单位：秒
-const ENTRY_DELAY = 0.1
+const ENTRY_DELAY: float = 0.1
 ## 多少秒下落一次
-const GRAVITY = 1.0
+const GRAVITY: float = 1.0
+
+## I型方块初始Y坐标
+const I_INITIAL_Y: int = 23
+## 普通方块初始Y坐标
+const NORMAL_INITIAL_Y: int = 22
+## 初始X坐标
+const INITIAL_X: int = 3
 
 
 signal coordinatesChanged
-signal gameovered(type: TetrominoTools.GameOverType)
+signal gameOvered(type: TetrominoTools.GameOverType)
 
 @export var _playfield: PlayField
 @export var nextQueue: NextQueue
 @export var holdPiece: HoldPiece
 
-@onready var fall_timer: Timer = $FallTimer
-@onready var move_timer: Timer = $MoveTimer
-@onready var lock_delay_timer: Timer = $LockDelayTimer
+@onready var fallTimer: Timer = $FallTimer
+@onready var moveTimer: Timer = $MoveTimer
+@onready var lockDelayTimer: Timer = $LockDelayTimer
 
 var tetromino: Tetromino
 var coordinates: Vector2i:
-	set = _set_coordinates
+	set = setCoordinates
 
-var is_landing: bool = false :
-	set = _set_is_landing
+var isLanding: bool = false:
+	set = setIsLanding
 
-var is_can_move: bool = false :
+var canMove: bool = false:
 	set(value):
-		is_can_move = value
+		canMove = value
 		if value:
-			move_timer.stop()
+			moveTimer.stop()
 		else:
-			move_timer.start()
+			moveTimer.start()
 
-var can_hold: bool = true:
+var canHold: bool = true:
 	set(value):
-		can_hold = value
-		holdPiece.setGhost(!can_hold)
+		canHold = value
+		holdPiece.setGhost(!canHold)
 
 
 func _ready() -> void:
-	_init_timer()
-	next_tetromino()
+	initTimer()
+	nextTetromino()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	var move_axis: float = Input.get_axis("moveLeft", "moveRight")
-	if (move_axis != 0):
-		var orientation: Vector2i = Vector2i(sign(move_axis), 0)
+	var moveAxis: float = Input.get_axis("moveLeft", "moveRight")
+	if moveAxis != 0:
+		var orientation: Vector2i = Vector2i(sign(moveAxis), 0)
 		move(orientation)
-		
+
 	if event.is_action_pressed("turnLeft"):
-		_m_rotate(-1)
-	
+		rotatePiece(-1)
+
 	if event.is_action_pressed("turnRight"):
-		_m_rotate(1)
-	
+		rotatePiece(1)
+
 	if event.is_action_pressed("moveForward"):
-		soft_down(true)
-	
+		softDrop(true)
+
 	if event.is_action_released("moveForward"):
-		soft_down(false)
-	
+		softDrop(false)
+
 	if event.is_action_pressed("jump"):
-		hard_down()
-	
+		hardDrop()
+
 	if event.is_action_pressed("hold"):
 		hold()
 
 
-
 func move(orientation: Vector2i) -> void:
-	if not is_can_move:
+	if not canMove:
 		return
-	
+
 	if not _playfield.isOverlap(tetromino, coordinates + orientation):
 		coordinates += orientation
-		is_can_move = false
+		canMove = false
 		queue_redraw()
 
 
-func soft_down(is_enable: bool) -> void:
-	if is_enable:
-		fall_timer.timeout.emit()
-		fall_timer.start(GRAVITY / 5)
-	else :
-		fall_timer.start(GRAVITY)
+func softDrop(isEnabled: bool) -> void:
+	if isEnabled:
+		fallTimer.timeout.emit()
+		fallTimer.start(GRAVITY / 5)
+	else:
+		fallTimer.start(GRAVITY)
 
 
-func hard_down() -> void:
+func hardDrop() -> void:
 	coordinates = _playfield.getLockPosition(tetromino, coordinates)
 
 
@@ -106,108 +112,109 @@ func fall() -> void:
 func lock() -> void:
 	# 踢墙有时会超出容器范围
 	if coordinates.y >= PlayField.V_CAPACITY:
-		gameovered.emit(Global.GameOverType.OVERFLOW)
-		
-	fall_timer.stop()
-	is_landing = false
+		gameOvered.emit(Global.GameOverType.OVERFLOW)
+
+	fallTimer.stop()
+	isLanding = false
 	_playfield.addBlocks(tetromino, coordinates)
-	next_tetromino()
+	nextTetromino()
 
 
-func next_tetromino() -> void:
+func nextTetromino() -> void:
 	tetromino = nextQueue.provide()
 	if tetromino is I:
-		coordinates = Vector2i(3, 23)
+		coordinates = Vector2i(INITIAL_X, I_INITIAL_Y)
 	else:
-		coordinates = Vector2i(3, 22)
-	
-	
+		coordinates = Vector2i(INITIAL_X, NORMAL_INITIAL_Y)
+
 	if _playfield.isOverlap(tetromino, coordinates):
-		gameovered.emit(Global.GameOverType.OVERLAPPED)
-	
+		gameOvered.emit(Global.GameOverType.OVERLAPPED)
+
 	await get_tree().create_timer(ENTRY_DELAY).timeout
-	fall_timer.start()
-	is_can_move = true
-	can_hold = true
+	fallTimer.start()
+	canMove = true
+	canHold = true
 
 
 func hold() -> void:
-	if not can_hold:
+	if not canHold:
 		return
-	
-	can_hold = false
-	
+
+	canHold = false
+
 	tetromino = holdPiece.hold(tetromino)
 	if tetromino == null:
-		next_tetromino()
+		nextTetromino()
 	else:
 		if tetromino is I:
-			coordinates = Vector2i(3, 23)
+			coordinates = Vector2i(INITIAL_X, I_INITIAL_Y)
 		else:
-			coordinates = Vector2i(3, 22)
+			coordinates = Vector2i(INITIAL_X, NORMAL_INITIAL_Y)
 
 
 func _draw() -> void:
 	TetrominoTools.drawTetromino(self, tetromino, coordinates)
 
 
-# 向左旋转是-1， 向右旋转是1
-func _m_rotate(_rotate_orientation: int) -> bool:
-	var test_points: Array[Vector2i] = get_test_points(_rotate_orientation)
+## 旋转方块
+## @param direction 旋转方向：-1向左，1向右
+func rotatePiece(direction: int) -> bool:
+	var testPoints: Array[Vector2i] = getTestPoints(direction)
+	var originalCoordinates: Vector2i = coordinates * 1
 
-	var coordinates_duplicate: Vector2i = coordinates * 1
+	tetromino.orientation = (tetromino.orientation + direction + 4) % 4
 
-	tetromino.orientation = (tetromino.orientation + _rotate_orientation + 4) % 4
-
-	for point: Vector2i in test_points:
+	for point: Vector2i in testPoints:
 		if not _playfield.isOverlap(tetromino, coordinates + point):
 			coordinates += point
 			return true
-	
-	self.coordinates = coordinates_duplicate
-	
+
+	coordinates = originalCoordinates
+
 	return false
 
 
 ## 获取所有踢墙测试点
-func get_test_points(_rotate_orientation: int) -> Array[Vector2i]:
-	var format_string: String = "%s_to_%s"
-	var _1: String = RotationSystem.getStateString(tetromino.orientation)
-	var _2: String = RotationSystem.getStateString((tetromino.orientation + _rotate_orientation + 4) % 4)
-	var key: String = format_string % [_1, _2]
+## @param direction 旋转方向
+## @return 踢墙测试点数组
+func getTestPoints(direction: int) -> Array[Vector2i]:
+	var formatString: String = "%s_to_%s"
+	var fromState: String = RotationSystem.getStateString(tetromino.orientation)
+	var toState: String = RotationSystem.getStateString((tetromino.orientation + direction + 4) % 4)
+	var key: String = formatString % [fromState, toState]
 	return RotationSystem.getTestPoints(tetromino, key)
 
 
-func _init_timer() -> void:
-	fall_timer.wait_time = GRAVITY
-	fall_timer.autostart = true
-	fall_timer.timeout.connect(fall)
-	
-	move_timer.wait_time = MOVE_THROTTLE
-	move_timer.timeout.connect(_on_move_timer_time_out)
-	
-	lock_delay_timer.wait_time = LOCK_DELAY
-	lock_delay_timer.one_shot = true
-	lock_delay_timer.timeout.connect(lock)
+func initTimer() -> void:
+	fallTimer.wait_time = GRAVITY
+	fallTimer.autostart = true
+	fallTimer.timeout.connect(fall)
+
+	moveTimer.wait_time = MOVE_THROTTLE
+	moveTimer.timeout.connect(onMoveTimerTimeout)
+
+	lockDelayTimer.wait_time = LOCK_DELAY
+	lockDelayTimer.one_shot = true
+	lockDelayTimer.timeout.connect(lock)
 
 
-func _set_is_landing(value: bool) -> void:
-	if is_landing != value:
-		if(value):
-			lock_delay_timer.start()
+func setIsLanding(value: bool) -> void:
+	if isLanding != value:
+		if value:
+			lockDelayTimer.start()
 		else:
-			lock_delay_timer.stop()
-			
-		is_landing = value
+			lockDelayTimer.stop()
+
+		isLanding = value
 
 
-func _set_coordinates(value: Vector2i) -> void:
+func setCoordinates(value: Vector2i) -> void:
 	coordinates = value
 	coordinatesChanged.emit()
 	queue_redraw()
-	
-	is_landing = _playfield.isOverlap(tetromino, coordinates + Coordinates.down)
+
+	isLanding = _playfield.isOverlap(tetromino, coordinates + Coordinates.down)
 
 
-func _on_move_timer_time_out() -> void:
-	is_can_move = true
+func onMoveTimerTimeout() -> void:
+	canMove = true

@@ -1,38 +1,39 @@
-class_name Arena 
-extends  Node2D
+class_name Arena
+extends Node2D
 
-var cleared_lines: int:
+var clearedLines: int:
 	set(value):
-		cleared_lines = value
+		clearedLines = value
 		score.text = str(value)
 
-@onready var play_field: PlayField = $PlayField
+@onready var playField: PlayField = $PlayField
 @onready var score: Label = $CanvasLayer/HBoxContainer/Score
 
 @onready var panel: Panel = $CanvasLayer/Panel
-@onready var reason: Label = $CanvasLayer/Panel/VBoxContainer/Reason
-@onready var active_piece: ActivePiece = $PlayField/ActivePiece
+@onready var reasonLabel: Label = $CanvasLayer/Panel/VBoxContainer/Reason
+@onready var activePiece: ActivePiece = $PlayField/ActivePiece
+
 
 func _ready() -> void:
-	score.text = '0'
-	play_field.cleared.connect(_on_playfield_cleared)
-	active_piece.gameovered.connect(_on_gameovered)
+	score.text = "0"
+	playField.cleared.connect(onPlayFieldCleared)
+	activePiece.gameOvered.connect(onGameOvered)
 
 
-func _on_playfield_cleared(lines: int) -> void:
-	cleared_lines += lines
+func onPlayFieldCleared(lines: int) -> void:
+	clearedLines += lines
 
 
-func _on_gameovered(type: TetrominoTools.GameOverType) -> void:
+func onGameOvered(type: TetrominoTools.GameOverType) -> void:
 	get_tree().paused = true
-	var reason_str: String
+	var reasonText: String
 	match type:
 		TetrominoTools.GameOverType.OVERLAPPED:
-			reason_str = '方块重叠'
+			reasonText = "方块重叠"
 		TetrominoTools.GameOverType.OVERFLOW:
-			reason_str = '方块溢出'
-			
-	reason.text = reason_str
+			reasonText = "方块溢出"
+
+	reasonLabel.text = reasonText
 	panel.show()
 
 
