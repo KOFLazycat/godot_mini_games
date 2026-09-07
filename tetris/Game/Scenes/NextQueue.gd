@@ -1,10 +1,10 @@
 ## 下一个方块队列（NextQueue）
-## 显示接下来将要出现的方块
+## 继承自 Node2D，显示接下来将要出现的方块
 ## 玩家可以预先看到下一个方块以便规划策略
 class_name NextQueue
 extends Node2D
 
-## 随机生成器
+## 随机生成器（用于生成随机方块）
 var _randomizer: Randomizer = Randomizer.new()
 
 ## 队列容量（显示的下一个方块数量）
@@ -12,21 +12,33 @@ const CAPACITY: int = 3
 
 ## 队列显示区域的宽度（格子数）
 const WIDTH: int = 6
+
 ## 队列显示区域的高度（格子数）
 const HEIGHT: int = 10
 
-## 下一个方块队列数组
+
+## 调试模式：启用后输出详细日志
+@export var debugMode: bool = false
+
+## 下一个方块队列数组（存储即将出现的方块）
 var nextQueue: Array[Tetromino] = []
 
 
 ## 初始化方法
 ## 预先生成CAPACITY个方块填充队列
 func _init() -> void:
+	if debugMode:
+		Debug.printDebug("NextQueue: _init() 开始初始化队列")
+
 	for i in CAPACITY:
 		nextQueue.append(_randomizer.provide())
 
+	if debugMode:
+		Debug.printDebug("NextQueue: _init() 队列初始化完成，队列长度=%s" % nextQueue.size())
+
 
 ## 绘制下一个方块队列
+## 在界面上显示队列中的所有方块
 func _draw() -> void:
 	# 绘制队列显示区域边框
 	draw_rect(Rect2(0, -HEIGHT * PlayField.CELL_WIDTH, \
@@ -35,18 +47,31 @@ func _draw() -> void:
 	# 绘制队列中的每个方块
 	for i in nextQueue.size():
 		# 每个方块之间间隔3行
-		TetrominoTools.drawTetromino(self, nextQueue[i], Vector2i(1, HEIGHT - 2 - i * 3))
+		var piece: Tetromino = nextQueue[i]
+		TetrominoTools.drawTetromino(self, piece, Vector2i(1, HEIGHT - 2 - i * 3))
+
+		if debugMode:
+			Debug.printDebug("NextQueue: 绘制队列第%s个方块，类型=%s" % [i, piece.get_class()])
 
 
 ## 提供下一个方块
 ## 从队列中取出一个方块，并补充一个新的方块到队列末尾
 ## @return 下一个俄罗斯方块
 func provide() -> Tetromino:
+	if debugMode:
+		Debug.printDebug("NextQueue: 提供下一个方块，队列长度=%s" % nextQueue.size())
+
 	# 取出队列最前面的方块
 	var nextPiece: Tetromino = nextQueue.pop_front()
 
+	if debugMode:
+		Debug.printDebug("NextQueue: 取出方块类型=%s" % nextPiece.get_class())
+
 	# 添加一个新的随机方块到队列末尾
 	nextQueue.append(_randomizer.provide())
+
+	if debugMode:
+		Debug.printDebug("NextQueue: 添加新方块，队列长度=%s" % nextQueue.size())
 
 	# 重绘显示
 	queue_redraw()

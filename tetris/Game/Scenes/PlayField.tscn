@@ -4,3 +4,4 @@
 
 [node name="PlayField" type="Node2D" unique_id=1707947829]
 script = ExtResource("1_xf1l5")
+debugMode = null

@@ -3,6 +3,10 @@
 class_name Arena
 extends Node2D
 
+
+## 调试模式：启用后输出详细日志
+@export var debugMode: bool = false
+
 ## 已消除的行数
 var clearedLines: int = 0:
 	set(value):
@@ -17,21 +21,34 @@ var clearedLines: int = 0:
 @onready var activePiece: ActivePiece = $PlayField/ActivePiece
 
 
+## 场景就绪时初始化
 func _ready() -> void:
+	if debugMode:
+		Debug.printDebug("Arena: _ready() 开始初始化")
+
 	score.text = "0"
 	playField.cleared.connect(onPlayFieldCleared)
 	activePiece.gameOvered.connect(onGameOvered)
+
+	if debugMode:
+		Debug.printDebug("Arena: _ready() 初始化完成")
 
 
 ## 当场地消除行时触发
 ## @param lines 消除的行数
 func onPlayFieldCleared(lines: int) -> void:
+	if debugMode:
+		Debug.printDebug("Arena: 消除%s行，累计消除=%s行" % [lines, clearedLines + lines])
+
 	clearedLines += lines
 
 
 ## 当游戏结束时触发
 ## @param type 游戏结束类型
 func onGameOvered(type: TetrominoTools.GameOverType) -> void:
+	if debugMode:
+		Debug.printDebug("Arena: 游戏结束，类型=%s" % type)
+
 	get_tree().paused = true
 	reasonLabel.text = getGameOverReason(type)
 	panel.show()
@@ -52,5 +69,8 @@ func getGameOverReason(type: TetrominoTools.GameOverType) -> String:
 
 ## 重新开始游戏
 func restart() -> void:
+	if debugMode:
+		Debug.printDebug("Arena: 重新开始游戏")
+
 	get_tree().paused = false
 	get_tree().reload_current_scene()
