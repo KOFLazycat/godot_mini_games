@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dtv8wcygnrbfk"]
+
+[ext_resource type="Script" uid="uid://bnyasv273twy7" path="res://Game/Scenes/HoldPiece.gd" id="1_2br1l"]
+
+[node name="HoldPiece" type="Node2D" unique_id=256886153]
+script = ExtResource("1_2br1l")

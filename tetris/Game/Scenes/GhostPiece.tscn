@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bhn7wyl0smfic"]
+
+[ext_resource type="Script" uid="uid://bo64kakcsqa8n" path="res://Game/Scenes/GhostPiece.gd" id="1_3qlfd"]
+
+[node name="GhostPiece" type="Node2D" unique_id=1559097168]
+script = ExtResource("1_3qlfd")
