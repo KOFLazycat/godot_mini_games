@@ -1,8 +1,11 @@
 ## 幽灵方块（GhostPiece）
 ## 显示活动方块落地后的预期位置
 ## 帮助玩家预测方块的下落位置
-class_name GhostPiece 
+class_name GhostPiece
 extends Node2D
+
+## 幽灵方块透明度
+const GHOST_ALPHA: float = 0.6
 
 ## 引用：游戏场地
 @export var _playfield: PlayField
@@ -13,21 +16,21 @@ extends Node2D
 ## 场景就绪时初始化
 func _ready() -> void:
 	# 监听活动方块的坐标变化，实时更新幽灵位置
-	_entity.coordinatesChanged.connect(func () -> void:queue_redraw())
+	_entity.coordinatesChanged.connect(func() -> void: queue_redraw())
 
 
 ## 绘制幽灵方块
 func _draw() -> void:
 	# 计算方块落地后的锁定位置
-	var coordinate: Vector2i = _playfield.getLockPosition(_entity.tetromino, _entity.coordinates)
+	var lockPosition: Vector2i = _playfield.getLockPosition(_entity.tetromino, _entity.coordinates)
 
 	# 如果锁定位置与当前位置相同（已经落地），不绘制
-	if coordinate == _entity.coordinates:
+	if lockPosition == _entity.coordinates:
 		return
 
 	# 获取活动方块的颜色并设置为半透明
-	var color: Color = _entity.tetromino.COLOR
-	color.a = 0.6
+	var pieceColor: Color = _entity.tetromino.COLOR
+	pieceColor.a = GHOST_ALPHA
 
 	# 绘制半透明的幽灵方块
-	TetrominoTools.drawTetromino(self, _entity.tetromino, coordinate, color)
+	TetrominoTools.drawTetromino(self, _entity.tetromino, lockPosition, pieceColor)
