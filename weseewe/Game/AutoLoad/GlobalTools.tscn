@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://gkrjskny2qfp"]
+
+[ext_resource type="Script" uid="uid://5u5q6r1krk70" path="res://Game/AutoLoad/GlobalTools.gd" id="1_n6mqh"]
+[ext_resource type="PackedScene" uid="uid://vs4gcm5r6mw5" path="res://Game/Scenes/Splash.tscn" id="2_3a15i"]
+
+[node name="GlobalTools" type="Node" unique_id=993426705]
+script = ExtResource("1_n6mqh")
+
+[node name="Splash" parent="." unique_id=934568447 instance=ExtResource("2_3a15i")]
+
+[editable path="Splash"]

@@ -43,6 +43,7 @@ GameState="*res://AutoLoad/GameState.gd"
 GlobalUI="*res://AutoLoad/GlobalUI.tscn"
 GlobalSonic="*res://AutoLoad/GlobalSonic.tscn"
 TurnBasedCoordinator="*res://AutoLoad/TurnBasedCoordinator.tscn"
+GlobalTools="*uid://gkrjskny2qfp"
 
 [comedot]
 
@@ -84,6 +85,8 @@ folder_colors={
 "res://Components/": "blue",
 "res://Entities/": "green",
 "res://Game/": "pink",
+"res://Game/Assets/": "purple",
+"res://Game/AutoLoad/": "orange",
 "res://Game/Scenes/": "yellow",
 "res://Game/Scripts/": "orange",
 "res://Lab/": "gray",
