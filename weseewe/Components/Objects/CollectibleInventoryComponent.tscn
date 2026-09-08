@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cjl1gxhpykmg3"]
+
+[ext_resource type="PackedScene" uid="uid://c3ufwns4q2thw" path="res://Components/Objects/CollectibleComponent.tscn" id="1_xqgb2"]
+[ext_resource type="Script" uid="uid://7c7nb7bxeqx1" path="res://Components/Objects/CollectibleInventoryComponent.gd" id="2_0chgq"]
+
+[node name="CollectibleInventoryComponent" unique_id=329701628 instance=ExtResource("1_xqgb2")]
+script = ExtResource("2_0chgq")
+inventoryItem = null
+preventCollectionIfDuplicateItem = true
+shouldDisplayIndicator = true

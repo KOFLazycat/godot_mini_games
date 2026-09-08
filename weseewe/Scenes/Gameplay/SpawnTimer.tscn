@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://dnrmhhkpx5fxj"]
+
+[ext_resource type="Script" uid="uid://dqqp8sc6eopxn" path="res://Scripts/Gameplay/Spawner.gd" id="2_43jxe"]
+
+[node name="SpawnTimer" type="Timer" unique_id=953473272 groups=["spawners"]]
+editor_description = "A Timer Node with the Spawner script to spawn copies of a scene at regular intervals. May be replaced with SpawnerRandom, SpawnerList etc."
+wait_time = 3.0
+autostart = true
+script = ExtResource("2_43jxe")
+
+[connection signal="timeout" from="." to="." method="spawn"]

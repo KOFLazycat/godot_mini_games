@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dnj2tewb1jq0n"]
+
+[ext_resource type="Script" uid="uid://dhuheh7xxxsp3" path="res://Scenes/Gameplay/SpawnArea.gd" id="1_k8est"]
+[ext_resource type="Script" uid="uid://dqqp8sc6eopxn" path="res://Scripts/Gameplay/Spawner.gd" id="2_38vop"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_phir2"]
+resource_local_to_scene = true
+size = Vector2(64, 64)
+
+[node name="SpawnArea" type="Area2D" unique_id=1390599236 groups=["spawners"]]
+editor_description = "An Area2D that wraps a Spawner to generate copies of other scenes at random positions. Enable \"Editable Children\" to access Spawner settings."
+collision_layer = 512
+collision_mask = 0
+monitoring = false
+monitorable = false
+script = ExtResource("1_k8est")
+metadata/_edit_group_ = true
+
+[node name="SpawnAreaShape" type="CollisionShape2D" parent="." unique_id=1648716433]
+position = Vector2(32, 32)
+shape = SubResource("RectangleShape2D_phir2")
+debug_color = Color(0.8, 0.2, 6, 0.42)
+
+[node name="Spawner" type="Node" parent="." unique_id=1827697740 groups=["spawners"]]
+editor_description = "Script may be replaced with SpawnerRandom or SpawnerList etc. Connect a Timer for regular spawns."
+script = ExtResource("2_38vop")
+parentOverride = NodePath("../..")
+
+[connection signal="willAddSpawn" from="Spawner" to="." method="onSpawner_willAddSpawn"]
