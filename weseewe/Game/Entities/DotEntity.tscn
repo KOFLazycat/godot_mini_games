@@ -8,7 +8,7 @@
 friction = 0.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_7adhp"]
-radius = 23.021729
+radius = 18.027756
 
 [node name="DotEntity" type="RigidBody2D" unique_id=674087965 node_paths=PackedStringArray("sprite") groups=["entities"]]
 editor_description = "A RigidBody2D with the Entity script."
@@ -25,6 +25,7 @@ metadata/_edit_group_ = true
 shape = SubResource("CircleShape2D_7adhp")
 
 [node name="Body" type="Node2D" parent="." unique_id=393194619]
+scale = Vector2(0.8, 0.8)
 
 [node name="DotBack" type="Sprite2D" parent="Body" unique_id=1310034986]
 texture = ExtResource("2_7adhp")

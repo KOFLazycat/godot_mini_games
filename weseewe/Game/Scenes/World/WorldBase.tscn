@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dydy8erb11ex0" path="res://Game/Scenes/World/BlockManager.gd" id="1_q5rjh"]
 [ext_resource type="Script" uid="uid://b2shq2gjd4fvt" path="res://addons/ropesim/Rope.gd" id="2_gtn0h"]
+[ext_resource type="Script" uid="uid://dgjuttxdu05er" path="res://Game/Scenes/World/DotWithRope.gd" id="2_ntbva"]
 [ext_resource type="Script" uid="uid://dvxegqp0cf77n" path="res://addons/ropesim/RopeInteraction.gd" id="3_ntbva"]
 [ext_resource type="PackedScene" uid="uid://dfiaanisbdbjh" path="res://Game/Entities/DotEntity.tscn" id="4_gtn0h"]
 
@@ -18,17 +19,21 @@ blockColors = Array[Color]([Color(0.64705884, 0.68235296, 0.7019608, 1), Color(0
 
 [node name="DotLayer" type="CanvasLayer" parent="." unique_id=705332771]
 
-[node name="Node2D" type="Node2D" parent="DotLayer" unique_id=1885601797]
-position = Vector2(141, -40)
+[node name="DotWithRope" type="Node2D" parent="DotLayer" unique_id=1885601797]
+position = Vector2(156, -11)
+script = ExtResource("2_ntbva")
+impulseStrength = 2000.0
 
-[node name="Rope" type="Node2D" parent="DotLayer/Node2D" unique_id=805279162]
+[node name="Rope" type="Node2D" parent="DotLayer/DotWithRope" unique_id=805279162]
 script = ExtResource("2_gtn0h")
 num_segments = 15
 rope_length = 150.0
 gravity = 75.0
 num_constraint_iterations = 20
+line_width = 1.0
+color = Color(0.57700837, 0.5770084, 0.57700837, 1)
 
-[node name="RopeInteraction" type="Node" parent="DotLayer/Node2D/Rope" unique_id=1790345825 node_paths=PackedStringArray("target_node", "input_node_override", "rope")]
+[node name="RopeInteraction" type="Node" parent="DotLayer/DotWithRope/Rope" unique_id=1790345825 node_paths=PackedStringArray("target_node", "input_node_override", "rope")]
 script = ExtResource("3_ntbva")
 disable_in_editor = true
 position_update_mode = 0
@@ -36,22 +41,22 @@ target_node = NodePath("../../DotEntity/AttachmentMarker/RopeEnd")
 input_node_override = NodePath("../../DotEntity/AttachmentMarker")
 rope = NodePath("..")
 
-[node name="DotEntity" parent="DotLayer/Node2D" unique_id=674087965 instance=ExtResource("4_gtn0h")]
-position = Vector2(0, 172)
+[node name="DotEntity" parent="DotLayer/DotWithRope" unique_id=674087965 instance=ExtResource("4_gtn0h")]
+position = Vector2(0, 148)
+mass = 10.0
 
-[node name="AttachmentMarker" type="Marker2D" parent="DotLayer/Node2D/DotEntity" unique_id=41154765]
-position = Vector2(0, -23)
+[node name="AttachmentMarker" type="Marker2D" parent="DotLayer/DotWithRope/DotEntity" unique_id=41154765]
 metadata/_edit_group_ = true
 
-[node name="RopeEnd" type="CharacterBody2D" parent="DotLayer/Node2D/DotEntity/AttachmentMarker" unique_id=1512808805]
+[node name="RopeEnd" type="CharacterBody2D" parent="DotLayer/DotWithRope/DotEntity/AttachmentMarker" unique_id=1512808805]
 collision_layer = 0
 collision_mask = 0
 motion_mode = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DotLayer/Node2D/DotEntity/AttachmentMarker/RopeEnd" unique_id=56633000]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DotLayer/DotWithRope/DotEntity/AttachmentMarker/RopeEnd" unique_id=56633000]
 shape = SubResource("CircleShape2D_gtn0h")
 
-[node name="PinJoint2D" type="PinJoint2D" parent="DotLayer/Node2D/DotEntity/AttachmentMarker/RopeEnd" unique_id=1275530644]
+[node name="PinJoint2D" type="PinJoint2D" parent="DotLayer/DotWithRope/DotEntity/AttachmentMarker/RopeEnd" unique_id=1275530644]
 node_a = NodePath("../../..")
 node_b = NodePath("..")
 softness = 0.05
