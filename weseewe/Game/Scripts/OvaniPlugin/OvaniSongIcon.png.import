@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cl618wo37bh1b"
-path="res://.godot/imported/Godot.svg-265317664a81b5c12d7851e5e6039d19.ctex"
+uid="uid://brmy8ip637jf5"
+path="res://.godot/imported/OvaniSongIcon.png-b92cc79149cfa3ea4c5adf649d69665e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Icons/Godot.svg"
-dest_files=["res://.godot/imported/Godot.svg-265317664a81b5c12d7851e5e6039d19.ctex"]
+source_file="res://Game/Scripts/OvaniPlugin/OvaniSongIcon.png"
+dest_files=["res://.godot/imported/OvaniSongIcon.png-b92cc79149cfa3ea4c5adf649d69665e.ctex"]
 
 [params]
 
@@ -39,6 +39,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

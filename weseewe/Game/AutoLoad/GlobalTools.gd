@@ -36,7 +36,7 @@ var data: Dictionary = {
 	"sound":true
 }
 
-	
+
 func _ready() -> void:
 	printFont()
 	data = loadFile()
@@ -56,7 +56,7 @@ func changeScene(stagePath: String) -> void:
 func save(_data: Dictionary) -> void:
 	var file: FileAccess = FileAccess.open(FILE_NAME, FileAccess.WRITE)
 	file.store_string(JSON.stringify(_data))
-	
+
 
 #载入文件
 func loadFile() -> Dictionary:
@@ -83,6 +83,7 @@ func recordGameData(colors_earned: int) -> void:
 	var avg: float = float(data['colors_earned'])/data['rounds_played']
 	data['avg_per_round']=avg
 	save(data)
+
 
 func printFont() -> void:
 	print("""

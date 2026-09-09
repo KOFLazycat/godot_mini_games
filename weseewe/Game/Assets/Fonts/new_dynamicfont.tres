@@ -1,0 +1,7 @@
+[gd_resource type="DynamicFont" format=2]
+
+[ext_resource type="DynamicFontData" uid="uid://byng0fqdonbd6" path="res://Game/Assets/Fonts/Xolonium-Regular.ttf" id="1"]
+
+[resource]
+size = 15
+font_data = ExtResource( 1 )
