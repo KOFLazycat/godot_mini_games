@@ -76,7 +76,7 @@ naming/script_name_casing=1
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Comedot/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/godot_state_charts/plugin.cfg", "res://addons/script-ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/Comedot/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/godot_state_charts/plugin.cfg", "res://addons/ropesim/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [file_customization]
 
@@ -1182,6 +1182,7 @@ debugBreak={
 2d_physics/layer_12="collectibles"
 2d_physics/layer_13="interactions"
 2d_physics/layer_14="targetables"
+2d_physics/layer_15="dots"
 avoidance/layer_1="default"
 avoidance/layer_2="characters"
 avoidance/layer_3="players"

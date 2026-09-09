@@ -3,7 +3,7 @@ extends Node2D
 
 #region Parameters
 @export var debugMode: bool = false
-@export var blockScene: PackedScene = preload("res://Game/Entities/Block.tscn")
+@export var blockScene: PackedScene = preload("res://Game/Entities/BlockEntity.tscn")
 @export var preBlockNum: int = 6
 @export var blockColors: Array[Color] = []
 #endregion

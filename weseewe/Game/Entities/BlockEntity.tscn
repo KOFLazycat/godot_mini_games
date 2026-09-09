@@ -9,7 +9,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lx1bt"]
 size = Vector2(102, 240)
 
-[node name="Block" type="StaticBody2D" unique_id=1154019202 node_paths=PackedStringArray("sprite") groups=["block"]]
+[node name="BlockEntity" type="StaticBody2D" unique_id=1154019202 node_paths=PackedStringArray("sprite") groups=["block"]]
 collision_layer = 16
 collision_mask = 0
 script = ExtResource("1_lx1bt")
