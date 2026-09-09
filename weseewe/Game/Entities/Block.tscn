@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://clr4ea44hmsgc"]
+
+[ext_resource type="Script" uid="uid://b3tgnb1y0hgk1" path="res://Entities/Entity.gd" id="1_lx1bt"]
+[ext_resource type="Texture2D" uid="uid://bj7tqcmteeg2w" path="res://Game/Assets/Images/Blocks/blockBottom.png" id="2_yjjpe"]
+[ext_resource type="Texture2D" uid="uid://bnao20tad4sh" path="res://Game/Assets/Images/Blocks/blockTop.png" id="3_6xvy3"]
+[ext_resource type="PackedScene" uid="uid://frr2yhuof6v5" path="res://Components/Movement/LinearMotionComponent.tscn" id="4_6xvy3"]
+[ext_resource type="PackedScene" uid="uid://beioo3m3702gr" path="res://Game/Components/AI/BlockStateComponent.tscn" id="5_hetil"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lx1bt"]
+size = Vector2(102, 240)
+
+[node name="Block" type="StaticBody2D" unique_id=1154019202 node_paths=PackedStringArray("sprite") groups=["block"]]
+collision_layer = 16
+collision_mask = 0
+script = ExtResource("1_lx1bt")
+sprite = NodePath("Body/BlockTopFront")
+isLoggingEnabled = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=28678861]
+position = Vector2(0, 120)
+shape = SubResource("RectangleShape2D_lx1bt")
+
+[node name="Body" type="Node2D" parent="." unique_id=1529373931]
+position = Vector2(0, 113)
+
+[node name="BlockTopBack" type="Sprite2D" parent="Body" unique_id=1611986479]
+texture = ExtResource("2_yjjpe")
+
+[node name="BlockTopFront" type="Sprite2D" parent="Body" unique_id=526230921]
+texture = ExtResource("3_6xvy3")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=306709193]
+rect = Rect2(-56, -8, 110, 258)
+
+[node name="LinearMotionComponent" parent="." unique_id=202830062 instance=ExtResource("4_6xvy3")]
+shouldOverrideDirection = true
+directionOverride = Vector2(-1, 0)
+shouldStopAtMaxDistance = true
+shouldDeleteParentAtMaxDistance = true
+maxDistance = 600.0
+speed = nan
+
+[node name="BlockStateComponent" parent="." unique_id=534797182 node_paths=PackedStringArray("visibleOnScreenNotifier") instance=ExtResource("5_hetil")]
+visibleOnScreenNotifier = NodePath("../VisibleOnScreenNotifier2D")

@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://beioo3m3702gr"]
+
+[ext_resource type="Script" uid="uid://dbgar6s1o5382" path="res://Game/Components/AI/BlockStateComponent.gd" id="1_j3dq3"]
+[ext_resource type="Script" uid="uid://couw105c3bde4" path="res://addons/godot_state_charts/state_chart.gd" id="2_cux77"]
+[ext_resource type="Script" uid="uid://jk2jm1g6q853" path="res://addons/godot_state_charts/compound_state.gd" id="3_2w5qr"]
+[ext_resource type="Script" uid="uid://cytafq8i1y8qm" path="res://addons/godot_state_charts/atomic_state.gd" id="4_sxo24"]
+
+[node name="BlockStateComponent" type="Node" unique_id=534797182 groups=["components"]]
+script = ExtResource("1_j3dq3")
+metadata/_edit_group_ = true
+
+[node name="StateChart" type="Node" parent="." unique_id=1648182889]
+script = ExtResource("2_cux77")
+metadata/_custom_type_script = "uid://couw105c3bde4"
+
+[node name="Root" type="Node" parent="StateChart" unique_id=1313563806]
+script = ExtResource("3_2w5qr")
+initial_state = NodePath("Slow")
+metadata/_custom_type_script = "uid://jk2jm1g6q853"
+
+[node name="Stop" type="Node" parent="StateChart/Root" unique_id=762276824]
+script = ExtResource("4_sxo24")
+
+[node name="Slow" type="Node" parent="StateChart/Root" unique_id=2078664765]
+script = ExtResource("4_sxo24")
+
+[node name="Fast" type="Node" parent="StateChart/Root" unique_id=1770074607]
+script = ExtResource("4_sxo24")
+
+[node name="SlowMove" type="Node" parent="StateChart/Root" unique_id=1391221364]
+script = ExtResource("4_sxo24")
+
+[node name="Shake" type="Node" parent="StateChart/Root" unique_id=1665393975]
+script = ExtResource("4_sxo24")
