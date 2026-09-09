@@ -35,9 +35,6 @@ rect = Rect2(-56, -8, 110, 258)
 [node name="LinearMotionComponent" parent="." unique_id=202830062 instance=ExtResource("4_6xvy3")]
 shouldOverrideDirection = true
 directionOverride = Vector2(-1, 0)
-shouldStopAtMaxDistance = true
-shouldDeleteParentAtMaxDistance = true
-maxDistance = 600.0
 speed = nan
 
 [node name="BlockStateComponent" parent="." unique_id=534797182 node_paths=PackedStringArray("visibleOnScreenNotifier") instance=ExtResource("5_hetil")]

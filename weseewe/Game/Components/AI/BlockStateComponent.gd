@@ -36,11 +36,6 @@ extends Component
 
 
 #region State
-# 方块的高度（像素）
-# 用于碰撞检测和边界计算
-var height: float = 128.0
-# 方块的宽度（像素）
-var width: float = 102.0
 #endregion
 
 

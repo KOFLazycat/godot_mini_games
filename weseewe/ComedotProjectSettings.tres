@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_8yny2")
-mainGameScenePath = "uid://clr4ea44hmsgc"
+mainGameScenePath = "uid://c8shh7lc65fc7"
 debugAutoLoads = null
 shouldPrintDebugLogs = null
 showDebugWindow = null
