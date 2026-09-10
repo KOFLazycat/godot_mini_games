@@ -13,8 +13,8 @@ func _ready() -> void:
 	pass
 
 
-func initialize(newRopeLength: float = 100.0, dotColor: Color = Color.WHITE) -> void:
-	if rope != null:
+func initialize(newRopeLength: float = 0.0, dotColor: Color = Color.WHITE) -> void:
+	if rope != null and newRopeLength != 0.0:
 		rope.rope_length = newRopeLength
 	if dotEntity != null and dotEntity.sprite != null:
 		var sp: Sprite2D = dotEntity.sprite as Sprite2D

@@ -29,7 +29,6 @@ rope = NodePath("..")
 
 [node name="DotEntity" parent="." unique_id=674087965 instance=ExtResource("4_jt4oj")]
 position = Vector2(0, 148)
-mass = 10.0
 
 [node name="AttachmentMarker" type="Marker2D" parent="DotEntity" unique_id=1131066292]
 metadata/_edit_group_ = true

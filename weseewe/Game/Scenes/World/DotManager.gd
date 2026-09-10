@@ -32,6 +32,7 @@ func addDot() -> void:
 		newDot.dotTextureFront = dotTextureFront
 	add_child(newDot)
 	dots.append(newDot)
+	await get_tree().create_timer(0.5).timeout
 	
 	if dots.size() <= 5:
 		newDot.initialize(100.0)

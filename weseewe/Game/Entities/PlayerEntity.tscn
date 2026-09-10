@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://1hj4dwjgpo2c"]
 
 [ext_resource type="Script" uid="uid://bisowd0k143yp" path="res://Entities/Characters/PlayerEntity.gd" id="1_r0nlw"]
-[ext_resource type="Texture2D" uid="uid://wwv814mefijp" path="res://Game/Assets/Images/Player/playerBottom.png" id="2_1tifc"]
-[ext_resource type="Texture2D" uid="uid://bd44uiiliynf2" path="res://Game/Assets/Images/Player/player.png" id="3_g3kql"]
-[ext_resource type="Texture2D" uid="uid://dlqhg5ms46waf" path="res://Game/Assets/Images/Player/playerBlink.png" id="4_740c2"]
+[ext_resource type="Texture2D" uid="uid://wwv814mefijp" path="res://Game/Assets/Images/Players/playerBottom.png" id="2_1tifc"]
+[ext_resource type="Texture2D" uid="uid://bd44uiiliynf2" path="res://Game/Assets/Images/Players/player.png" id="3_g3kql"]
+[ext_resource type="Texture2D" uid="uid://dlqhg5ms46waf" path="res://Game/Assets/Images/Players/playerBlink.png" id="4_740c2"]
 [ext_resource type="Script" uid="uid://bqtlb3ebf2ocg" path="res://Resources/Parameters/PlatformerJumpParameters.gd" id="5_g3kql"]
 [ext_resource type="PackedScene" uid="uid://6ie44p6lwohx" path="res://Game/Components/Control/PlatformerJumpComponent.tscn" id="7_1gn6l"]
 [ext_resource type="Script" uid="uid://cki34kcp6p026" path="res://Resources/Parameters/PlatformerMovementParameters.gd" id="7_740c2"]
@@ -46,7 +46,7 @@ tracks/0/path = NodePath("../Body/SpriteTop:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.20000002, 0.40000004),
+"times": PackedFloat32Array(0, 0.20000002, 0.6),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
 "values": [ExtResource("3_g3kql"), ExtResource("4_740c2"), ExtResource("3_g3kql")]
@@ -82,6 +82,7 @@ metadata/_custom_type_script = "uid://bqtlb3ebf2ocg"
 [sub_resource type="Resource" id="Resource_g3kql"]
 script = ExtResource("7_740c2")
 speedOnFloor = 0.0
+shouldAllowMovementInputInAir = false
 metadata/_custom_type_script = "uid://cki34kcp6p026"
 
 [node name="PlayerEntity" type="CharacterBody2D" unique_id=1971183666 node_paths=PackedStringArray("body") groups=["entities", "players"]]

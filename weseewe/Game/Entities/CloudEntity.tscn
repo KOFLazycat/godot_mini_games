@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://dqjlhwrq7lcy5"]
+
+[ext_resource type="Script" uid="uid://b3tgnb1y0hgk1" path="res://Entities/Entity.gd" id="1_oa7rr"]
+[ext_resource type="Texture2D" uid="uid://ccdpfao02m13g" path="res://Game/Assets/Images/Clouds/cloudBottom.png" id="2_3mwhb"]
+[ext_resource type="Texture2D" uid="uid://b3hhbb6g6d61o" path="res://Game/Assets/Images/Clouds/cloudTop.png" id="3_oiv4r"]
+[ext_resource type="PackedScene" uid="uid://frr2yhuof6v5" path="res://Components/Movement/LinearMotionComponent.tscn" id="5_b4mdc"]
+[ext_resource type="PackedScene" uid="uid://tom3x711yko8" path="res://Components/Movement/SpinComponent.tscn" id="10_k2oou"]
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3mwhb"]
+
+[node name="CloudEntity" type="Node2D" unique_id=464733286 groups=["entities", "interactions"]]
+script = ExtResource("1_oa7rr")
+metadata/_edit_group_ = true
+
+[node name="Body" type="Node2D" parent="." unique_id=1280096925]
+
+[node name="SpriteBottom" type="Sprite2D" parent="Body" unique_id=2076520893]
+texture = ExtResource("2_3mwhb")
+
+[node name="SpriteTop" type="Sprite2D" parent="Body" unique_id=1024814954]
+texture = ExtResource("3_oiv4r")
+
+[node name="Animation" type="Node2D" parent="." unique_id=1147640541]
+
+[node name="MainAnimationPlayer" type="AnimationPlayer" parent="Animation" unique_id=1302015794]
+libraries/ = SubResource("AnimationLibrary_3mwhb")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=239561361]
+rect = Rect2(-70, -70, 137, 139)
+
+[node name="SpinComponent" parent="." unique_id=1049083317 node_paths=PackedStringArray("nodeToRotate") instance=ExtResource("10_k2oou")]
+nodeToRotate = NodePath("../Body")
+rotationPerFrame = -0.1999999999999993
+
+[node name="LinearMotionComponent" parent="." unique_id=202830062 instance=ExtResource("5_b4mdc")]
+initialSpeed = 10.0
+maxSpeed = 100.0
+shouldOverrideDirection = true
+directionOverride = Vector2(-1, 0)
+speed = nan

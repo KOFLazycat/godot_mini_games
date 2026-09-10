@@ -87,12 +87,12 @@ func onIdle_state_entered() -> void:
 
 func onJump_state_entered() -> void:
 	if not isEnabled: return
-	playerGPUParticles.emitting = true
 	spinComponent.isEnabled = true
 	match platformerJumpComponent.currentNumberOfJumps:
 		1:
 			spinComponent.rotationPerFrame = 10
 		2:
+			playerGPUParticles.emitting = true
 			spinComponent.rotationPerFrame = 15
 		_:
 			spinComponent.rotationPerFrame = 10

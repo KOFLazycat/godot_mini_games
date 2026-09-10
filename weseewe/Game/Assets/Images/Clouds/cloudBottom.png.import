@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://wwv814mefijp"
-path="res://.godot/imported/playerBottom.png-8293cb564750045ccc33c558621e634a.ctex"
+uid="uid://ccdpfao02m13g"
+path="res://.godot/imported/cloudBottom.png-a327a3cad16c6479f8418994715d42b9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Game/Assets/Images/Player/playerBottom.png"
-dest_files=["res://.godot/imported/playerBottom.png-8293cb564750045ccc33c558621e634a.ctex"]
+source_file="res://Game/Assets/Images/Clouds/cloudBottom.png"
+dest_files=["res://.godot/imported/cloudBottom.png-a327a3cad16c6479f8418994715d42b9.ctex"]
 
 [params]
 
