@@ -53,7 +53,7 @@ func _initializeBlocks() -> void:
 			Debug.printError("Block 场景实例化失败", self)
 			continue
 
-		blockInstance.position = Vector2(i * blockWidth, 0.0)
+		blockInstance.position = Vector2(i * blockWidth, randf_range(-10.0, 50.0))
 		add_child(blockInstance)
 
 		var blockStateComponent: BlockStateComponent = blockInstance.getComponent(BlockStateComponent)
