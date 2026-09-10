@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dydy8erb11ex0" path="res://Game/Scenes/World/BlockManager.gd" id="1_q5rjh"]
 [ext_resource type="Script" uid="uid://67knp4ajdmi4" path="res://Game/Scenes/World/DotManager.gd" id="2_17wjc"]
 [ext_resource type="Texture2D" uid="uid://b8r8lrf4bmnqs" path="res://Game/Assets/Images/Dots/title.png" id="3_cvhah"]
+[ext_resource type="PackedScene" uid="uid://1hj4dwjgpo2c" path="res://Game/Entities/PlayerEntity.tscn" id="4_gtn0h"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cvhah"]
 atlas = ExtResource("3_cvhah")
@@ -22,3 +23,8 @@ blockColors = Array[Color]([Color(0.64705884, 0.68235296, 0.7019608, 1), Color(0
 [node name="DotManager" type="Node2D" parent="DotLayer" unique_id=1923978432]
 script = ExtResource("2_17wjc")
 dotTextureFront = SubResource("AtlasTexture_cvhah")
+
+[node name="PlayerLayer" type="CanvasLayer" parent="." unique_id=1197060619]
+
+[node name="PlayerEntity" parent="PlayerLayer" unique_id=1971183666 instance=ExtResource("4_gtn0h")]
+position = Vector2(83, 93)

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://6ie44p6lwohx"]
+
+[ext_resource type="Script" uid="uid://dx7x8wsy2y3hq" path="res://Game/Components/Control/PlatformerJumpComponent.gd" id="1_lb83b"]
+
+[node name="PlatformerJumpComponent" type="Node" unique_id=1255562983 groups=["components"]]
+script = ExtResource("1_lb83b")
+
+[node name="InputBufferTimer" type="Timer" parent="." unique_id=915155166]
+wait_time = 0.1
+one_shot = true
+
+[node name="CoyoteJumpTimer" type="Timer" parent="." unique_id=1384757265]
+wait_time = 0.15
+one_shot = true
+
+[node name="WallJumpTimer" type="Timer" parent="." unique_id=1702046140]
+wait_time = 0.1
+one_shot = true

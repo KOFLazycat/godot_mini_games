@@ -1,0 +1,116 @@
+[gd_scene format=3 uid="uid://1hj4dwjgpo2c"]
+
+[ext_resource type="Script" uid="uid://bisowd0k143yp" path="res://Entities/Characters/PlayerEntity.gd" id="1_r0nlw"]
+[ext_resource type="Texture2D" uid="uid://wwv814mefijp" path="res://Game/Assets/Images/Player/playerBottom.png" id="2_1tifc"]
+[ext_resource type="Texture2D" uid="uid://bd44uiiliynf2" path="res://Game/Assets/Images/Player/player.png" id="3_g3kql"]
+[ext_resource type="Texture2D" uid="uid://dlqhg5ms46waf" path="res://Game/Assets/Images/Player/playerBlink.png" id="4_740c2"]
+[ext_resource type="Script" uid="uid://bqtlb3ebf2ocg" path="res://Resources/Parameters/PlatformerJumpParameters.gd" id="5_g3kql"]
+[ext_resource type="PackedScene" uid="uid://6ie44p6lwohx" path="res://Game/Components/Control/PlatformerJumpComponent.tscn" id="7_1gn6l"]
+[ext_resource type="Script" uid="uid://cki34kcp6p026" path="res://Resources/Parameters/PlatformerMovementParameters.gd" id="7_740c2"]
+[ext_resource type="PackedScene" uid="uid://tom3x711yko8" path="res://Components/Movement/SpinComponent.tscn" id="11_0lhmh"]
+[ext_resource type="PackedScene" uid="uid://7qwb1qwjpbph" path="res://Game/Components/AI/PlayerStateComponent.tscn" id="12_121kr"]
+[ext_resource type="PackedScene" uid="uid://bv4nl55gi16vx" path="res://Components/Physics/PlatformerPhysicsComponent.tscn" id="14_xfm27"]
+[ext_resource type="PackedScene" uid="uid://dn7cpj4u7w1jy" path="res://Components/Physics/CharacterBodyComponent.tscn" id="17_vosan"]
+[ext_resource type="PackedScene" uid="uid://cdq0dcwhcrm5p" path="res://Components/Control/InputComponent.tscn" id="19_fuiot"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1q6vm"]
+resource_local_to_scene = true
+size = Vector2(30, 30)
+
+[sub_resource type="Animation" id="Animation_g3kql"]
+resource_name = "Idle"
+length = 3.0000000000000004
+loop_mode = 1
+step = 0.0333333
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Body/SpriteTop:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.20000002, 0.40000004),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("3_g3kql"), ExtResource("4_740c2"), ExtResource("3_g3kql")]
+}
+
+[sub_resource type="Animation" id="Animation_740c2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Body/SpriteTop:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_g3kql")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_740c2"]
+_data = {
+&"Idle": SubResource("Animation_g3kql"),
+&"RESET": SubResource("Animation_740c2")
+}
+
+[sub_resource type="Resource" id="Resource_1tifc"]
+script = ExtResource("5_g3kql")
+jumpVelocity1stJump = 400.0
+jumpVelocity2ndJump = 400.0
+metadata/_custom_type_script = "uid://bqtlb3ebf2ocg"
+
+[sub_resource type="Resource" id="Resource_g3kql"]
+script = ExtResource("7_740c2")
+speedOnFloor = 0.0
+metadata/_custom_type_script = "uid://cki34kcp6p026"
+
+[node name="PlayerEntity" type="CharacterBody2D" unique_id=1971183666 node_paths=PackedStringArray("body") groups=["entities", "players"]]
+editor_description = "A template for the player character in a platformer game."
+z_index = 10
+collision_layer = 6
+collision_mask = 16
+floor_constant_speed = true
+platform_on_leave = 2
+script = ExtResource("1_r0nlw")
+body = NodePath(".")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1903598439]
+position = Vector2(0, -15)
+shape = SubResource("RectangleShape2D_1q6vm")
+
+[node name="Body" type="Node2D" parent="." unique_id=1428529229]
+position = Vector2(0, -15)
+
+[node name="SpriteBottom" type="Sprite2D" parent="Body" unique_id=1093059815]
+texture = ExtResource("2_1tifc")
+
+[node name="SpriteTop" type="Sprite2D" parent="Body" unique_id=399060917]
+texture = ExtResource("3_g3kql")
+
+[node name="Animation" type="Node2D" parent="." unique_id=638807940]
+
+[node name="MainAnimationPlayer" type="AnimationPlayer" parent="Animation" unique_id=339365067]
+libraries/ = SubResource("AnimationLibrary_740c2")
+autoplay = &"Idle"
+
+[node name="PlatformerJumpComponent" parent="." unique_id=1255562983 instance=ExtResource("7_1gn6l")]
+parameters = SubResource("Resource_1tifc")
+
+[node name="PlatformerPhysicsComponent" parent="." unique_id=1617475570 instance=ExtResource("14_xfm27")]
+parameters = SubResource("Resource_g3kql")
+
+[node name="CharacterBodyComponent" parent="." unique_id=709892523 node_paths=PackedStringArray("body") instance=ExtResource("17_vosan")]
+body = NodePath("..")
+
+[node name="SpinComponent" parent="." unique_id=1049083317 node_paths=PackedStringArray("nodeToRotate") instance=ExtResource("11_0lhmh")]
+nodeToRotate = NodePath("../Body")
+rotationPerFrame = 10.0
+
+[node name="InputComponent" parent="." unique_id=1492055703 instance=ExtResource("19_fuiot")]
+inputActionsToMonitor = [&"jump"]
+
+[node name="PlayerStateComponent" parent="." unique_id=534797182 instance=ExtResource("12_121kr")]

@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://7qwb1qwjpbph"]
+
+[ext_resource type="Script" uid="uid://btduhu02uv75f" path="res://Game/Components/AI/PlayerStateComponent.gd" id="1_pllej"]
+[ext_resource type="Script" uid="uid://couw105c3bde4" path="res://addons/godot_state_charts/state_chart.gd" id="2_trlrb"]
+[ext_resource type="Script" uid="uid://jk2jm1g6q853" path="res://addons/godot_state_charts/compound_state.gd" id="3_1mpov"]
+[ext_resource type="Script" uid="uid://cytafq8i1y8qm" path="res://addons/godot_state_charts/atomic_state.gd" id="4_bwdjn"]
+[ext_resource type="Script" uid="uid://cf1nsco3w0mf6" path="res://addons/godot_state_charts/transition.gd" id="4_trlrb"]
+
+[node name="PlayerStateComponent" type="Node" unique_id=534797182 groups=["components"]]
+script = ExtResource("1_pllej")
+metadata/_edit_group_ = true
+
+[node name="StateChart" type="Node" parent="." unique_id=1648182889]
+script = ExtResource("2_trlrb")
+metadata/_custom_type_script = "uid://couw105c3bde4"
+
+[node name="Root" type="Node" parent="StateChart" unique_id=1313563806]
+script = ExtResource("3_1mpov")
+initial_state = NodePath("Idle")
+metadata/_custom_type_script = "uid://jk2jm1g6q853"
+
+[node name="ToIdle" type="Node" parent="StateChart/Root" unique_id=1390043944]
+script = ExtResource("4_trlrb")
+to = NodePath("../Idle")
+event = &"to_idle"
+delay_in_seconds = "0.0"
+
+[node name="ToJump" type="Node" parent="StateChart/Root" unique_id=825669644]
+script = ExtResource("4_trlrb")
+to = NodePath("../Jump")
+event = &"to_jump"
+delay_in_seconds = "0.0"
+
+[node name="ToDie" type="Node" parent="StateChart/Root" unique_id=1495371446]
+script = ExtResource("4_trlrb")
+to = NodePath("../Die")
+event = &"to_die"
+delay_in_seconds = "0.0"
+
+[node name="Idle" type="Node" parent="StateChart/Root" unique_id=762276824]
+script = ExtResource("4_bwdjn")
+
+[node name="Jump" type="Node" parent="StateChart/Root" unique_id=2078664765]
+script = ExtResource("4_bwdjn")
+
+[node name="Die" type="Node" parent="StateChart/Root" unique_id=1391221364]
+script = ExtResource("4_bwdjn")
