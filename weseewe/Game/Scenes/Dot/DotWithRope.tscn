@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://eickjw8y0x3h"]
+
+[ext_resource type="Script" uid="uid://dgjuttxdu05er" path="res://Game/Scenes/World/DotWithRope.gd" id="1_30e0j"]
+[ext_resource type="Script" uid="uid://b2shq2gjd4fvt" path="res://addons/ropesim/Rope.gd" id="2_3fgne"]
+[ext_resource type="Script" uid="uid://dvxegqp0cf77n" path="res://addons/ropesim/RopeInteraction.gd" id="3_bgirs"]
+[ext_resource type="PackedScene" uid="uid://dfiaanisbdbjh" path="res://Game/Entities/DotEntity.tscn" id="4_jt4oj"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gtn0h"]
+
+[node name="DotWithRope" type="Node2D" unique_id=1264544568]
+script = ExtResource("1_30e0j")
+impulseStrength = 2000.0
+
+[node name="Rope" type="Node2D" parent="." unique_id=897337376]
+script = ExtResource("2_3fgne")
+num_segments = 15
+gravity = 75.0
+num_constraint_iterations = 20
+line_width = 1.0
+color = Color(0.4467767, 0.4467771, 0.44677705, 1)
+
+[node name="RopeInteraction" type="Node" parent="Rope" unique_id=1075243809 node_paths=PackedStringArray("target_node", "input_node_override", "rope")]
+script = ExtResource("3_bgirs")
+disable_in_editor = true
+position_update_mode = 0
+target_node = NodePath("../../DotEntity/AttachmentMarker/RopeEnd")
+input_node_override = NodePath("../../DotEntity/AttachmentMarker")
+rope = NodePath("..")
+
+[node name="DotEntity" parent="." unique_id=674087965 instance=ExtResource("4_jt4oj")]
+position = Vector2(0, 148)
+mass = 10.0
+
+[node name="AttachmentMarker" type="Marker2D" parent="DotEntity" unique_id=1131066292]
+metadata/_edit_group_ = true
+
+[node name="RopeEnd" type="CharacterBody2D" parent="DotEntity/AttachmentMarker" unique_id=1516951144]
+collision_layer = 0
+collision_mask = 0
+motion_mode = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DotEntity/AttachmentMarker/RopeEnd" unique_id=1855245506]
+shape = SubResource("CircleShape2D_gtn0h")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="DotEntity/AttachmentMarker/RopeEnd" unique_id=303354384]
+node_a = NodePath("../../..")
+node_b = NodePath("..")
+softness = 0.05
