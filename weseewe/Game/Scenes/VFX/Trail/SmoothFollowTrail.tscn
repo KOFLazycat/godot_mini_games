@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://ccu5w8tyq8qxe"]
+
+[ext_resource type="Script" uid="uid://dq5p35sh17bjg" path="res://Game/Scenes/VFX/Trail/SmoothFollowTrail.gd" id="1_r2s3i"]
+
+[sub_resource type="Curve" id="Curve_e6mp6"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="SmoothFollowTrail" type="Line2D" unique_id=1823271917]
+top_level = true
+points = PackedVector2Array(0, 0, -100, 0)
+width = 32.0
+width_curve = SubResource("Curve_e6mp6")
+texture_mode = 2
+joint_mode = 2
+script = ExtResource("1_r2s3i")

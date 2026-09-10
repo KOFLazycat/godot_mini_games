@@ -17,6 +17,11 @@ extends Component
 
 
 #region State
+var playerGPUParticles: GPUParticles2D:
+	get:
+		if playerGPUParticles == null:
+			playerGPUParticles = entity.findFirstChildOfType(GPUParticles2D)
+		return playerGPUParticles
 #endregion
 
 
@@ -75,12 +80,14 @@ func _disconnectionSignals() -> void:
 
 func onIdle_state_entered() -> void:
 	if not isEnabled: return
+	playerGPUParticles.emitting = false
 	spinComponent.isEnabled = false
 	spinComponent.nodeToRotate.rotation = 0
 
 
 func onJump_state_entered() -> void:
 	if not isEnabled: return
+	playerGPUParticles.emitting = true
 	spinComponent.isEnabled = true
 	match platformerJumpComponent.currentNumberOfJumps:
 		1:
@@ -93,6 +100,7 @@ func onJump_state_entered() -> void:
 
 func onDie_state_entered() -> void:
 	if not isEnabled: return
+	playerGPUParticles.emitting = false
 	spinComponent.isEnabled = false
 	spinComponent.nodeToRotate.rotation = 0
 
