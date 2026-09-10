@@ -1,8 +1,6 @@
 [gd_scene format=3 uid="uid://dfiaanisbdbjh"]
 
 [ext_resource type="Script" uid="uid://b3tgnb1y0hgk1" path="res://Entities/Entity.gd" id="1_ff4h8"]
-[ext_resource type="Texture2D" uid="uid://dfdjldd66sgh4" path="res://Game/Assets/Images/Dots/colorDotBottom.png" id="2_7adhp"]
-[ext_resource type="Texture2D" uid="uid://ds01oyo4kkdii" path="res://Game/Assets/Images/Dots/colorDot.png" id="3_iycxm"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7adhp"]
 friction = 0.0
@@ -28,7 +26,5 @@ shape = SubResource("CircleShape2D_7adhp")
 scale = Vector2(0.8, 0.8)
 
 [node name="DotBack" type="Sprite2D" parent="Body" unique_id=1310034986]
-texture = ExtResource("2_7adhp")
 
 [node name="DotFront" type="Sprite2D" parent="Body" unique_id=1260422486]
-texture = ExtResource("3_iycxm")

@@ -2,6 +2,7 @@ class_name DotManager
 extends Node2D
 
 @export var dotWithRopeScene: PackedScene = preload("res://Game/Scenes/Dot/DotWithRope.tscn")
+@export var dotTextureFront: Texture
 
 var dots: Array[DotWithRope] = []
 const MAX_DOTS: int = 10
@@ -27,6 +28,8 @@ func addDot() -> void:
 
 	var newDot: DotWithRope = dotWithRopeScene.instantiate()
 	newDot.position = Vector2(SPAWN_X, FIXED_Y)
+	if dotTextureFront != null:
+		newDot.dotTextureFront = dotTextureFront
 	add_child(newDot)
 	dots.append(newDot)
 	
