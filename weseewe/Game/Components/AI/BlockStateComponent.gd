@@ -36,6 +36,12 @@ extends Component
 
 
 #region State
+var currentState: BlockState = BlockState.SLOW
+
+enum BlockState {
+	SLOW,
+	FAST,
+}
 #endregion
 
 
@@ -45,11 +51,8 @@ extends Component
 
 #region Dependencies
 @onready var stateChart: StateChart = $StateChart
-@onready var stop: AtomicState = $StateChart/Root/Stop
 @onready var slow: AtomicState = $StateChart/Root/Slow
 @onready var fast: AtomicState = $StateChart/Root/Fast
-@onready var slowMove: AtomicState = $StateChart/Root/SlowMove
-@onready var shake: AtomicState = $StateChart/Root/Shake
 @onready var linearMotionComponent: LinearMotionComponent:
 	get:
 		if linearMotionComponent == null:
@@ -75,47 +78,46 @@ func _exit_tree() -> void:
 
 
 func _connectionSignals() -> void:
-	Tools.connectSignal(stop.state_entered, onStop_state_entered)
 	Tools.connectSignal(slow.state_entered, onSlow_state_entered)
 	Tools.connectSignal(fast.state_entered, onFast_state_entered)
-	Tools.connectSignal(slowMove.state_entered, onSlowMove_state_entered)
-	Tools.connectSignal(shake.state_entered, onShake_state_entered)
+	Tools.connectSignal(GlobalEvent.gameStarted, onGlobalEvent_gameStarted)
+	Tools.connectSignal(GlobalEvent.gameEnded, onGlobalEvent_gameEnded)
 	if visibleOnScreenNotifier:
 		Tools.connectSignal(visibleOnScreenNotifier.screen_exited, onVisibleOnScreenNotifier_screen_exited)
 
 
 func _disconnectionSignals() -> void:
-	Tools.disconnectSignal(stop.state_entered, onStop_state_entered)
 	Tools.disconnectSignal(slow.state_entered, onSlow_state_entered)
 	Tools.disconnectSignal(fast.state_entered, onFast_state_entered)
-	Tools.disconnectSignal(slowMove.state_entered, onSlowMove_state_entered)
-	Tools.disconnectSignal(shake.state_entered, onShake_state_entered)
+	Tools.disconnectSignal(GlobalEvent.gameStarted, onGlobalEvent_gameStarted)
+	Tools.disconnectSignal(GlobalEvent.gameEnded, onGlobalEvent_gameEnded)
 	if visibleOnScreenNotifier:
 		Tools.disconnectSignal(visibleOnScreenNotifier.screen_exited, onVisibleOnScreenNotifier_screen_exited)
 
 
-func onStop_state_entered() -> void:
-	linearMotionComponent.isMoving = false
-
-
 func onSlow_state_entered() -> void:
+	if not isEnabled: return
+	currentState = BlockState.SLOW
 	linearMotionComponent.isMoving = true
 	linearMotionComponent.speed = slowSpeed
 
 
 func onFast_state_entered() -> void:
+	if not isEnabled: return
+	currentState = BlockState.FAST
 	linearMotionComponent.isMoving = true
 	linearMotionComponent.speed = fastSpeed
 
 
-func onSlowMove_state_entered() -> void:
-	linearMotionComponent.isMoving = true
-	linearMotionComponent.speed = slowSpeed
-
-
-func onShake_state_entered() -> void:
-	pass
-
-
 func onVisibleOnScreenNotifier_screen_exited() -> void:
-	pass
+	if not isEnabled: return
+
+
+func onGlobalEvent_gameStarted() -> void:
+	if not isEnabled: return
+	stateChart.send_event("to_fast")
+
+
+func onGlobalEvent_gameEnded(_isWin: bool) -> void:
+	if not isEnabled: return
+	stateChart.send_event("to_slow")

@@ -26,13 +26,3 @@ signal playerDied
 ## 玩家得分变化信号
 ## @param score: 当前得分
 signal playerScoreChanged(score: int)
-
-# ===================== 界面相关 =====================
-
-## 界面显示信号
-## @param uiName: 界面名称
-signal uiShow(uiName: String)
-
-## 界面隐藏信号
-## @param uiName: 界面名称
-signal uiHide(uiName: String)

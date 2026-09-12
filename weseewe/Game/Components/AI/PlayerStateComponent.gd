@@ -43,7 +43,6 @@ enum PlayerState {
 
 
 #region Signals
-signal didPlayerDie()
 #endregion
 
 
@@ -137,7 +136,8 @@ func onDie_state_entered() -> void:
 	if dieJumpResource != null:
 		dieJumpResource.play_managed()
 	await get_tree().create_timer(0.5).timeout
-	didPlayerDie.emit()
+	GlobalEvent.playerDied.emit()
+	GlobalEvent.gameEnded.emit(false)
 	entity.requestDeletion()
 
 
