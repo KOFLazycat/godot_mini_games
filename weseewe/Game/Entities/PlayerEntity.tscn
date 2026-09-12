@@ -9,7 +9,11 @@
 [ext_resource type="Script" uid="uid://cki34kcp6p026" path="res://Resources/Parameters/PlatformerMovementParameters.gd" id="7_740c2"]
 [ext_resource type="PackedScene" uid="uid://tom3x711yko8" path="res://Components/Movement/SpinComponent.tscn" id="11_0lhmh"]
 [ext_resource type="PackedScene" uid="uid://7qwb1qwjpbph" path="res://Game/Components/AI/PlayerStateComponent.tscn" id="12_121kr"]
+[ext_resource type="Script" uid="uid://ccoyybae2xmc3" path="res://Game/Scripts/Resources/Sounds/SoundResource.gd" id="13_h1hnb"]
+[ext_resource type="AudioStream" uid="uid://bfmxvemwvkpvu" path="res://Game/Assets/Sounds/jumpA.wav" id="14_op2w6"]
 [ext_resource type="PackedScene" uid="uid://bv4nl55gi16vx" path="res://Components/Physics/PlatformerPhysicsComponent.tscn" id="14_xfm27"]
+[ext_resource type="AudioStream" uid="uid://gqfkj52t2kq5" path="res://Game/Assets/Sounds/jumpB.wav" id="15_op2w6"]
+[ext_resource type="AudioStream" uid="uid://c7g8jggwvpjkd" path="res://Game/Assets/Sounds/pop.wav" id="16_bqixc"]
 [ext_resource type="PackedScene" uid="uid://dn7cpj4u7w1jy" path="res://Components/Physics/CharacterBodyComponent.tscn" id="17_vosan"]
 [ext_resource type="PackedScene" uid="uid://cdq0dcwhcrm5p" path="res://Components/Control/InputComponent.tscn" id="19_fuiot"]
 
@@ -85,6 +89,27 @@ speedOnFloor = 0.0
 shouldAllowMovementInputInAir = false
 metadata/_custom_type_script = "uid://cki34kcp6p026"
 
+[sub_resource type="Resource" id="Resource_47gq7"]
+script = ExtResource("13_h1hnb")
+pitch_min = 0.9
+pitch_max = 1.1
+sound = ExtResource("14_op2w6")
+metadata/_custom_type_script = "uid://ccoyybae2xmc3"
+
+[sub_resource type="Resource" id="Resource_bqixc"]
+script = ExtResource("13_h1hnb")
+pitch_min = 0.9
+pitch_max = 1.1
+sound = ExtResource("15_op2w6")
+metadata/_custom_type_script = "uid://ccoyybae2xmc3"
+
+[sub_resource type="Resource" id="Resource_op2w6"]
+script = ExtResource("13_h1hnb")
+pitch_min = 0.9
+pitch_max = 1.1
+sound = ExtResource("16_bqixc")
+metadata/_custom_type_script = "uid://ccoyybae2xmc3"
+
 [node name="PlayerEntity" type="CharacterBody2D" unique_id=1971183666 node_paths=PackedStringArray("body") groups=["entities", "players"]]
 editor_description = "A template for the player character in a platformer game."
 z_index = 10
@@ -107,6 +132,10 @@ amount = 3
 texture = ExtResource("3_g3kql")
 lifetime = 0.5
 process_material = SubResource("ParticleProcessMaterial_121kr")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=949344495]
+position = Vector2(0, -15)
+rect = Rect2(-25, -25, 50, 50)
 
 [node name="Body" type="Node2D" parent="." unique_id=1428529229]
 position = Vector2(0, -15)
@@ -140,3 +169,6 @@ rotationPerFrame = 10.0
 inputActionsToMonitor = [&"jump"]
 
 [node name="PlayerStateComponent" parent="." unique_id=534797182 instance=ExtResource("12_121kr")]
+firstJumpResource = SubResource("Resource_47gq7")
+secondJumpResource = SubResource("Resource_bqixc")
+dieJumpResource = SubResource("Resource_op2w6")

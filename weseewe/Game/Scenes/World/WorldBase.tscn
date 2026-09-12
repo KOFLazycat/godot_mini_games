@@ -1,16 +1,26 @@
 [gd_scene format=3 uid="uid://c8shh7lc65fc7"]
 
 [ext_resource type="Script" uid="uid://uxfh53nikwep" path="res://Game/Scenes/World/CloudManager.gd" id="1_17wjc"]
+[ext_resource type="Script" uid="uid://dvetino2slea1" path="res://Game/Scenes/World/WorldBase.gd" id="1_h5ggv"]
 [ext_resource type="Script" uid="uid://dydy8erb11ex0" path="res://Game/Scenes/World/BlockManager.gd" id="1_q5rjh"]
 [ext_resource type="Script" uid="uid://67knp4ajdmi4" path="res://Game/Scenes/World/DotManager.gd" id="2_17wjc"]
 [ext_resource type="Texture2D" uid="uid://b8r8lrf4bmnqs" path="res://Game/Assets/Images/Dots/title.png" id="3_cvhah"]
 [ext_resource type="PackedScene" uid="uid://1hj4dwjgpo2c" path="res://Game/Entities/PlayerEntity.tscn" id="4_gtn0h"]
+[ext_resource type="AudioStream" uid="uid://dqfbkqkvd0y2y" path="res://Game/Assets/Sounds/music1.wav" id="8_8mhsx"]
+[ext_resource type="Script" uid="uid://ccoyybae2xmc3" path="res://Game/Scripts/Resources/Sounds/SoundResource.gd" id="10_vdup3"]
+
+[sub_resource type="Resource" id="Resource_17wjc"]
+script = ExtResource("10_vdup3")
+sound = ExtResource("8_8mhsx")
+metadata/_custom_type_script = "uid://ccoyybae2xmc3"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cvhah"]
 atlas = ExtResource("3_cvhah")
 region = Rect2(10, 17, 48, 45)
 
 [node name="WorldBase" type="Node2D" unique_id=425809908]
+script = ExtResource("1_h5ggv")
+bgMusicResource = SubResource("Resource_17wjc")
 
 [node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=255714419]
 

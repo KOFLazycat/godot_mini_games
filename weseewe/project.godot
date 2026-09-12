@@ -45,6 +45,7 @@ GlobalSonic="*res://AutoLoad/GlobalSonic.tscn"
 TurnBasedCoordinator="*res://AutoLoad/TurnBasedCoordinator.tscn"
 GlobalTools="*uid://gkrjskny2qfp"
 SoundManager="*uid://bs8f3bqwqs481"
+GlobalEvent="*uid://b4kqoo2cxu1h7"
 
 [comedot]
 

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b4kqoo2cxu1h7"]
+
+[ext_resource type="Script" uid="uid://bnlpcsd3qgora" path="res://Game/AutoLoad/GlobalEvent.gd" id="1_igase"]
+
+[node name="GlobalEvent" type="Node" unique_id=1640673618]
+script = ExtResource("1_igase")
