@@ -4,9 +4,10 @@
 [ext_resource type="Script" uid="uid://dvetino2slea1" path="res://Game/Scenes/World/WorldBase.gd" id="1_h5ggv"]
 [ext_resource type="Script" uid="uid://dydy8erb11ex0" path="res://Game/Scenes/World/BlockManager.gd" id="1_q5rjh"]
 [ext_resource type="Script" uid="uid://67knp4ajdmi4" path="res://Game/Scenes/World/DotManager.gd" id="2_17wjc"]
-[ext_resource type="Texture2D" uid="uid://b8r8lrf4bmnqs" path="res://Game/Assets/Images/Dots/title.png" id="3_cvhah"]
 [ext_resource type="PackedScene" uid="uid://1hj4dwjgpo2c" path="res://Game/Entities/PlayerEntity.tscn" id="4_gtn0h"]
+[ext_resource type="Texture2D" uid="uid://ds01oyo4kkdii" path="res://Game/Assets/Images/Dots/colorDot.png" id="7_8mhsx"]
 [ext_resource type="AudioStream" uid="uid://dqfbkqkvd0y2y" path="res://Game/Assets/Sounds/music1.wav" id="8_8mhsx"]
+[ext_resource type="AudioStream" uid="uid://q4535ou2tym7" path="res://Game/Assets/Sounds/color.wav" id="8_vdup3"]
 [ext_resource type="Script" uid="uid://cidbi1ovwdyby" path="res://Game/Scenes/World/Menu.gd" id="9_8mhsx"]
 [ext_resource type="Texture2D" uid="uid://bgwcribri4ha4" path="res://Game/Assets/Images/UI/start.png" id="9_h5ggv"]
 [ext_resource type="Script" uid="uid://ccoyybae2xmc3" path="res://Game/Scripts/Resources/Sounds/SoundResource.gd" id="10_vdup3"]
@@ -16,9 +17,10 @@ script = ExtResource("10_vdup3")
 sound = ExtResource("8_8mhsx")
 metadata/_custom_type_script = "uid://ccoyybae2xmc3"
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_cvhah"]
-atlas = ExtResource("3_cvhah")
-region = Rect2(10, 17, 48, 45)
+[sub_resource type="Resource" id="Resource_bqixc"]
+script = ExtResource("10_vdup3")
+sound = ExtResource("8_vdup3")
+metadata/_custom_type_script = "uid://ccoyybae2xmc3"
 
 [node name="WorldBase" type="Node2D" unique_id=425809908]
 script = ExtResource("1_h5ggv")
@@ -50,7 +52,8 @@ layer = 20
 
 [node name="DotManager" type="Node2D" parent="DotLayer" unique_id=1923978432]
 script = ExtResource("2_17wjc")
-dotTextureFront = SubResource("AtlasTexture_cvhah")
+dotTextureFront = ExtResource("7_8mhsx")
+dotAddResource = SubResource("Resource_bqixc")
 
 [node name="PlayerLayer" type="CanvasLayer" parent="." unique_id=1197060619]
 layer = 30

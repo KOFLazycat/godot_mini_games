@@ -3,6 +3,7 @@ extends Node2D
 
 @export var dotWithRopeScene: PackedScene = preload("res://Game/Scenes/Dot/DotWithRope.tscn")
 @export var dotTextureFront: Texture
+@export var dotAddResource: SoundResource
 
 var dots: Array[DotWithRope] = []
 const MAX_DOTS: int = 10
@@ -12,17 +13,24 @@ const SPAWN_X: float = 400.0
 
 
 func _ready() -> void:
-	pass
+	_connectionSignals()
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		var mouseEvent: InputEventMouseButton = event
-		if mouseEvent.button_index == MOUSE_BUTTON_LEFT and mouseEvent.pressed:
-			addDot()
+func _exit_tree() -> void:
+	_disconnectionSignals()
 
 
-func addDot() -> void:
+func _connectionSignals() -> void:
+	Tools.connectSignal(GlobalEvent.blockColorAdded, onGlobalEvent_blockColorAdded)
+	Tools.connectSignal(GlobalEvent.gameEnded, onGlobalEvent_gameEnded)
+
+
+func _disconnectionSignals() -> void:
+	Tools.disconnectSignal(GlobalEvent.blockColorAdded, onGlobalEvent_blockColorAdded)
+	Tools.disconnectSignal(GlobalEvent.gameEnded, onGlobalEvent_gameEnded)
+
+
+func addDot(dotColor: Color = Color.WHITE) -> void:
 	if dots.size() >= MAX_DOTS:
 		return
 
@@ -35,9 +43,9 @@ func addDot() -> void:
 	await get_tree().create_timer(0.5).timeout
 	
 	if dots.size() <= 5:
-		newDot.initialize(100.0)
+		newDot.initialize(100.0, dotColor)
 	else:
-		newDot.initialize(150.0)
+		newDot.initialize(150.0, dotColor)
 	
 	updateDotPositions()
 
@@ -79,3 +87,14 @@ func getTargetX(index: int, count: int, screenWidth: float) -> float:
 			return screenWidth * 5.5 / 6.0
 
 	return screenWidth * 0.5
+
+
+func onGlobalEvent_blockColorAdded(color: Color) -> void:
+	addDot(color)
+	await get_tree().create_timer(0.5).timeout
+	if dotAddResource != null:
+		dotAddResource.play_managed()
+
+
+func onGlobalEvent_gameEnded(_isWin: bool) -> void:
+	pass

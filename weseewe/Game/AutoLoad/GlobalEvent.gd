@@ -26,3 +26,10 @@ signal playerDied
 ## 玩家得分变化信号
 ## @param score: 当前得分
 signal playerScoreChanged(score: int)
+
+
+# ===================== Block相关 =====================
+
+## Block 颜色添加到 usedColors 信号
+## @param color: 新增的颜色
+signal blockColorAdded(color: Color)

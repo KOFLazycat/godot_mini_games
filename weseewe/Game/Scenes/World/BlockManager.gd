@@ -3,9 +3,12 @@ extends Node2D
 
 #region Parameters
 @export var debugMode: bool = false
-@export var blockScene: PackedScene = preload("res://Game/Entities/BlockEntity.tscn")
 @export var preBlockNum: int = 6
+@export var minBlockPositionY: float = -100.0
+@export var maxBlockPositionY: float = 20.0
+@export var minBlockHeightDiff: float = 10.0
 @export var blockColors: Array[Color] = []
+@export var blockScene: PackedScene = preload("res://Game/Entities/BlockEntity.tscn")
 #endregion
 
 #region State
@@ -24,6 +27,8 @@ var usedColors: Array[Color] = []
 var consecutiveFromRemainingCount: int = 0
 # 记录上一个 block 的颜色是否在 usedColors 中
 var lastColorInUsedColors: bool = true
+# 记录上一个 block 的 y 坐标，用于计算高度差
+var lastBlockPositionY: float = 0.0
 # 用于定时 pop 颜色的 Timer
 var popColorTimer: Timer = null
 # 游戏是否已开始（通过检查 Timer 是否存在来判断）
@@ -71,11 +76,6 @@ func _initializeBlocks() -> void:
 	# 洗牌
 	remainingColors.shuffle()
 
-	# 从 remainingColors pop 一个颜色到 usedColors
-	if remainingColors.size() > 0:
-		var firstColor: Color = remainingColors.pop_front()
-		usedColors.append(firstColor)
-
 	# 生成 preBlockNum 个 block
 	for i: int in range(preBlockNum):
 		var blockInstance: Entity = blockScene.instantiate()
@@ -88,13 +88,16 @@ func _initializeBlocks() -> void:
 
 		var blockStateComponent: BlockStateComponent = blockInstance.getComponent(BlockStateComponent)
 		if blockStateComponent != null:
-			# 游戏开始前，只使用 usedColors[0] 作为颜色（此时只有一个颜色）
-			if usedColors.size() > 0:
-				blockStateComponent.blockColor = usedColors[0]
-				# 游戏开始前，启用碰撞
+			# 使用 remainingColors[0] 作为颜色
+			if remainingColors.size() > 0:
+				blockStateComponent.blockColor = remainingColors[0]
 				blockStateComponent.shouldDisableCollision = false
 			Tools.connectSignal(blockStateComponent.visibleOnScreenNotifier.screen_exited, onVisibleOnScreenNotifier_screen_exited.bind(blockInstance))
 		blockList.append(blockInstance)
+
+	# 初始化最后一个 block 的 y 坐标
+	if blockList.size() > 0:
+		lastBlockPositionY = blockList.back().position.y
 
 
 ## 游戏开始时的处理
@@ -102,12 +105,18 @@ func onGlobalEvent_gameStarted() -> void:
 	# 重置连续计数
 	consecutiveFromRemainingCount = 0
 	lastColorInUsedColors = true
+	# 重置最后一个 block 的 y 坐标为 0
+	lastBlockPositionY = 0.0
+
 	# 创建定时器，每16秒从 remainingColors pop 一个颜色到 usedColors
 	popColorTimer = Timer.new()
 	popColorTimer.wait_time = 16.0
 	popColorTimer.autostart = true
 	Tools.connectSignal(popColorTimer.timeout, onPopColorTimer_timeout)
 	add_child(popColorTimer)
+	
+	# 游戏开始后，立即调用一次
+	onPopColorTimer_timeout()
 
 
 ## 定时 pop 颜色的回调
@@ -115,6 +124,8 @@ func onPopColorTimer_timeout() -> void:
 	if remainingColors.size() > 0:
 		var color: Color = remainingColors.pop_front()
 		usedColors.append(color)
+		# 发射 Block 颜色添加信号
+		GlobalEvent.blockColorAdded.emit(color)
 		# 更新已生成 block 的碰撞状态
 		_updateBlocksCollisionState()
 		if debugMode:
@@ -127,6 +138,45 @@ func onPopColorTimer_timeout() -> void:
 		# 停止定时器
 		if popColorTimer != null:
 			popColorTimer.stop()
+
+
+## 获取随机的 block y 坐标
+## 在 minBlockPositionY 到 maxBlockPositionY 之间随机
+## 相邻 block 高度差可以为 0，不为 0 时必须 >= minBlockHeightDiff
+func _getRandomBlockY() -> float:
+	var minY: float = minBlockPositionY
+	var maxY: float = maxBlockPositionY
+	var diff: float = minBlockHeightDiff
+
+	# 从有效范围内随机选择
+	var validY: Array[float] = []
+	var currentY: float = minY
+	while currentY <= maxY:
+		var heightDiff: float = abs(currentY - lastBlockPositionY)
+		# 高度差为 0 或 >= minBlockHeightDiff 时有效
+		if is_zero_approx(heightDiff) or heightDiff >= diff:
+			validY.append(currentY)
+		currentY += 1.0
+
+	if validY.size() > 0:
+		return validY.pick_random()
+	else:
+		# 如果没有有效值，返回随机值
+		return randf_range(minY, maxY)
+
+
+## 更新所有 block 的颜色和碰撞状态
+## 游戏开始时调用，为所有 block 设置颜色并更新碰撞状态
+func _updateAllBlocksColorAndCollision() -> void:
+	for block: Entity in blockList:
+		var blockStateComponent: BlockStateComponent = block.getComponent(BlockStateComponent)
+		if blockStateComponent != null and usedColors.size() > 0:
+			# 使用 usedColors[0] 作为颜色
+			var color: Color = usedColors[0]
+			blockStateComponent.blockColor = color
+			blockStateComponent.shouldDisableCollision = false
+			if debugMode:
+				Debug.printLog("Block color updated: %s, shouldDisableCollision: false" % [color], self)
 
 
 ## 更新所有已生成 block 的碰撞状态
@@ -151,6 +201,15 @@ func onVisibleOnScreenNotifier_screen_exited(blockInstance: Node2D) -> void:
 		lastX = lastBlock.position.x
 
 	blockInstance.position.x = lastX + blockWidth
+
+	# 设置 position.y：游戏开始后在 minBlockPositionY 到 maxBlockPositionY 之间随机
+	# 相邻 block 高度差可以为 0，不为 0 时必须 >= minBlockHeightDiff
+	if isGameStarted:
+		var newY: float = _getRandomBlockY()
+		blockInstance.position.y = newY
+		lastBlockPositionY = newY
+		if debugMode:
+			Debug.printLog("Block Y: %s" % [newY], self)
 
 	blockList.erase(blockInstance)
 	blockList.append(blockInstance)

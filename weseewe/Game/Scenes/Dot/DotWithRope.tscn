@@ -17,7 +17,7 @@ num_segments = 15
 gravity = 75.0
 num_constraint_iterations = 20
 line_width = 1.0
-color = Color(0.4467767, 0.4467771, 0.44677705, 1)
+color = Color(0.6872149, 0.68721503, 0.6872149, 1)
 
 [node name="RopeInteraction" type="Node" parent="Rope" unique_id=1075243809 node_paths=PackedStringArray("target_node", "input_node_override", "rope")]
 script = ExtResource("3_bgirs")
