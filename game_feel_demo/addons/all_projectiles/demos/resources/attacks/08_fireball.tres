@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AttackBlueprint2D" format=3 uid="uid://bxoxw4f0plun7"]
+
+[ext_resource type="AudioStream" uid="uid://dfjmqam1r2uk5" path="res://addons/all_projectiles/demos/audio/whoosh-fire-cast-243100.mp3" id="1_jpb54"]
+[ext_resource type="Script" uid="uid://ddrcv1svwbx38" path="res://addons/all_projectiles/scripts/resources/attack_blueprint_2d.gd" id="1_y277j"]
+
+[resource]
+script = ExtResource("1_y277j")
+name = &"FIREBALL"
+attack_anticipate_time = 0.167
+attack_duration_time = 0.083
+attack_recovery_time = 0.167
+attack_offset = Vector2(11, -86)
+attack_charge_time = 0.167
+override_attack_duration = false
+global_properties = Dictionary[StringName, Variant]({
+&"RELEASE_AUDIO": ExtResource("1_jpb54"),
+&"RELEASE_DB": -5.5,
+&"RELEASE_HEADSTART": 1.16
+})

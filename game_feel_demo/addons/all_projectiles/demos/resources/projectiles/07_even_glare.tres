@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://b2ej0dxyy6ajr"]
+
+[ext_resource type="PackedScene" uid="uid://galq571cf0wa" path="res://addons/all_projectiles/demos/scenes/projectiles/07_even_glare.tscn" id="1_6l862"]
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="1_y2gxk"]
+[ext_resource type="PackedScene" uid="uid://tkmmlvu36fo6" path="res://addons/all_projectiles/demos/scenes/particles/trail_bubbling_blue.tscn" id="1_yihh2"]
+
+[sub_resource type="Curve" id="Curve_vtc2x"]
+_limits = [0.0, 8.63, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.930736, 8.63), 23.8119, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_t77yi"]
+_limits = [0.1, 2.0, 0.0, 1.0]
+_data = [Vector2(0, 0.1), 0.0, 0.0, 0, 0, Vector2(0.428571, 0.538462), -4.82308, -4.82308, 0, 0, Vector2(0.692641, 1.29011), -8.68153, -8.68153, 0, 0, Vector2(0.904762, 2), -5.00171, -5.00171, 0, 0, Vector2(0.995671, 1.20659), -10.182, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_yihh2"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[resource]
+script = ExtResource("1_y2gxk")
+name = &"EVEN_GLARE"
+proj_type = 2
+linear_speed = 1150.0
+radius = 20
+collision_layer = 16
+collision_mask = 2
+instance = ExtResource("1_6l862")
+pierce = 5
+look_at = false
+angular_speed = 0.0
+after_hit_angular_speed = 0.0
+allow_rehit = true
+instances = 4
+proj_spread = 2
+angular_spread = 40.0
+global_properties = Dictionary[StringName, Variant]({
+&"ROTATION_CURVE": SubResource("Curve_vtc2x"),
+&"SIZE_CURVE": SubResource("Curve_t77yi"),
+&"SPEED_CURVE": SubResource("Curve_yihh2"),
+&"START_TIMED_PARTICLE_TRAIL": ExtResource("1_yihh2")
+})

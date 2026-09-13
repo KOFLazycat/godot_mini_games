@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://dpxs7aclyx0k"]
+
+[ext_resource type="PackedScene" uid="uid://3g38d4nainky" path="res://addons/all_projectiles/demos/scenes/projectiles/05_the_pursuer.tscn" id="1_7762j"]
+[ext_resource type="PackedScene" uid="uid://3rtn6vke323n" path="res://addons/all_projectiles/demos/scenes/particles/trail_bubbling_black.tscn" id="1_exewk"]
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="1_qiu26"]
+
+[resource]
+script = ExtResource("1_qiu26")
+name = &"THE_PURSUER"
+proj_type = 2
+lifetime = 6.0
+linear_speed = 1950.0
+radius = 20
+collision_layer = 16
+collision_mask = 2
+instance = ExtResource("1_7762j")
+pierce = 32
+seeking = true
+seeking_mask = 2
+angular_speed = 180.0
+after_hit_angular_speed = 1800.0
+cast_radius = 1000.0
+allow_rehit = true
+rehit_cooldown = 0.16
+global_properties = Dictionary[StringName, Variant]({
+&"START_TIMED_PARTICLE_TRAIL": ExtResource("1_exewk")
+})

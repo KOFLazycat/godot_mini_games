@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AttackBlueprint2D" format=3 uid="uid://bgef6x2728idn"]
+
+[ext_resource type="Script" uid="uid://ddrcv1svwbx38" path="res://addons/all_projectiles/scripts/resources/attack_blueprint_2d.gd" id="1_vaeab"]
+[ext_resource type="AudioStream" uid="uid://hmht0dlp3g3h" path="res://addons/all_projectiles/demos/audio/magic-spell-shoot-sound-effect-236816.mp3" id="1_x3itu"]
+
+[resource]
+script = ExtResource("1_vaeab")
+name = &"EVEN_GLARE"
+attack_anticipate_time = 0.167
+attack_duration_time = 0.083
+attack_recovery_time = 0.167
+attack_offset = Vector2(11, -86)
+attack_charge_time = 0.167
+override_attack_duration = false
+global_properties = Dictionary[StringName, Variant]({
+&"RELEASE_AUDIO": ExtResource("1_x3itu"),
+&"RELEASE_DB": -5.0,
+&"RELEASE_HEADSTART": 0.2
+})

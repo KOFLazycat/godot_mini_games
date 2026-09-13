@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AttackBlueprint2D" format=3 uid="uid://b65v1lxxvrpot"]
+
+[ext_resource type="Script" uid="uid://ddrcv1svwbx38" path="res://addons/all_projectiles/scripts/resources/attack_blueprint_2d.gd" id="1_pbhj8"]
+[ext_resource type="AudioStream" uid="uid://cnj832wdp2bge" path="res://addons/all_projectiles/demos/audio/breath_01-81144.mp3" id="2_tye35"]
+
+[resource]
+script = ExtResource("1_pbhj8")
+name = &"SOUL_SEEKER"
+attack_anticipate_time = 0.167
+attack_duration_time = 0.083
+attack_recovery_time = 0.167
+attack_offset = Vector2(11, -86)
+attack_charge_time = 0.167
+override_attack_duration = false
+global_properties = Dictionary[StringName, Variant]({
+&"RELEASE_AUDIO": ExtResource("2_tye35"),
+&"RELEASE_DB": -7.5,
+&"RELEASE_HEADSTART": 0.15
+})

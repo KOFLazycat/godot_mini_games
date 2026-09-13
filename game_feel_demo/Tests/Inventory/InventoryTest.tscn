@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://p5j61vitplf"]
+
+[ext_resource type="PackedScene" uid="uid://b6c5d68ty35va" path="res://Templates/Entities/PlayerEntityTemplate-Overhead.tscn" id="2_kwxr1"]
+[ext_resource type="PackedScene" uid="uid://35rprhfbgfpb" path="res://Components/Gameplay/InventoryComponent.tscn" id="3_fdjm8"]
+[ext_resource type="PackedScene" uid="uid://bqecemgdtqhw1" path="res://Components/Objects/CollectorComponent.tscn" id="4_hcysf"]
+[ext_resource type="Script" uid="uid://wkmslg2j8n3a" path="res://UI/Lists/InventoryList.gd" id="5_koqj8"]
+[ext_resource type="Texture2D" uid="uid://dlgr48hfwadef" path="res://Assets/Tiles/Kenney1Bit-Colored.png" id="6_fnjw7"]
+[ext_resource type="Script" uid="uid://b3tgnb1y0hgk1" path="res://Entities/Entity.gd" id="7_8ubho"]
+[ext_resource type="PackedScene" uid="uid://cjl1gxhpykmg3" path="res://Components/Objects/CollectibleInventoryComponent.tscn" id="8_vo3g0"]
+[ext_resource type="Resource" uid="uid://bjyppdv5f7xa8" path="res://Tests/Inventory/TestYellowKey.tres" id="9_cdyda"]
+[ext_resource type="Resource" uid="uid://g0b8g0pccipy" path="res://Tests/Inventory/TestRedKey.tres" id="9_kwxr1"]
+[ext_resource type="Resource" uid="uid://b5bjb7ftispv6" path="res://Tests/Inventory/TestBlueKey.tres" id="11_fdjm8"]
+
+[node name="InventoryTest" type="Node2D" unique_id=157306399]
+
+[node name="PlayerEntityTemplate-Overhead" parent="." unique_id=1079093200 instance=ExtResource("2_kwxr1")]
+
+[node name="InventoryComponent" parent="PlayerEntityTemplate-Overhead" unique_id=1085872954 instance=ExtResource("3_fdjm8")]
+debugMode = true
+
+[node name="CollectorComponent" parent="PlayerEntityTemplate-Overhead" unique_id=1981667090 instance=ExtResource("4_hcysf")]
+debugMode = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1126971210]
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer" unique_id=272691900]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/MarginContainer" unique_id=1003261915 node_paths=PackedStringArray("inventoryComponent")]
+layout_mode = 2
+columns = 4
+script = ExtResource("5_koqj8")
+inventoryComponent = NodePath("../../../PlayerEntityTemplate-Overhead/InventoryComponent")
+
+[node name="RedKey" type="Sprite2D" parent="." unique_id=222417500]
+position = Vector2(-112, 0)
+texture = ExtResource("6_fnjw7")
+region_enabled = true
+region_rect = Rect2(544, 176, 16, 16)
+script = ExtResource("7_8ubho")
+
+[node name="CollectibleInventoryComponent" parent="RedKey" unique_id=906869016 instance=ExtResource("8_vo3g0")]
+inventoryItem = ExtResource("9_kwxr1")
+debugMode = true
+
+[node name="RedKey2" type="Sprite2D" parent="." unique_id=789912408]
+position = Vector2(128, 64)
+texture = ExtResource("6_fnjw7")
+region_enabled = true
+region_rect = Rect2(544, 176, 16, 16)
+script = ExtResource("7_8ubho")
+
+[node name="CollectibleInventoryComponent" parent="RedKey2" unique_id=977594450 instance=ExtResource("8_vo3g0")]
+inventoryItem = ExtResource("9_kwxr1")
+debugMode = true
+
+[node name="YellowKey" type="Sprite2D" parent="." unique_id=2090975829]
+position = Vector2(120, -56)
+texture = ExtResource("6_fnjw7")
+region_enabled = true
+region_rect = Rect2(512, 176, 16, 16)
+script = ExtResource("7_8ubho")
+
+[node name="CollectibleInventoryComponent" parent="YellowKey" unique_id=804192699 instance=ExtResource("8_vo3g0")]
+inventoryItem = ExtResource("9_cdyda")
+debugMode = true
+
+[node name="YellowKey2" type="Sprite2D" parent="." unique_id=1891770284]
+position = Vector2(-256, 0)
+texture = ExtResource("6_fnjw7")
+region_enabled = true
+region_rect = Rect2(512, 176, 16, 16)
+script = ExtResource("7_8ubho")
+
+[node name="CollectibleInventoryComponent" parent="YellowKey2" unique_id=773524543 instance=ExtResource("8_vo3g0")]
+inventoryItem = ExtResource("9_cdyda")
+debugMode = true
+
+[node name="BlueKey" type="Sprite2D" parent="." unique_id=1892449930]
+position = Vector2(0, 128)
+texture = ExtResource("6_fnjw7")
+region_enabled = true
+region_rect = Rect2(528, 176, 16, 16)
+script = ExtResource("7_8ubho")
+
+[node name="CollectibleInventoryComponent" parent="BlueKey" unique_id=1179454419 instance=ExtResource("8_vo3g0")]
+inventoryItem = ExtResource("11_fdjm8")
+debugMode = true
+
+[node name="BlueKey2" type="Sprite2D" parent="." unique_id=1938966041]
+position = Vector2(0, -88)
+texture = ExtResource("6_fnjw7")
+region_enabled = true
+region_rect = Rect2(528, 176, 16, 16)
+script = ExtResource("7_8ubho")
+
+[node name="CollectibleInventoryComponent" parent="BlueKey2" unique_id=331157805 instance=ExtResource("8_vo3g0")]
+inventoryItem = ExtResource("11_fdjm8")
+debugMode = true

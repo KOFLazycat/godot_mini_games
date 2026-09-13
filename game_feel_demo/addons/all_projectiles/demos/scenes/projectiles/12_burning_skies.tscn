@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://m6lgjjkb8yrf"]
+
+[ext_resource type="Texture2D" uid="uid://dxfvafagawxcy" path="res://addons/all_projectiles/demos/textures/projectiles/star_1.png" id="3_3wtgo"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_grgi5"]
+radius = 18.0
+
+[node name="BasicProjectile" type="Node2D" unique_id=699845662]
+z_index = 11
+
+[node name="Collision" type="Area2D" parent="." unique_id=2111362413]
+collision_layer = 16
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision" unique_id=183777902]
+shape = SubResource("CircleShape2D_grgi5")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1669280305]
+modulate = Color(0.247059, 0.713726, 0.913725, 1)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_3wtgo")

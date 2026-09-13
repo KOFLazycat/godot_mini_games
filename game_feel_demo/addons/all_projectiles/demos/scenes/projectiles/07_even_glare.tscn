@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://galq571cf0wa"]
+
+[ext_resource type="Texture2D" uid="uid://0mlt273mqntg" path="res://addons/all_projectiles/demos/textures/projectiles/star_08.png" id="3_nsihj"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_grgi5"]
+radius = 36.0
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ja1do"]
+blend_mode = 1
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_gujbl"]
+blend_mode = 1
+
+[node name="BasicProjectile" type="Node2D" unique_id=471103949]
+z_index = 11
+
+[node name="Collision" type="Area2D" parent="." unique_id=334621371]
+collision_layer = 16
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision" unique_id=169125543]
+shape = SubResource("CircleShape2D_grgi5")
+
+[node name="Sprite2D2" type="Sprite2D" parent="." unique_id=928558035]
+modulate = Color(8.66354e-07, 0.505166, 0.774539, 1)
+material = SubResource("CanvasItemMaterial_ja1do")
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("3_nsihj")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1261711833]
+material = SubResource("CanvasItemMaterial_gujbl")
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("3_nsihj")

@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://c70acig5l5xjx"]
+
+[ext_resource type="Script" uid="uid://di0tmgoqyoe6w" path="res://UI/Chart.gd" id="1_ktel2"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_7qj2e"]
+font_size = 8
+font_color = Color(0.4, 1, 0.8, 0.75)
+outline_size = 4
+outline_color = Color(0, 0, 0, 0.5)
+
+[node name="Chart" type="Node2D" unique_id=1998156526]
+script = ExtResource("1_ktel2")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1833947488]
+
+[node name="NameLabel" type="Label" parent="CanvasLayer" unique_id=113626588]
+unique_name_in_owner = true
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -4.0
+offset_right = 8.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Chart"
+label_settings = SubResource("LabelSettings_7qj2e")
+
+[node name="MaxLabel" type="Label" parent="CanvasLayer" unique_id=1966098349]
+unique_name_in_owner = true
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_bottom = 8.0
+grow_horizontal = 2
+text = "MAX: "
+vertical_alignment = 2
+
+[node name="MinLabel" type="Label" parent="CanvasLayer" unique_id=154296136]
+unique_name_in_owner = true
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "MIN: "

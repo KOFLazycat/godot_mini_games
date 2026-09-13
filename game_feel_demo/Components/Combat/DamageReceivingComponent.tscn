@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://ffkcrlcom1kx"]
+
+[ext_resource type="Script" uid="uid://uq1yciinhsc0" path="res://Components/Combat/DamageReceivingComponent.gd" id="1_lwsou"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_agrga"]
+resource_local_to_scene = true
+size = Vector2(16, 16)
+
+[node name="DamageReceivingComponent" type="Area2D" unique_id=1661512529 groups=["components"]]
+editor_description = "A component representing the \"hurtbox\" that receives damage from a DamageComponent's \"hitbox\"."
+collision_layer = 1024
+collision_mask = 1024
+monitoring = false
+script = ExtResource("1_lwsou")
+metadata/_edit_group_ = true
+
+[node name="ReceivingCollisionShape" type="CollisionShape2D" parent="." unique_id=212184690]
+shape = SubResource("RectangleShape2D_agrga")
+debug_color = Color(0.7, 0.7, 0, 0.419608)
+
+[connection signal="area_entered" from="." to="." method="onAreaEntered"]
+[connection signal="area_exited" from="." to="." method="onAreaExited"]

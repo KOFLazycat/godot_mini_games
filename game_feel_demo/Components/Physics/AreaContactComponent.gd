@@ -1,0 +1,183 @@
+## Keeps a list of all the [Area2D]s, [PhysicsBody2D]s or [TileMapLayer]s that are currently in collision contact with this component's area.
+## Only nodes with a [CollisionObject2D.collision_layer] matching the [CollisionObject2D.collision_mask] of this component are added.
+## TIP: PERFORMANCE: For a component that only emits signals but does not maintain an array of contacts, use [AreaCollisionComponent] to improve performance.
+## TIP: For a basic non-component script that can be attached to any [Area2D], see [CollisionsArrayArea]
+
+class_name AreaContactComponent
+extends AreaCollisionComponent
+
+# TBD: Rename to AreaContactListComponent for better clarity?
+# TBD: Add a list for [TileMapLayer]s?
+# TBD: Reduce code duplication between [CollisionsArrayArea]?
+# TRIED: Areas cannot be shared between DamageComponent/DamageReceivingComponent etc. FORGOT: why?
+# CHECK: Use get_parent() instead of `.owner`?
+
+
+#region Parameters
+## If not empty, only physics nodes belonging to this group will be included in the contact lists, e.g. "zones" etc.
+## IMPORTANT: The [CollisionObject2D] collision and layer masks still apply.
+## PERFORMANCE: Only 1 group is checked because comparing array-with-array "intersection" search is slower.
+@export var groupToInclude: StringName # TBD: Allow multiple groups by comparing substrings?
+#endregion
+
+
+#region State
+
+var areasInContact:  Array[Area2D] ## A list of [Area2D]s currently in collision contact.
+var bodiesInContact: Array[Node2D] ## A list of [PhysicsBody2D]s OR [TileMapLayer]s currently in collision contact.
+
+
+func setIsEnabled(newValue: bool) -> void:
+	super.setIsEnabled(newValue)
+	if isEnabled and self.is_node_ready(): resetContactLists() # Get the existing touchies when we're re-enabled
+
+#endregion
+
+
+func _ready() -> void:
+	super._ready() # Start monitoring exits after adding existing overlaps
+	self.set_physics_process(self.debugMode) # Disable per-frame debugging until needed
+	if not shouldNotifyOnEntityReady: resetContactLists() # Update the existing collisions now if not onEntityDidReady()
+
+
+func onEntityDidReady() -> void:
+	# FIXES: Other compenents may not receive signals for already overlapping nodes,
+	# because they may connect to this component's signals later in their own _ready() if they're ordered lower on the scene tree.
+	# So we reset the contact lists after the entity has _ready()'ed, which implies all other components have _ready()'ed and connected.
+	# PERFORMANCE: `shouldNotifyOnEntityReady` is set in the `AreaContactComponent.tscn` scene, and may be disabled if not needed.
+	resetContactLists()
+
+
+## Clears the [member areasInContact] & [member bodiesInContact] arrays and re-adds all [Area2D]s, [PhysicsBody2D]s or [TileMapLayer]s that are currently in contact with the [Area2D] of this component.
+## If not [member isEnabled], the lists are cleared but no nodes are added. Affected by [member shouldMonitorAreas] and [member shouldMonitorBodies].
+## NOTE: [signal didEnterArea], [signal didEnterBody] & [method onCollide] wtc. are called from here allow other scripts to react to any existing physical contact.
+func resetContactLists() -> void:
+	# NOTE: Clear the list but don't add new areas/bodies if not enabled.
+	# Because that seems like it would be the expected behavior.
+	self.areasInContact.clear()
+	self.bodiesInContact.clear()
+	if not isEnabled: return
+
+	# DESIGN: Arrays should be updated before signals.
+	# Signals should be emitted for existing overlaps, so that other scripts can react.
+	# like picking up a collectible item if we were already standing on it. (not that CollectibleComponent uses AreaContactComponent :')
+
+	# For each node, just call the beginning of the event/signal chain: on*Entered()
+	# which calls all the other functions, so subclasses can override at any "hook"
+
+	if shouldMonitorAreas:
+		for overlappingArea in area.get_overlapping_areas():
+			self.onAreaEntered(overlappingArea) # also calls:
+			# shouldIncludeArea(overlappingArea)
+			# areasInContact.append(overlappingArea)
+			# self.onCollide(overlappingArea)
+			# self.didEnterArea.emit(overlappingArea)
+
+	if shouldMonitorBodies:
+		for overlappingBody in area.get_overlapping_bodies():
+			self.onBodyEntered(overlappingBody) # also calls:
+			# shouldIncludeBody(overlappingBody)
+			# bodiesInContact.append(overlappingBody)
+			# self.onCollide(overlappingBody)
+			# self.didEnterBody.emit(overlappingBody)
+
+
+#region Validation
+
+## Checks if an [Area2D] matches the criteria for being included in [areasInContact]
+## Subclasses may override this function to specify different conditions.
+## ALERT: PERFORMANCE: The default implementation does NOT check [member shouldMonitorAreas] or [isEnabled] or duplicate areas already in [areasInContact]
+func shouldIncludeArea(areaToCheck: Area2D) -> bool:
+	return  not (areaToCheck == entity or entity.is_ancestor_of(areaToCheck)) \
+			and (groupToInclude.is_empty()   or areaToCheck.is_in_group(groupToInclude))
+
+
+## Checks if a [PhysicsBody2D] or [TileMapLayer] matches the criteria for being included in [bodiesInContact]
+## Subclasses may override this function to specify different conditions.
+## ALERT: PERFORMANCE: The default implementation does NOT check [member shouldMonitorBodies] or [isEnabled] or duplicate bodies already in [bodiesInContact]
+func shouldIncludeBody(bodyToCheck: Node2D) -> bool:
+	return  not (bodyToCheck == entity or entity.is_ancestor_of(bodyToCheck)) \
+			and (groupToInclude.is_empty()   or bodyToCheck.is_in_group(groupToInclude))
+
+#endregion
+
+
+#region Events
+
+# DESIGN: All functions below: Arrays should be updated before signals.
+# There is code duplication from [AreaCollisionComponent] because the arrays must be updated in the middle of the functions :(
+# Ignore collisions when the node is the parent Entity or any of its children.
+# DESIGN: Let the methods that handle entry & addition take care of the checks; only recheck array membership during exit/removal.
+
+
+func onAreaEntered(areaEntered: Area2D) -> void:
+	if not isEnabled or not shouldMonitorAreas or not shouldIncludeArea(areaEntered): return
+
+	if debugMode:
+		printDebug(str("onAreaEntered(): ", areaEntered, ", owner: ", areaEntered.owner))
+		emitDebugBubble(str("IN:", areaEntered, "\n", areaEntered.owner), Color.YELLOW)
+
+	# If the node is already in the list, then that's a weird situation, but we must still emit the other signals because the physics event is real.
+	if not areasInContact.has(areaEntered): areasInContact.append(areaEntered)
+	elif debugMode: printWarning("Already in areasInContact")
+
+	self.onCollide(areaEntered)
+	didEnterArea.emit(areaEntered)
+
+
+func onBodyEntered(bodyEntered: Node2D) -> void:
+	if not isEnabled or not shouldMonitorBodies or not shouldIncludeBody(bodyEntered): return
+
+	if debugMode:
+		printDebug(str("onBodyEntered(): ", bodyEntered, ", owner: ", bodyEntered.owner))
+		emitDebugBubble(str("IN:", bodyEntered, "\n", bodyEntered.owner), Color.YELLOW)
+
+	# If the node is already in the list, then that's a weird situation, but we must still emit the other signals because the physics event is real.
+	if not bodiesInContact.has(bodyEntered): bodiesInContact.append(bodyEntered)
+	elif debugMode: printWarning("Already in bodiesInContact")
+
+	self.onCollide(bodyEntered)
+	didEnterBody.emit(bodyEntered)
+
+
+## NOTE: Removals are NOT affected by [member isEnabled] but ARE affected by [member shouldMonitorAreas].
+## NOTE: [method onExit] & [signal didExitArea] are only called if the exiting area is in [member areasInContact].
+func onAreaExited(areaExited: Area2D) -> void:
+	if not shouldMonitorAreas or not areasInContact.has(areaExited): return
+	if debugMode:
+		printDebug(str("onAreaExited(): ", areaExited, ", owner: ", areaExited.owner))
+		emitDebugBubble(str("OUT:", areaExited, "\n", areaExited.owner), Color.ORANGE)
+
+	areasInContact.erase(areaExited)
+	self.onExit(areaExited)
+	didExitArea.emit(areaExited)
+
+
+## NOTE: Removals are NOT affected by [member isEnabled] but ARE affected by [member shouldMonitorBodies].
+## NOTE: [method onExit] & [signal didExitBodt] are only called if the exiting body is in [member bodiesInContact].
+func onBodyExited(bodyExited: Node2D) -> void:
+	if not shouldMonitorBodies or not bodiesInContact.has(bodyExited): return
+	if debugMode:
+		printDebug(str("onBodyExited(): ", bodyExited, ", owner: ", bodyExited.owner))
+		emitDebugBubble(str("OUT:", bodyExited, "\n", bodyExited.owner), Color.ORANGE)
+
+	bodiesInContact.erase(bodyExited)
+	self.onExit(bodyExited)
+	didExitBody.emit(bodyExited)
+
+#endregion
+
+
+#region Debug
+
+func _physics_process(_delta: float) -> void:
+	showDebugInfo()
+
+
+func showDebugInfo() -> void:
+	if not debugMode: return
+	Debug.addComponentWatchList(self, {
+		areasInContact	= areasInContact,
+		bodiesInContact	= bodiesInContact})
+
+#endregion

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://dowqw8hnb8jfj"]
+
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="1_2ra0q"]
+[ext_resource type="PackedScene" uid="uid://boxsnvld2ptex" path="res://addons/all_projectiles/scenes/basic_projectile.tscn" id="1_8op6i"]
+
+[resource]
+script = ExtResource("1_2ra0q")
+name = &"BASIC_INSTANCE_PROJECTILE"
+proj_type = 2
+lifetime = 3.0
+radius = 20
+instance = ExtResource("1_8op6i")

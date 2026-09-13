@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://bguorcmtk2rod"]
+
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="1_442su"]
+[ext_resource type="PackedScene" uid="uid://dodcdysou7k81" path="res://addons/all_projectiles/demos/scenes/particles/blast_centered_stars.tscn" id="1_d311i"]
+[ext_resource type="PackedScene" uid="uid://m6lgjjkb8yrf" path="res://addons/all_projectiles/demos/scenes/projectiles/12_burning_skies.tscn" id="1_xbrkr"]
+[ext_resource type="PackedScene" uid="uid://v4ejk14ldh64" path="res://addons/all_projectiles/demos/scenes/particles/trail_muzzle.tscn" id="2_eaadi"]
+
+[resource]
+script = ExtResource("1_442su")
+name = &"BURNING_SKIES"
+proj_type = 2
+linear_speed = 1750.0
+radius = 20
+collision_layer = 16
+collision_mask = 2
+instance = ExtResource("1_xbrkr")
+damage = 6
+pierce = 2
+look_at = false
+seeking_mask = 2
+angular_speed = 45.0
+after_hit_angular_speed = 180.0
+cast_radius = 400.0
+instances = 3
+spawn_interval = 0.2
+proj_spread = 1
+vertical_spread = 200.0
+linear_deviation = 250.0
+global_properties = Dictionary[StringName, Variant]({
+&"ON_EXPIRED_PACKED_SCENE": ExtResource("1_d311i"),
+&"START_TIMED_PARTICLE_TRAIL": ExtResource("2_eaadi")
+})

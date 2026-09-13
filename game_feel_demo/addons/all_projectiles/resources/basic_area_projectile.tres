@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://c2xgtxg6j77n4"]
+
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="1_pe8q3"]
+[ext_resource type="Texture2D" uid="uid://bahr7m3dk2pq3" path="res://addons/all_projectiles/icons/Circle.png" id="2_iqbqg"]
+
+[resource]
+script = ExtResource("1_pe8q3")
+name = &"BASIC_AREA_PROJECTILE"
+texture = ExtResource("2_iqbqg")
+size = 0.5
+lifetime = 3.0
+radius = 36

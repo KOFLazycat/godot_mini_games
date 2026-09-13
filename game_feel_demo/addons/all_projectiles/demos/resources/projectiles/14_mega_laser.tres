@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://bynl5cahtaysk"]
+
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="1_38i5p"]
+[ext_resource type="PackedScene" uid="uid://iqm7snts88rg" path="res://addons/all_projectiles/demos/scenes/projectiles/14_mega_laser.tscn" id="1_p6sou"]
+[ext_resource type="PackedScene" uid="uid://bla0k0f2s0l4y" path="res://addons/all_projectiles/demos/scenes/particles/blast_laser.tscn" id="1_qwf3a"]
+
+[sub_resource type="Curve" id="Curve_qwf3a"]
+_limits = [0.0, 1.2, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.200913, 0.021978), 0.0, 4.24693, 0, 0, Vector2(0.410959, 0.835165), -3.85055, -3.85055, 0, 0, Vector2(0.56621, 0.857143), 0.0, 0.0, 0, 0, Vector2(0.616438, 0.758242), -3.16657, -3.16657, 0, 0, Vector2(0.716895, 1.06813), 0.0, 0.0, 0, 0, Vector2(0.757991, 0.830769), 0.0, 0.0, 0, 0, Vector2(0.863014, 1.0022), 0.0, 0.0, 0, 0, Vector2(0.899543, 0.725275), 0.0, 0.0, 0, 0, Vector2(0.945205, 0.813187), 0.0, 0.0, 0, 0, Vector2(1, 0.208791), -3.82867, 0.0, 0, 0]
+point_count = 11
+
+[resource]
+script = ExtResource("1_38i5p")
+name = &"MEGA_LASER"
+proj_type = 2
+lifetime = 1.5
+linear_speed = 1.0
+radius = 20
+collision_layer = 16
+collision_mask = 2
+instance = ExtResource("1_p6sou")
+damage = 12
+pierce = 4
+angular_speed = 0.0
+after_hit_angular_speed = 0.0
+allow_rehit = true
+rehit_cooldown = 0.09
+global_properties = Dictionary[StringName, Variant]({
+&"SIZE_CURVE": SubResource("Curve_qwf3a"),
+&"START_TIMED_PARTICLE_TRAIL": ExtResource("1_qwf3a")
+})

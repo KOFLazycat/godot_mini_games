@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://dptdcjgpbfcie"]
+
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="1_j100q"]
+[ext_resource type="PackedScene" uid="uid://d0ilv72pqdoyc" path="res://addons/all_projectiles/demos/scenes/projectiles/11_eruption.tscn" id="1_mvlty"]
+[ext_resource type="PackedScene" uid="uid://b7tfqhjrtkgq7" path="res://addons/all_projectiles/demos/scenes/particles/blast_eruption.tscn" id="1_u20yn"]
+
+[resource]
+script = ExtResource("1_j100q")
+name = &"ERUPTION"
+proj_type = 2
+lifetime = 0.05
+linear_speed = 0.0
+radius = 20
+collision_layer = 16
+collision_mask = 2
+instance = ExtResource("1_mvlty")
+damage = 15
+pierce = 4
+look_at = false
+angular_speed = 0.0
+after_hit_angular_speed = 0.0
+allow_rehit = true
+rehit_cooldown = 0.015
+proj_spread = 2
+global_properties = Dictionary[StringName, Variant]({
+&"ON_EXPIRED_PACKED_SCENE": ExtResource("1_u20yn")
+})

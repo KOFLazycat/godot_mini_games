@@ -1,0 +1,96 @@
+[gd_scene format=4 uid="uid://dk8auhx4xrnqp"]
+
+[ext_resource type="PackedScene" uid="uid://2r67te40csdi" path="res://Scenes/Debug/DebugBackground.tscn" id="2_kxnpl"]
+[ext_resource type="TileSet" uid="uid://bsngxcc7r2xu5" path="res://Assets/Tiles/Kenney1Bit-Monochrome-Physics.tres" id="3_yqhs0"]
+[ext_resource type="PackedScene" uid="uid://b6c5d68ty35va" path="res://Templates/Entities/PlayerEntityTemplate-Overhead.tscn" id="4_bek2q"]
+[ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="6_kpabc"]
+[ext_resource type="PackedScene" uid="uid://dyxwb73c1uv7v" path="res://Components/Physics/PushRigidBodyComponent.tscn" id="7_nnv3x"]
+[ext_resource type="PackedScene" uid="uid://ge0omhunt1go" path="res://Components/Control/AimingCursorComponent.tscn" id="8_bek2q"]
+[ext_resource type="PackedScene" uid="uid://cfw867i3q122v" path="res://Templates/Examples/TreeWithGunExampleEntity.tscn" id="10_xxxig"]
+[ext_resource type="PackedScene" uid="uid://ks8fhlam1j34" path="res://Templates/Examples/GhostExampleEntity.tscn" id="11_xlksg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1r2ol"]
+size = Vector2(12, 14)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sy48a"]
+size = Vector2(384, 400)
+
+[node name="TreesWithGunsExample" type="Node2D" unique_id=1962837040]
+
+[node name="DebugBackground" parent="." unique_id=450280105 instance=ExtResource("2_kxnpl")]
+modulate = Color(0.4, 0.4, 0.4, 1)
+
+[node name="TerrainTileMapLayer" type="TileMapLayer" parent="." unique_id=147079617]
+modulate = Color(0.8, 0.8, 0.8, 1)
+tile_map_data = PackedByteArray("AAAAAAsAAAARABUAAAD//wsAAAARABUAAAD+/wsAAAARABUAAAD9/wsAAAARABUAAAD8/wsAAAARABUAAAD7/wsAAAARABUAAAD6/wsAAAARABUAAAD5/wsAAAARABUAAAABAAsAAAARABUAAAACAAsAAAARABUAAAADAAsAAAARABUAAAAEAAsAAAARABUAAAAFAAsAAAARABUAAAAGAAsAAAARABUAAAAHAAsAAAARABUAAAD4/wsAAAARABUAAAAAAPT/AAARABMAAAD///T/AAARABMAAAD+//T/AAARABMAAAD9//T/AAARABMAAAD8//T/AAARABMAAAD7//T/AAARABMAAAD6//T/AAARABMAAAD5//T/AAARABMAAAABAPT/AAARABMAAAACAPT/AAARABMAAAADAPT/AAARABMAAAAEAPT/AAARABMAAAAFAPT/AAARABMAAAAGAPT/AAARABMAAAAHAPT/AAARABMAAAAIAPT/AAARABMAAAAJAPT/AAARABMAAAALAP//AAASABQAAAALAP7/AAASABQAAAALAP3/AAASABQAAAALAPz/AAASABQAAAALAPv/AAASABQAAAALAPr/AAASABQAAAALAPn/AAASABQAAAALAPj/AAASABQAAAALAPf/AAASABQAAAALAPb/AAASABQAAAALAPX/AAASABQAAAALAPT/AAASABMAAAAKAPT/AAARABMAAAALAAAAAAASABQAAAALAAEAAAASABQAAAALAAIAAAASABQAAAALAAMAAAASABQAAAALAAQAAAASABQAAAALAAUAAAASABQAAAALAAYAAAASABQAAAALAAcAAAASABQAAAALAAgAAAASABQAAAAIAAsAAAARABUAAAAJAAsAAAARABUAAAAKAAsAAAARABUAAAALAAkAAAASABQAAAALAAoAAAASABQAAAALAAsAAAASABUAAAD0/wAAAAAQABQAAAD0////AAAQABQAAAD0//7/AAAQABQAAAD0//3/AAAQABQAAAD0//z/AAAQABQAAAD0//v/AAAQABQAAAD0//r/AAAQABQAAAD0//n/AAAQABQAAAD0//j/AAAQABQAAAD0//f/AAAQABQAAAD0//b/AAAQABQAAAD0//X/AAAQABQAAAD4//T/AAARABMAAAD3//T/AAARABMAAAD2//T/AAARABMAAAD1//T/AAARABMAAAD0//T/AAAQABMAAAD0/wsAAAAQABUAAAD1/wsAAAARABUAAAD2/wsAAAARABUAAAD3/wsAAAARABUAAAD0/woAAAAQABQAAAD0/wkAAAAQABQAAAD0/wgAAAAQABQAAAD0/wcAAAAQABQAAAD0/wYAAAAQABQAAAD0/wUAAAAQABQAAAD0/wQAAAAQABQAAAD0/wMAAAAQABQAAAD0/wIAAAAQABQAAAD0/wEAAAAQABQAAAD0//P/AAAlABIAAAD1//P/AAAkABMAAAD2//P/AAAvABIAAAD3//P/AAAnABIAAAD4//P/AAAmABIAAAD5//P/AAAkABMAAAD6//P/AAApABMAAAD6//7/AAAHAA8AAAD6/wEAAAAHAA8AAAAFAP7/AAAHAA8AAAAFAAEAAAAHAA8AAAD//wUAAAAHAA8AAAAAAAUAAAAHAA8AAAABAPr/AAAHAA8AAAACAPr/AAAHAA8AAAD+//r/AAAHAA8AAAD9//r/AAAHAA8AAAA=")
+tile_set = ExtResource("3_yqhs0")
+
+[node name="PlayerEntityTemplate-OverheadBasic" parent="." unique_id=859962267 instance=ExtResource("4_bek2q")]
+collision_mask = 3632
+
+[node name="CollisionShape2D" parent="PlayerEntityTemplate-OverheadBasic" index="0" unique_id=303169715]
+shape = SubResource("RectangleShape2D_1r2ol")
+
+[node name="AnimatedSprite2D" parent="PlayerEntityTemplate-OverheadBasic" index="1" unique_id=30334644]
+modulate = Color(0, 1, 1, 1)
+
+[node name="Camera2D" parent="PlayerEntityTemplate-OverheadBasic/CameraComponent" parent_id_path=PackedInt32Array(859962267, 1618703562) index="0" unique_id=1997418455 node_paths=PackedStringArray("boundary")]
+boundary = NodePath("../../../CameraBounds")
+
+[node name="FactionComponent" parent="PlayerEntityTemplate-OverheadBasic" unique_id=1980926030 instance=ExtResource("6_kpabc")]
+factions = 2
+
+[node name="PushRigidBodyComponent" parent="PlayerEntityTemplate-OverheadBasic" unique_id=246998227 instance=ExtResource("7_nnv3x")]
+
+[node name="AimingCursorComponent" parent="PlayerEntityTemplate-OverheadBasic" unique_id=609996757 instance=ExtResource("8_bek2q")]
+
+[node name="Trees" type="Node" parent="." unique_id=1054995060]
+
+[node name="TreeEntity1" parent="Trees" unique_id=234012061 instance=ExtResource("10_xxxig")]
+position = Vector2(0, -64)
+
+[node name="NodeFacingComponent" parent="Trees/TreeEntity1" index="4" unique_id=1728329491 node_paths=PackedStringArray("targetToFace")]
+targetToFace = NodePath("../../../PlayerEntityTemplate-OverheadBasic/AimingCursorComponent")
+
+[node name="TreeEntity2" parent="Trees" unique_id=1718656649 instance=ExtResource("10_xxxig")]
+position = Vector2(64, 0)
+
+[node name="NodeFacingComponent" parent="Trees/TreeEntity2" index="4" unique_id=1728329491 node_paths=PackedStringArray("targetToFace")]
+targetToFace = NodePath("../../../PlayerEntityTemplate-OverheadBasic/AimingCursorComponent")
+
+[node name="TreeEntity3" parent="Trees" unique_id=1092403872 instance=ExtResource("10_xxxig")]
+position = Vector2(-64, 0)
+
+[node name="NodeFacingComponent" parent="Trees/TreeEntity3" index="4" unique_id=1728329491 node_paths=PackedStringArray("targetToFace")]
+targetToFace = NodePath("../../../PlayerEntityTemplate-OverheadBasic/AimingCursorComponent")
+
+[node name="TreeEntity4" parent="Trees" unique_id=899578031 instance=ExtResource("10_xxxig")]
+position = Vector2(0, 64)
+
+[node name="NodeFacingComponent" parent="Trees/TreeEntity4" index="4" unique_id=1728329491 node_paths=PackedStringArray("targetToFace")]
+targetToFace = NodePath("../../../PlayerEntityTemplate-OverheadBasic/AimingCursorComponent")
+
+[node name="Monsters" type="Node" parent="." unique_id=502487911]
+
+[node name="Ghost" parent="Monsters" unique_id=1922420295 instance=ExtResource("11_xlksg")]
+position = Vector2(-184, -184)
+collision_mask = 72
+
+[node name="CameraBounds" type="Area2D" parent="." unique_id=792502766]
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraBounds" unique_id=99048158]
+position = Vector2(0, -8)
+shape = SubResource("RectangleShape2D_sy48a")
+debug_color = Color(0, 0.6, 0.7, 0.1)
+
+[editable path="PlayerEntityTemplate-OverheadBasic"]
+[editable path="PlayerEntityTemplate-OverheadBasic/CameraComponent"]
+[editable path="Trees/TreeEntity1"]
+[editable path="Trees/TreeEntity1/GunComponent"]
+[editable path="Trees/TreeEntity2"]
+[editable path="Trees/TreeEntity2/GunComponent"]
+[editable path="Trees/TreeEntity3"]
+[editable path="Trees/TreeEntity3/GunComponent"]
+[editable path="Trees/TreeEntity4"]
+[editable path="Trees/TreeEntity4/GunComponent"]

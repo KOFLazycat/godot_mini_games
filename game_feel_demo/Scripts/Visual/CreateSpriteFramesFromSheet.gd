@@ -1,0 +1,311 @@
+## Automatically sets up the [member sprite_frames] animations for an [AnimatedSprite2D] from a sprite sheet image.
+## Adds a "Create Animations" button in the Godot Editor's Inspector Dock.
+## TIP: This is a convenient alternative to the cumbersome workflow of manually clicking Add → Select File → Select Frames for each animation in the Godot Editor's SpriteFrames Dock.
+
+@tool
+extends AnimatedSprite2D
+
+# TODO: Support variable number of frames per animation?
+
+@export_tool_button("Create Animations",	"SpriteFrames")			var createSpriteFramesButton:		Callable = createSpriteFramesInEditor
+@export_tool_button("Platformer Template",	"AnimationTrackList")	var createPlatformerTemplateButton:	Callable = createPlatformerTemplate
+@export_tool_button("Overhead Template (4)","AnimationTrackList")	var createOverheadTemplate4Button:	Callable = createOverheadTemplate.bind(4)
+@export_tool_button("Overhead Template (8)","AnimationTrackList")	var createOverheadTemplate8Button:	Callable = createOverheadTemplate.bind(8)
+
+
+#region Parameters
+
+const debug: Script = preload("res://AutoLoad/Debug.gd") # To avoid Dumbdot's annoying "static called on instance" warning
+const defaultAnimationName := &"default"
+
+@export var spriteSheet:	Texture2D:
+	set(newValue):
+		if newValue != spriteSheet:
+			spriteSheet = newValue
+			if validateSheet(): calculateColumnsAndRows()
+			else: columns = 0;  rows = 0
+
+@export var frameSize:		Vector2i = Vector2i(16, 16):
+	set(newValue):
+		if newValue != frameSize:
+			frameSize = newValue
+			if validateSheet(): calculateColumnsAndRows()
+			else: columns = 0;  rows = 0
+
+## The number of frames to add to each animation, starting from its value in [member animationStartFrames]
+## May be clamped to the actual number of frames available as determined by the [member spriteSheet] size & [member frameSize]
+@export_range(1, 256, 1, "or_greater") var framesPerAnimation: int = 2
+
+## A [Dictionary] where the keys are animation names, and their values are the first frame of that animation,
+## counting from 0 at the top-left of the [member spriteSheet] and increasing right and downwards.
+## Each animation must have the same number of frames in the [member spriteSheet] image.
+@export var animationStartFrames: Dictionary[StringName, int] = { &"default": 0 }
+
+## If `true` then the animations are created when this node is [method _ready] at game runtime.
+## If `false` (default) then animations must be manually created at development time inside the Godot Editor
+## by clicking the custom button in the Inspector Dock.
+@export var shouldCreateAnimationsOnReady: bool = false
+
+#endregion
+
+
+#region State
+# TBD: Recalculate `frameSize` when `columns` or `rows` are directly modified?
+var columns:int
+var rows:	int
+#endregion
+
+
+func _ready() -> void:
+	# NOTE: This is a `@tool` script, meaning it can run inside the Godot Editor,
+	# so we don't want to automatically recreate animations
+	# before the developer presses the button in the Godot Inspector UI.
+	if shouldCreateAnimationsOnReady \
+	and not Engine.is_editor_hint()  \
+	and validateSheet():
+		calculateColumnsAndRows()
+		createSpriteFrames()
+
+
+#region Validation
+
+func validateSheet() -> bool:
+	if not spriteSheet:
+		debug.printEditorError("validateSheet(): spriteSheet is missing", self)
+		return false
+
+	var sheetSize: Vector2i = spriteSheet.get_size()
+
+	if  sheetSize.x <= 0 or sheetSize.y <= 0:
+		debug.printEditorError(str("validateSheet() sheetSize <= 0: ", sheetSize), self)
+		return false
+	
+	if  frameSize.x <= 0 or frameSize.y <= 0:
+		debug.printEditorError(str("validateSheet() frameSize <= 0: ", frameSize), self)
+		return false
+
+	if  sheetSize.x % frameSize.x != 0 or sheetSize.y % frameSize.y != 0:
+		debug.printEditorWarning(str("validateSheet(): spriteSheet size: ", sheetSize, " cannot divide evenly by frameSize: ", frameSize), self)
+		return false
+	# else
+	return true
+
+
+## Verifies [member animationStartFrames] and checks each animation's starting and ending frame is within the total count defined by [member columns] * [member rows]
+func validateAnimations() -> bool:
+	if  animationStartFrames.is_empty():
+		debug.printEditorError("validateAnimations(): animationStartFrames is empty", self)
+		return false
+
+	var totalFrames:int = columns * rows
+	if  totalFrames <= 0:
+		debug.printEditorError(str("validateAnimations(): totalFrames <= 0: ", columns, " × ", rows, " ・ Call calculateColumnsAndRows()"), self)
+		return false 
+		
+	var startFrame:	int
+	var lastFrame:	int
+
+	for animationName: StringName in animationStartFrames:
+
+		startFrame = animationStartFrames[animationName]
+		lastFrame  = startFrame + framesPerAnimation - 1
+
+		if startFrame < 0 or startFrame >= totalFrames or startFrame > lastFrame:
+			debug.printEditorWarning(str("createSpriteFrames(): ", animationName, " has invalid starting frame: ", startFrame, ", framesPerAnimation: ", framesPerAnimation, ", last frame: ", lastFrame, ", total columns * rows in sheet: ", totalFrames), self)
+			return false
+
+		if lastFrame >= totalFrames:
+			debug.printEditorWarning(str("createSpriteFrames(): ", animationName, " has invalid ending frame: ", lastFrame, ", start frame: ", startFrame, ", framesPerAnimation: ", framesPerAnimation, ", total columns * rows in sheet: ", totalFrames), self)
+			return false
+
+	return true
+
+#endregion
+
+
+#region Interface
+
+## Sets [member columns] & [member rows] from the dimensions of the [member spriteSheet] divided by [member frameSize] 
+## IMPORTANT: [method validateSheet] should be called to verify all parameters first.
+func calculateColumnsAndRows() -> Vector2i:
+	columns = 0; rows = 0 # Reset in case there's a failure ahead
+	var sheetSize: Vector2i = spriteSheet.get_size()
+
+	@warning_ignore_start("integer_division") # validateSheet() should have already checked divisibility with %
+	columns	= sheetSize.x / frameSize.x
+	rows	= sheetSize.y / frameSize.y
+	@warning_ignore_restore("integer_division")
+
+	if  framesPerAnimation > columns * rows:
+		framesPerAnimation = columns * rows
+
+	return Vector2i(columns, rows)
+
+
+## Creates and returns a new set of [SpriteFrames] built from the [member spriteSheet]
+## and if [param updateSelf] is `true` (default), updates this sprite's own [member AnimatedSprite2D.sprite_frames] and [member AnimatedSprite2D.animation]
+func createSpriteFrames(updateSelf: bool = true) -> SpriteFrames:
+	# Validate parameters
+
+	if columns <= 0 or rows <= 0:
+		debug.printEditorError(str("createSpriteFrames() columns/rows <= 0: ", columns, ",", rows, " ・ Call calculateColumnsAndRows()"), self)
+		return null
+
+	# Make sure the sheet can be divided evenly so that all frames are the same size
+	var sheetSize: Vector2i = spriteSheet.get_size()
+	if  sheetSize.x % columns != 0 or sheetSize.y % rows != 0:
+		debug.printEditorWarning(str("createSpriteFrames(): spriteSheet size ", sheetSize, " cannot divide evenly by grid ", Vector2i(columns, rows)), self)
+		return null
+
+	if not validateAnimations(): return null
+
+	# Use/overwrite existing `sprite_frames` or create a new set
+	
+	var newSpriteFrames: SpriteFrames
+	
+	if updateSelf: newSpriteFrames = self.sprite_frames
+
+	if not newSpriteFrames:
+		newSpriteFrames	= SpriteFrames.new()
+		
+		# Remove the empty &"default" animation
+		if not newSpriteFrames.get_animation_names().is_empty():
+			newSpriteFrames.remove_animation(newSpriteFrames.get_animation_names()[0]) # AVOID: &"default" may change in future Godot versions so we shouldn't hardcode the name, just whatever the first animation is
+		
+		if updateSelf: self.sprite_frames = newSpriteFrames
+
+	# Add frames for each animation in the list
+	for animationName: StringName in animationStartFrames:
+		addFramesToAnimation(newSpriteFrames, animationName, animationStartFrames[animationName], framesPerAnimation)
+
+	# DESIGN: If the new set of frames has our currently playing animation, let it be.
+	# If our current animation is not already in the new set of frames
+	# or it's an empty animation (i.e. Godot's &"default" placeholder),
+	# then play the first animation from the new set.
+	if updateSelf and (
+	not newSpriteFrames.has_animation(self.animation)
+	or  newSpriteFrames.get_frame_count(self.animation) <= 0):
+		self.animation = animationStartFrames.keys().front()
+
+	return newSpriteFrames
+
+
+## Builds an animation from the [member spriteSheet] according to [member frameSize] etc.
+## WARNING: Overwrites any existing animation/frames with the same name!
+## Sets the animation's FPS to 60 ÷ number of frames in the animation.
+## TIP: If [param preserveExistingProperties] is `true` (default) then [method SpriteFrames.clear] is used instead of [method SpriteFrames.remove_animation] in case of a conflict.
+## [method SpriteFrames.clear] only removes an existing animation's frames while preserving other properties such as looping etc.
+func addFramesToAnimation(
+	newSpriteFrames: SpriteFrames,
+	animationName:	 StringName,
+	startFrame:		 int,
+	frameCount:		 int = self.framesPerAnimation,
+	preserveExistingProperties: bool = true) -> void:
+
+	# If there is already an animation with the same name, replace it
+	if  newSpriteFrames.has_animation(animationName):
+		debug.printEditorLog(str("addFramesToAnimation() replacing existing animation: ", animationName), self)
+		if preserveExistingProperties:
+			newSpriteFrames.clear(animationName) # Keeps looping etc.
+		else:
+			newSpriteFrames.remove_animation(animationName)
+			newSpriteFrames.add_animation(animationName)
+	else:
+		newSpriteFrames.add_animation(animationName)
+
+	var frameIndex:			int
+	var frameCoordinates:	Vector2i
+	var frameTexture:		AtlasTexture
+		
+	for frameOffset: int in frameCount: # 0 to the number of frames in the animation
+		frameIndex			= startFrame + frameOffset # The "index" from among the total number of frames
+		frameCoordinates	= Vector2i(frameIndex % columns, floori(float(frameIndex) / columns)) # The column and row in the sprite sheet
+		frameTexture		= AtlasTexture.new()
+		frameTexture.atlas  = spriteSheet
+		frameTexture.region = Rect2(Vector2(frameCoordinates * frameSize), Vector2(frameSize))
+		newSpriteFrames.add_frame(animationName, frameTexture)
+
+	# Set the FPS to 60 ÷ framecount, for convenience
+	var animationFrameCount: int = newSpriteFrames.get_frame_count(animationName)
+	if  animationFrameCount > 0:
+		newSpriteFrames.set_animation_speed(animationName, 60.0 / animationFrameCount)
+
+#endregion
+
+
+#region Editor Inspector Buttons
+
+func createSpriteFramesInEditor() -> SpriteFrames:
+	if not Engine.is_editor_hint(): return null
+
+	debug.printEditorLog(str("createSpriteFramesInEditor() spriteSheet: ", spriteSheet, ", frameSize: ", frameSize, ", framesPerAnimation: ", framesPerAnimation, "\nanimationStartFrames: ", animationStartFrames), self)
+	var previousAnimation:		StringName		= self.animation
+	var previousSpriteFrames:	SpriteFrames	= self.sprite_frames
+	var newSpriteFrames:		SpriteFrames	= createSpriteFrames(false) # not updateSelf
+	
+	if  newSpriteFrames:
+		var newAnimation: StringName			= previousAnimation
+		if not newSpriteFrames.has_animation(newAnimation) \
+			or newSpriteFrames.get_frame_count(newAnimation) <= 0:
+			newAnimation						= animationStartFrames.keys().front() # Display a valid animation in the Godot Editor
+		
+		var undoManager: EditorUndoRedoManager	= EditorInterface.get_editor_undo_redo()
+		undoManager.create_action("Create AnimatedSprite2D SpriteFrames")
+		undoManager.add_undo_property(self,	&"sprite_frames",	previousSpriteFrames)
+		undoManager.add_undo_property(self,	&"animation",		previousAnimation)
+		undoManager.add_do_property(  self,	&"sprite_frames",	newSpriteFrames)
+		undoManager.add_do_property(  self,	&"animation",		newAnimation)
+		undoManager.commit_action()
+	return self.sprite_frames # TBD: Return current frames or `null` on failure?
+
+
+func createPlatformerTemplate() -> Dictionary[StringName, int]:
+	debug.printEditorLog(str("createPlatformerTemplate()"), self)
+	var newAnimationFrames: Dictionary[StringName, int] = {
+		&"idle": framesPerAnimation * 0,
+		&"walk": framesPerAnimation * 1,
+		&"jump": framesPerAnimation * 2,
+		&"fall": framesPerAnimation * 3,
+		}
+	if  Engine.is_editor_hint():
+		var undoManager: EditorUndoRedoManager  = EditorInterface.get_editor_undo_redo()
+		undoManager.create_action("Create AnimatedSprite2D animations template for platformer gameplay")
+		undoManager.add_undo_property(self,	&"animationStartFrames",	self.animationStartFrames)
+		undoManager.add_do_property(  self,	&"animationStartFrames",	newAnimationFrames)
+		undoManager.commit_action()
+	return self.animationStartFrames
+
+
+## IMPORTANT: [param maxDirectionCount] other than 8 (default; cardinal+ordinal) or 4 (cardinal-only) is NOT supported!
+## @experimental
+func createOverheadTemplate(maxDirectionCount: int = 8) -> Dictionary[StringName, int]:
+	debug.printEditorLog(str("createOverheadTemplate() maxDirectionCount: ", maxDirectionCount), self)
+	
+	const idlePrefix := OverheadAnimationComponent.defaultIdlePrefix
+	const walkPrefix := OverheadAnimationComponent.defaultWalkPrefix
+	var newAnimationFrames:	Dictionary[StringName, int]
+	var animationIndex:		int = 0
+	var directionsAdded:	int = 0
+	var compassSuffix:		StringName
+
+	for compassDirection: Tools.CompassDirection in Tools.compassDirectionLetters:
+		compassSuffix   = Tools.compassDirectionLetters[compassDirection]
+		if compassSuffix.is_empty(): continue # Skip `.none`
+		elif maxDirectionCount == 4 and compassSuffix.length() > 1: continue # Skip "NE", "SE" etc
+		# Add the compass suffix to both idle and walk animations
+		# e.g. "idleE" = 0, "walkE" = 2, "idleSE" = 4 etc if 2 `framesPerAnimation`
+		for animationPrefix: StringName in [idlePrefix, walkPrefix]:
+			newAnimationFrames[StringName(animationPrefix + compassSuffix)] = framesPerAnimation * animationIndex
+			animationIndex += 1
+		directionsAdded += 1
+		if directionsAdded >= maxDirectionCount: break
+
+	if  Engine.is_editor_hint():
+		var undoManager: EditorUndoRedoManager  = EditorInterface.get_editor_undo_redo()
+		undoManager.create_action("Create AnimatedSprite2D animations template for %d-direction overhead gameplay" % maxDirectionCount)
+		undoManager.add_undo_property(self,	&"animationStartFrames",	self.animationStartFrames)
+		undoManager.add_do_property(  self,	&"animationStartFrames",	newAnimationFrames)
+		undoManager.commit_action()
+	return self.animationStartFrames
+
+#endregion

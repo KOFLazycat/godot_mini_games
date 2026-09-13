@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://ckm00w5xh8xkx"]
+
+[ext_resource type="PackedScene" uid="uid://draxjbos17c1a" path="res://addons/all_projectiles/demos/scenes/particles/blast_small.tscn" id="1_sm31r"]
+[ext_resource type="PackedScene" uid="uid://b7ssvyikpthcj" path="res://addons/all_projectiles/demos/scenes/particles/trail_stars.tscn" id="2_00kc3"]
+[ext_resource type="PackedScene" uid="uid://bktkw4o5g806w" path="res://addons/all_projectiles/demos/scenes/projectiles/01_magic_bolt.tscn" id="3_eoe65"]
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="4_2xewh"]
+
+[resource]
+script = ExtResource("4_2xewh")
+name = &"MAGIC_BOLT"
+proj_type = 2
+lifetime = 3.0
+linear_speed = 1200.0
+radius = 20
+collision_layer = 16
+collision_mask = 2
+instance = ExtResource("3_eoe65")
+angular_speed = 0.0
+after_hit_angular_speed = 0.0
+global_properties = Dictionary[StringName, Variant]({
+&"ON_EXPIRED_PACKED_SCENE": ExtResource("1_sm31r"),
+&"START_TIMED_PARTICLE_TRAIL": ExtResource("2_00kc3")
+})

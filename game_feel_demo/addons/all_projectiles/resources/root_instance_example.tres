@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://c7btcsakv13mw"]
+
+[ext_resource type="PackedScene" uid="uid://ctrtgxx6xmvy" path="res://addons/all_projectiles/scenes/root_instance_example.tscn" id="1_cy54l"]
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="2_gvlgf"]
+
+[resource]
+script = ExtResource("2_gvlgf")
+name = &"ROOT_INSTANCE_EXAMPLE"
+proj_type = 2
+lifetime = 3.0
+radius = 20
+collision_path = "."
+instance = ExtResource("1_cy54l")
+seeking_mask = 2
+angular_speed = 720.0
+after_hit_angular_speed = 720.0
+cast_radius = 300.0

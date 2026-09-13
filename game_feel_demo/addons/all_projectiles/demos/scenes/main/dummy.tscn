@@ -1,0 +1,158 @@
+[gd_scene format=3 uid="uid://n58kqhwlmgrh"]
+
+[ext_resource type="Script" uid="uid://bnwee572vyff8" path="res://addons/all_projectiles/demos/scripts/dummy.gd" id="1_1qbgx"]
+[ext_resource type="Texture2D" uid="uid://vukvgy2m5gyb" path="res://addons/all_projectiles/demos/textures/sheets/dummy_sheet.png" id="2_oqs3i"]
+[ext_resource type="AudioStream" uid="uid://de2yvtk74mb6b" path="res://addons/all_projectiles/demos/audio/hit-by-a-wood-230542.mp3" id="3_6ixgq"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1jbuj"]
+radius = 30.06
+height = 185.0
+
+[sub_resource type="Animation" id="Animation_7eo1t"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_ag2nl"]
+resource_name = "back_hit"
+length = 0.250004
+step = 0.0416667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0833333, 0.166667),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_v7ftl"]
+resource_name = "back_overshoot"
+length = 0.166671
+step = 0.0416667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0833333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [5, 4]
+}
+
+[sub_resource type="Animation" id="Animation_bk8xm"]
+resource_name = "front_hit"
+length = 0.250004
+step = 0.0416667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0833333, 0.166667),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [5, 6, 7]
+}
+
+[sub_resource type="Animation" id="Animation_3wfpo"]
+resource_name = "front_overshoot"
+length = 0.166671
+step = 0.0416667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0833333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [1, 0]
+}
+
+[sub_resource type="Animation" id="Animation_6ju8c"]
+resource_name = "idle"
+length = 0.500004
+step = 0.0416667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_xqwya"]
+_data = {
+&"RESET": SubResource("Animation_7eo1t"),
+&"back_hit": SubResource("Animation_ag2nl"),
+&"back_overshoot": SubResource("Animation_v7ftl"),
+&"front_hit": SubResource("Animation_bk8xm"),
+&"front_overshoot": SubResource("Animation_3wfpo"),
+&"idle": SubResource("Animation_6ju8c")
+}
+
+[node name="Dummy" type="CharacterBody2D" unique_id=1011098043]
+z_index = -2
+collision_layer = 2
+collision_mask = 4
+script = ExtResource("1_1qbgx")
+floor_offset = 92.0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1933577028]
+position = Vector2(5, -9)
+texture = ExtResource("2_oqs3i")
+hframes = 4
+vframes = 2
+
+[node name="Collision" type="CollisionShape2D" parent="." unique_id=824105311]
+shape = SubResource("CapsuleShape2D_1jbuj")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=113573473]
+libraries/ = SubResource("AnimationLibrary_xqwya")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1786805521]
+offset_left = -24.0
+offset_top = -124.0
+offset_right = 16.0
+offset_bottom = -99.0
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="." unique_id=1796314069]
+offset_left = -24.0
+offset_top = -124.0
+offset_right = 16.0
+offset_bottom = -101.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "0"
+horizontal_alignment = 1
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1736936658]
+stream = ExtResource("3_6ixgq")
+volume_db = -3.0

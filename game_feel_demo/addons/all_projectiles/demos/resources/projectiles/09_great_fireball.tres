@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://ciqi7gar6htdo"]
+
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="1_70vov"]
+[ext_resource type="PackedScene" uid="uid://bfn4mphdixymt" path="res://addons/all_projectiles/demos/scenes/particles/blast_fire_big.tscn" id="1_e6o61"]
+[ext_resource type="PackedScene" uid="uid://btnn7urtffwgy" path="res://addons/all_projectiles/demos/scenes/projectiles/09_great_fireball.tscn" id="1_jfelk"]
+
+[resource]
+script = ExtResource("1_70vov")
+name = &"GREAT_FIREBALL"
+proj_type = 2
+lifetime = 3.0
+linear_speed = 1700.0
+radius = 20
+collision_layer = 16
+collision_mask = 2
+instance = ExtResource("1_jfelk")
+angular_speed = 0.0
+after_hit_angular_speed = 0.0
+global_properties = Dictionary[StringName, Variant]({
+&"ID": 15,
+&"ON_EXPIRED_PACKED_SCENE": ExtResource("1_e6o61"),
+&"SCALE": 3.0
+})
+on_expired_projectile_id = &"GREAT_FIREBALL_EXPLOSION"

@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://doek86wjw137k"]
+
+[ext_resource type="PackedScene" uid="uid://c70acig5l5xjx" path="res://UI/Chart.tscn" id="1_g7onf"]
+
+[node name="ChartWindow" type="Window" unique_id=474388253]
+disable_3d = true
+handle_input_locally = false
+snap_2d_transforms_to_pixel = true
+snap_2d_vertices_to_pixel = true
+canvas_item_default_texture_filter = 0
+oversampling_override = 1.0
+title = "Debug Chart"
+size = Vector2i(300, 400)
+wrap_controls = true
+transient = true
+unresizable = true
+unfocusable = true
+min_size = Vector2i(80, 80)
+max_size = Vector2i(1200, 1200)
+content_scale_mode = 2
+content_scale_aspect = 1
+content_scale_stretch = 1
+
+[node name="Chart" parent="." unique_id=943032438 instance=ExtResource("1_g7onf")]
+unique_name_in_owner = true

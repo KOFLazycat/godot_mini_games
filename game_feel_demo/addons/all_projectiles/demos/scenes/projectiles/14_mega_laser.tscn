@@ -1,0 +1,97 @@
+[gd_scene format=3 uid="uid://iqm7snts88rg"]
+
+[ext_resource type="Texture2D" uid="uid://bahr7m3dk2pq3" path="res://addons/all_projectiles/icons/Circle.png" id="1_rtdsg"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0a64g"]
+radius = 74.0
+height = 1096.0
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_7dllf"]
+
+[sub_resource type="Curve" id="Curve_g14xq"]
+_data = [Vector2(0, 0.186813), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_3ett6"]
+blend_mode = 1
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ie528"]
+blend_mode = 1
+
+[sub_resource type="Curve" id="Curve_rnkvj"]
+_limits = [0.0, 100.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 100), 256.186, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_vwaq1"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.461187, 0.538462), -0.164086, -0.164086, 0, 0, Vector2(1, 0), 0.695239, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_jy48o"]
+offsets = PackedFloat32Array(0, 0.151832, 0.659686, 0.769634, 1)
+colors = PackedColorArray(0.635543, 0.733178, 1, 0, 0.278431, 1, 0.929412, 1, 0.224006, 0.493954, 0.899099, 1, 0.0709259, 0.210945, 0.390208, 0.676923, 0.0273626, 0.226981, 0.368344, 0)
+
+[node name="BasicProjectile" type="Node2D" unique_id=1935419269]
+z_index = 9
+
+[node name="Collision" type="Area2D" parent="." unique_id=693440541]
+collision_layer = 16
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision" unique_id=1634691767]
+position = Vector2(540, 0)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_0a64g")
+
+[node name="Back" type="Line2D" parent="." unique_id=1348440466]
+material = SubResource("CanvasItemMaterial_7dllf")
+points = PackedVector2Array(0, 0, 1000, 0)
+width = 220.0
+width_curve = SubResource("Curve_g14xq")
+default_color = Color(0.278431, 1, 0.929412, 1)
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="Front" type="Line2D" parent="." unique_id=1881983680]
+material = SubResource("CanvasItemMaterial_3ett6")
+points = PackedVector2Array(0, 0, 1000, 0)
+width = 175.0
+width_curve = SubResource("Curve_g14xq")
+default_color = Color(0.669312, 1, 0.955121, 1)
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="Spark" type="CPUParticles2D" parent="." unique_id=847590405]
+z_index = 10
+z_as_relative = false
+material = SubResource("CanvasItemMaterial_ie528")
+amount = 48
+texture = ExtResource("1_rtdsg")
+lifetime = 0.6
+explosiveness = 0.18
+randomness = 0.33
+lifetime_randomness = 0.34
+local_coords = true
+draw_order = 1
+emission_shape = 1
+emission_sphere_radius = 8.53
+direction = Vector2(0, 0)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 150.0
+initial_velocity_max = 240.0
+linear_accel_min = 5.04
+linear_accel_max = 12.0
+radial_accel_min = -3.0
+radial_accel_max = 6.0
+damping_min = 8.0
+damping_max = 16.0
+damping_curve = SubResource("Curve_rnkvj")
+scale_amount_min = 0.6
+scale_amount_max = 1.2
+scale_amount_curve = SubResource("Curve_vwaq1")
+color_ramp = SubResource("Gradient_jy48o")
+hue_variation_min = 0.2
+hue_variation_max = 0.32
