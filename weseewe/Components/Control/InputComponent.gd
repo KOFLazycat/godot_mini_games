@@ -517,7 +517,7 @@ func clearMovementInputs(shouldZeroX: bool = true, shouldZeroY: bool = true, sho
 ## NOTE: If [param shouldNormalize] is `true` (default), this method matches the behavior of actual input events,
 ## where [member movementDirection] is "normalized" for diagonals, polled via [method Input.get_vector] e.g. up+right = (0.707, -0.707),
 ## whereas [member horizontalInput] & [member verticalInput] are polled via [method Input.get_axis] e.g. up+right = (1.0, -1.0)
-## WARNING: Do NOT pass pre-normalized values if [param shouldNormalize]
+## WARNING: Do NOT pass already normalized values if [param shouldNormalize]
 func setMovementInputs(newDirection: Vector2, scaleOverride: Vector2 = self.movementDirectionScale, shouldNormalize: bool = true) -> void:
 	var scaledDirection: Vector2 = newDirection * scaleOverride
 	# TBD: Update order: Emit axes signals before `didUpdateMovementDirection`?

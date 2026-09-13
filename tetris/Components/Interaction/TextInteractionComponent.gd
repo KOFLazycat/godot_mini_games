@@ -68,7 +68,7 @@ func requestToInteract(interactorEntity: Entity, interactionControlComponent: In
 ## The [Payload] result is emitted through [signal didPerformInteraction]
 ## @experimental
 @warning_ignore("unused_parameter")
-func performInteraction(interactorEntity: Entity, interactionControlComponent: InteractionControlComponent = null) -> String:
+func performInteraction(interactorEntity: Entity, interactionControlComponent: InteractionControlComponent) -> String:
 	# Are we on cooldown or disabled? Then just return the current text
 	if  not isEnabled \
 	or (not canSkipCurrentCooldown and not is_zero_approx(cooldownTimer.time_left)): # TBD: Check cooldown again in performInteraction() or only in requestToInteract()?

@@ -49,7 +49,7 @@ func requestToInteract(interactorEntity: Entity, interactionControlComponent: In
 ## Deducts the [member cost] then executes the [member payload], passing this [InteractionWithCostComponent] as the `source` of the [Payload], and the [param interactorEntity] as the `target`.
 ## May be overridden by a subclass to perform custom actions.
 ## Returns: The result of [method Payload.execute] or `false` if the [member payload] is missing.
-func performInteraction(interactorEntity: Entity, interactionControlComponent: InteractionControlComponent = null) -> Variant:
+func performInteraction(interactorEntity: Entity, interactionControlComponent: InteractionControlComponent) -> Variant:
 	if debugMode: printDebug(str("performInteraction() interactorEntity: ", interactorEntity, "interactionControlComponent: ", interactionControlComponent, ", isEnabled: ", isEnabled, ", cost: ", cost, ", cooldown: ", cooldownTimer.time_left))
 	if  not isEnabled \
 	or (not canSkipCurrentCooldown and isOnCooldown): return false # Refuse if already on cooldown, unless we can skip once

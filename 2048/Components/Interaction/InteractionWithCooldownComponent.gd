@@ -87,7 +87,7 @@ func checkInteractionConditions(interactorEntity: Entity, interactionControlComp
 ## Extends [method performInteraction] to start a cooldown [Timer] after an interaction.
 ## DESIGN: Allows "forced" execution: Does NOT verify cooldown or [method checkInteractionConditions]; callers should check [method requestToInteract] for validation.
 ## Does NOT start a failure cooldown if disabled or on invalid [member payload] state as that's a "request rejection"; not an attempted and failed interaction.
-func performInteraction(interactorEntity: Entity, interactionControlComponent: InteractionControlComponent = null) -> Variant:
+func performInteraction(interactorEntity: Entity, interactionControlComponent: InteractionControlComponent) -> Variant:
 	if debugMode: printDebug(str("performInteraction() interactorEntity: ", interactorEntity, "interactionControlComponent: ", interactionControlComponent, ", isEnabled: ", isEnabled, ", cooldown: ", cooldownTimer.time_left, ", canSkipCurrentCooldown: ", canSkipCurrentCooldown))
 	if not isEnabled: return null
 	if not payload and not allowNoPayload:
