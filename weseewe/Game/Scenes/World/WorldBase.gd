@@ -38,5 +38,6 @@ func onStartButton_pressed() -> void:
 	menu.visible = false
 
 
-func onGlobalEvent_gameEnded(isWin: bool) -> void:
-	prints(isWin, "AAAAAAAAAAA")
+func onGlobalEvent_gameEnded(_isWin: bool) -> void:
+	# 重新加载当前场景
+	get_tree().reload_current_scene()
