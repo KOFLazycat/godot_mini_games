@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cpe4gfbgka4cj"]
+
+[ext_resource type="Script" uid="uid://bfwa6i0xg0axx" path="res://Src/AutoLoad/LubanLoader.gd" id="1_t2yqo"]
+
+[node name="LubanLoader" type="Node" unique_id=1468823615]
+script = ExtResource("1_t2yqo")

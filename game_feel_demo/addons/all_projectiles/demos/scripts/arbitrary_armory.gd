@@ -792,7 +792,7 @@ func expired_custom_fireball(proj: Projectile2D) -> void:
 
 	## 获取爆炸场景
 	var _scale: float = proj.global_properties.get("SCALE")
-	var blast_scene: PackedScene = proj.global_properties.get(GlobalConst.PROJECTILE_GLOBAL_PROPERTIES_KEY_EXPIRED_SCENE)
+	var blast_scene: PackedScene = proj.global_properties.get("PROJECTILE_GLOBAL_PROPERTIES_KEY_EXPIRED_SCENE")
 
 	## 如果配置了爆炸场景，实例化并播放
 	if (blast_scene != null):
@@ -992,7 +992,7 @@ func expired_custom_particle_trail(proj: Projectile2D) -> void:
 		trail.timed_free()
 
 	## 获取爆炸场景并实例化
-	var blast_scene: PackedScene = proj.global_properties.get(GlobalConst.PROJECTILE_GLOBAL_PROPERTIES_KEY_EXPIRED_SCENE)
+	var blast_scene: PackedScene = proj.global_properties.get("PROJECTILE_GLOBAL_PROPERTIES_KEY_EXPIRED_SCENE")
 	if (blast_scene != null):
 		var blast: TimedParticle = blast_scene.instantiate()
 		blast.transform = proj.transform
