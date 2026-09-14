@@ -46,6 +46,7 @@ TurnBasedCoordinator="*res://AutoLoad/TurnBasedCoordinator.tscn"
 TweenFX="*res://addons/TweenFX/TweenFX.gd"
 APDatabase="*res://addons/all_projectiles/scripts/main/projectile_database.gd"
 Shaker="*res://addons/shaker/src/Shaker.gd"
+Juicee="*res://addons/juicee/core/juicee.gd"
 
 [comedot]
 
@@ -76,7 +77,7 @@ naming/script_name_casing=1
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Comedot/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/TweenFX/plugin.cfg", "res://addons/all_projectiles/plugin.cfg", "res://addons/godot_state_charts/plugin.cfg", "res://addons/script-ide/plugin.cfg", "res://addons/shaker/plugin.cfg")
+enabled=PackedStringArray("res://addons/Comedot/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/TweenFX/plugin.cfg", "res://addons/all_projectiles/plugin.cfg", "res://addons/godot_state_charts/plugin.cfg", "res://addons/juicee/plugin.cfg", "res://addons/script-ide/plugin.cfg", "res://addons/shaker/plugin.cfg")
 
 [file_customization]
 
