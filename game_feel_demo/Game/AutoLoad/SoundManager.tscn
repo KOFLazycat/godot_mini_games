@@ -1,6 +1,7 @@
-[gd_scene format=3 uid="uid://bs8f3bqwqs481"]
+[gd_scene format=3 uid="uid://di6n66ik5yoc7"]
 
 [ext_resource type="Script" uid="uid://bv1mtytgsybkp" path="res://Game/AutoLoad/SoundManager.gd" id="1_h1qr7"]
 
 [node name="SoundManager" type="Node" unique_id=369057455]
 script = ExtResource("1_h1qr7")
+audioBus = &"SFX"

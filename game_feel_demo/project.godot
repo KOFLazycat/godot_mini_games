@@ -49,8 +49,8 @@ Shaker="*res://addons/shaker/src/Shaker.gd"
 Juicee="*res://addons/juicee/core/juicee.gd"
 BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
 BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
-SoundManager="*uid://bs8f3bqwqs481"
 GlobalArbitraryArmory="*uid://1wutg0yfimox"
+SoundManager="*uid://di6n66ik5yoc7"
 
 [comedot]
 
