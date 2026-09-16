@@ -18,7 +18,7 @@ extends Node
 @export var startCount:int = 10
 
 ## 音效输出的音频总线名称（留空则走 Master）
-@export var audioBus:StringName
+@export var audioBus:StringName = &"SFX"
 
 
 ## SoundPlayer 对象池
