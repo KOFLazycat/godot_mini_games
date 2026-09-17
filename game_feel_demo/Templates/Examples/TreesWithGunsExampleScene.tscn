@@ -5,12 +5,49 @@
 [ext_resource type="PackedScene" uid="uid://b6c5d68ty35va" path="res://Templates/Entities/PlayerEntityTemplate-Overhead.tscn" id="4_bek2q"]
 [ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="6_kpabc"]
 [ext_resource type="PackedScene" uid="uid://dyxwb73c1uv7v" path="res://Components/Physics/PushRigidBodyComponent.tscn" id="7_nnv3x"]
+[ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="8_0ecu0"]
 [ext_resource type="PackedScene" uid="uid://ge0omhunt1go" path="res://Components/Control/AimingCursorComponent.tscn" id="8_bek2q"]
 [ext_resource type="PackedScene" uid="uid://cfw867i3q122v" path="res://Templates/Examples/TreeWithGunExampleEntity.tscn" id="10_xxxig"]
 [ext_resource type="PackedScene" uid="uid://ks8fhlam1j34" path="res://Templates/Examples/GhostExampleEntity.tscn" id="11_xlksg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1r2ol"]
 size = Vector2(12, 14)
+
+[sub_resource type="Resource" id="Resource_okdq1"]
+resource_local_to_scene = true
+script = ExtResource("8_0ecu0")
+max = 10000
+value = 500
+name = &"gunCooldown"
+displayName = "Gun Cooldown"
+metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
+
+[sub_resource type="Resource" id="Resource_sy48a"]
+resource_local_to_scene = true
+script = ExtResource("8_0ecu0")
+max = 10000
+value = 500
+name = &"gunCooldown"
+displayName = "Gun Cooldown"
+metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
+
+[sub_resource type="Resource" id="Resource_kxnpl"]
+resource_local_to_scene = true
+script = ExtResource("8_0ecu0")
+max = 10000
+value = 500
+name = &"gunCooldown"
+displayName = "Gun Cooldown"
+metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
+
+[sub_resource type="Resource" id="Resource_yqhs0"]
+resource_local_to_scene = true
+script = ExtResource("8_0ecu0")
+max = 10000
+value = 500
+name = &"gunCooldown"
+displayName = "Gun Cooldown"
+metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sy48a"]
 size = Vector2(384, 400)
@@ -49,11 +86,17 @@ factions = 2
 [node name="TreeEntity1" parent="Trees" unique_id=234012061 instance=ExtResource("10_xxxig")]
 position = Vector2(0, -64)
 
+[node name="CooldownTimer" parent="Trees/TreeEntity1/GunComponent" parent_id_path=PackedInt32Array(234012061, 335321454) index="1" unique_id=57790064]
+cooldownMilliseconds = SubResource("Resource_okdq1")
+
 [node name="NodeFacingComponent" parent="Trees/TreeEntity1" index="4" unique_id=1728329491 node_paths=PackedStringArray("targetToFace")]
 targetToFace = NodePath("../../../PlayerEntityTemplate-OverheadBasic/AimingCursorComponent")
 
 [node name="TreeEntity2" parent="Trees" unique_id=1718656649 instance=ExtResource("10_xxxig")]
 position = Vector2(64, 0)
+
+[node name="CooldownTimer" parent="Trees/TreeEntity2/GunComponent" parent_id_path=PackedInt32Array(1718656649, 335321454) index="1" unique_id=57790064]
+cooldownMilliseconds = SubResource("Resource_sy48a")
 
 [node name="NodeFacingComponent" parent="Trees/TreeEntity2" index="4" unique_id=1728329491 node_paths=PackedStringArray("targetToFace")]
 targetToFace = NodePath("../../../PlayerEntityTemplate-OverheadBasic/AimingCursorComponent")
@@ -61,11 +104,17 @@ targetToFace = NodePath("../../../PlayerEntityTemplate-OverheadBasic/AimingCurso
 [node name="TreeEntity3" parent="Trees" unique_id=1092403872 instance=ExtResource("10_xxxig")]
 position = Vector2(-64, 0)
 
+[node name="CooldownTimer" parent="Trees/TreeEntity3/GunComponent" parent_id_path=PackedInt32Array(1092403872, 335321454) index="1" unique_id=57790064]
+cooldownMilliseconds = SubResource("Resource_kxnpl")
+
 [node name="NodeFacingComponent" parent="Trees/TreeEntity3" index="4" unique_id=1728329491 node_paths=PackedStringArray("targetToFace")]
 targetToFace = NodePath("../../../PlayerEntityTemplate-OverheadBasic/AimingCursorComponent")
 
 [node name="TreeEntity4" parent="Trees" unique_id=899578031 instance=ExtResource("10_xxxig")]
 position = Vector2(0, 64)
+
+[node name="CooldownTimer" parent="Trees/TreeEntity4/GunComponent" parent_id_path=PackedInt32Array(899578031, 335321454) index="1" unique_id=57790064]
+cooldownMilliseconds = SubResource("Resource_yqhs0")
 
 [node name="NodeFacingComponent" parent="Trees/TreeEntity4" index="4" unique_id=1728329491 node_paths=PackedStringArray("targetToFace")]
 targetToFace = NodePath("../../../PlayerEntityTemplate-OverheadBasic/AimingCursorComponent")

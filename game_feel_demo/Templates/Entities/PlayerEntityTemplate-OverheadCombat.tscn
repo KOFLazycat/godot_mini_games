@@ -11,6 +11,10 @@
 [ext_resource type="PackedScene" uid="uid://qn8n4bqswnlr" path="res://Components/Control/MouseRotationComponent.tscn" id="7_ywvyn"]
 [ext_resource type="PackedScene" uid="uid://cdik3ejdf7c57" path="res://Components/Control/TurningControlComponent.tscn" id="9_qdfo0"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cafj2"]
+resource_local_to_scene = true
+size = Vector2(15, 15)
+
 [sub_resource type="Resource" id="Resource_vklec"]
 resource_name = "playerHealth"
 script = ExtResource("4_02hnx")
@@ -28,8 +32,20 @@ name = &"playerAmmo"
 displayName = "Ammo"
 metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
 
+[sub_resource type="Resource" id="Resource_2wn0i"]
+resource_local_to_scene = true
+script = ExtResource("4_02hnx")
+max = 10000
+value = 500
+name = &"gunCooldown"
+displayName = "Gun Cooldown"
+metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
+
 [node name="Player-OverheadCombat" unique_id=610726931 instance=ExtResource("1_mkdep")]
 editor_description = "A template for the player character in an \"overhead\" or \"top-down\" view game with combat functionality."
+
+[node name="CollisionShape2D" parent="." index="0" unique_id=303169715]
+shape = SubResource("RectangleShape2D_cafj2")
 
 [node name="FactionComponent" parent="." index="5" unique_id=171852289 instance=ExtResource("2_02hnx")]
 factions = 2
@@ -50,6 +66,9 @@ nodeToAnimate = NodePath("../AnimatedSprite2D")
 [node name="GunComponent" parent="." index="10" unique_id=392950478 instance=ExtResource("6_qdfo0")]
 ammo = SubResource("Resource_0geu2")
 ammoCost = 1
+
+[node name="CooldownTimer" parent="GunComponent" index="1" unique_id=57790064]
+cooldownMilliseconds = SubResource("Resource_2wn0i")
 
 [node name="MouseRotationComponent" parent="." index="11" unique_id=2087875808 node_paths=PackedStringArray("nodeToRotate") instance=ExtResource("7_ywvyn")]
 nodeToRotate = NodePath("../GunComponent")

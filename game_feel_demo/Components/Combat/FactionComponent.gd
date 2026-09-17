@@ -56,4 +56,3 @@ func checkOpposition(otherFactions: int) -> bool:
 	return (self.factions & otherFactions) == 0 # Bitwise `AND` means `true` if ANY bits match.
 
 #endregion
-

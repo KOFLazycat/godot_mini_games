@@ -152,6 +152,7 @@ text = "C @Pixel"
 [connection signal="pressed" from="UI/HBoxContainer/ButtonCPixel" to="." method="onButtonCPixel_pressed"]
 
 [editable path="Player-TileBased"]
+[editable path="Player-TileBased/CameraComponent"]
 [editable path="Player-TileBased/TileBasedPositionComponent"]
 [editable path="NPC1/TileBasedPositionComponent"]
 [editable path="NPC2/TileBasedPositionComponent"]

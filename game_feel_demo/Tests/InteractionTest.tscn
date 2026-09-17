@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://3gmi65j17bkt" path="res://Resources/Payloads/StatModifierPayload.gd" id="11_cmk47"]
 [ext_resource type="PackedScene" uid="uid://ctb31yeqt3dae" path="res://Components/Interaction/InteractionWithCostComponent.tscn" id="12_johh5"]
 [ext_resource type="Script" uid="uid://dj5n8s8rxgypa" path="res://Resources/Stats/StatCost.gd" id="13_16kqk"]
+[ext_resource type="FontFile" uid="uid://g8n47s8qewq5" path="res://Assets/Fonts/PixelOperator8-Bold.ttf" id="13_cmk47"]
 [ext_resource type="Script" uid="uid://etxev52wl7c8" path="res://UI/Lists/StatsList.gd" id="14_facn4"]
 [ext_resource type="Texture2D" uid="uid://dlgr48hfwadef" path="res://Assets/Tiles/Kenney1Bit-Colored.png" id="14_su6gy"]
 [ext_resource type="Script" uid="uid://b3tgnb1y0hgk1" path="res://Entities/Entity.gd" id="15_bslwp"]
@@ -24,7 +25,11 @@
 [ext_resource type="PackedScene" uid="uid://bao7nrybc7152" path="res://Components/Interaction/TextInteractionComponent.tscn" id="20_c0i8c"]
 [ext_resource type="PackedScene" uid="uid://ks8fhlam1j34" path="res://Templates/Examples/GhostExampleEntity.tscn" id="20_johh5"]
 
-[sub_resource type="Resource" id="Resource_cmk47"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_johh5"]
+resource_local_to_scene = true
+radius = 16.0
+
+[sub_resource type="Resource" id="Resource_poow8"]
 resource_local_to_scene = true
 script = ExtResource("5_bslwp")
 max = 10000
@@ -33,20 +38,24 @@ name = &"interactorCooldown"
 displayName = "Interactor Cooldown"
 metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
 
-[sub_resource type="Resource" id="Resource_johh5"]
+[sub_resource type="Resource" id="Resource_facn4"]
 resource_local_to_scene = true
 script = ExtResource("19_vpvxn")
 strings = PackedStringArray("1/5: Hi! Interact to talk!", "2/5: Message2", "3/5: The next message will be empty…", "", "5/5: Goodbye!")
 metadata/_custom_type_script = "uid://d1ed0yc1xwfvx"
 
-[sub_resource type="Resource" id="Resource_poow8"]
+[sub_resource type="Resource" id="Resource_2himm"]
 resource_local_to_scene = true
 script = ExtResource("19_n8u5t")
 colors = PackedColorArray(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1)
 strings = PackedStringArray("1/3: I am automatic!", "2/3: A really long ass message to test cooldowns and multiple lines etcetera . . .", "3/3: Isn\'t this fun???")
 metadata/_custom_type_script = "uid://c8oqfug6bro2n"
 
-[sub_resource type="Resource" id="Resource_facn4"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_sj56h"]
+resource_local_to_scene = true
+radius = 16.0
+
+[sub_resource type="Resource" id="Resource_3njpx"]
 resource_local_to_scene = true
 script = ExtResource("5_bslwp")
 max = 60000
@@ -54,6 +63,16 @@ value = 1111
 name = &"textCooldown"
 displayName = "Text Cooldown"
 metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
+
+[sub_resource type="LabelSettings" id="LabelSettings_us0gv"]
+resource_local_to_scene = true
+font = ExtResource("13_cmk47")
+font_size = 8
+outline_size = 4
+outline_color = Color(0, 0, 0, 0.75)
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_offset = Vector2(0, 2)
 
 [sub_resource type="Resource" id="Resource_0gg6p"]
 script = ExtResource("11_cmk47")
@@ -76,7 +95,11 @@ ExtResource("7_c0i8c"): 500
 })
 metadata/_custom_type_script = "uid://3gmi65j17bkt"
 
-[sub_resource type="Resource" id="Resource_2himm"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_sx188"]
+resource_local_to_scene = true
+radius = 16.0
+
+[sub_resource type="Resource" id="Resource_ylyqj"]
 resource_local_to_scene = true
 script = ExtResource("5_bslwp")
 max = 60000
@@ -93,7 +116,7 @@ ExtResource("7_c0i8c"): -1000
 })
 metadata/_custom_type_script = "uid://3gmi65j17bkt"
 
-[sub_resource type="Resource" id="Resource_sj56h"]
+[sub_resource type="Resource" id="Resource_nrqcr"]
 resource_local_to_scene = true
 script = ExtResource("5_bslwp")
 max = 3
@@ -102,7 +125,7 @@ name = &"ghostMine"
 displayName = "Ghost Mine"
 metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
 
-[sub_resource type="Resource" id="Resource_3njpx"]
+[sub_resource type="Resource" id="Resource_dmtko"]
 resource_local_to_scene = true
 script = ExtResource("19_cmk47")
 payloadScene = ExtResource("20_johh5")
@@ -121,13 +144,14 @@ z_index = 100
 stats = Array[ExtResource("5_bslwp")]([ExtResource("6_u3x77"), ExtResource("7_c0i8c")])
 
 [node name="InteractionMouseControlComponent" parent="PlayerEntityTemplate-Overhead" unique_id=628595486 node_paths=PackedStringArray("interactorIndicator") instance=ExtResource("7_n8u5t")]
-mouseButton = 1
-shouldUpdateCursor = true
 interactorIndicator = NodePath("CanvasLayer/MarginContainer/Label")
 debugMode = true
 
+[node name="InteractionControlShape" parent="PlayerEntityTemplate-Overhead/InteractionMouseControlComponent" index="0" unique_id=218436281]
+shape = SubResource("CircleShape2D_johh5")
+
 [node name="CooldownTimer" parent="PlayerEntityTemplate-Overhead/InteractionMouseControlComponent" index="1" unique_id=57790064]
-cooldownMilliseconds = SubResource("Resource_cmk47")
+cooldownMilliseconds = SubResource("Resource_poow8")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="PlayerEntityTemplate-Overhead/InteractionMouseControlComponent" unique_id=450224244]
 
@@ -161,7 +185,7 @@ region_rect = Rect2(400, 112, 16, 16)
 
 [node name="TextInteractionComponent" parent="NPC1" unique_id=182836956 instance=ExtResource("20_c0i8c")]
 z_index = 100
-textSequence = SubResource("Resource_johh5")
+textSequence = SubResource("Resource_facn4")
 debugMode = true
 
 [node name="NPC2" parent="." unique_id=1201538327 instance=ExtResource("9_vpvxn")]
@@ -171,7 +195,7 @@ region_rect = Rect2(480, 112, 16, 16)
 
 [node name="TextInteractionComponent" parent="NPC2" unique_id=932116605 instance=ExtResource("20_c0i8c")]
 z_index = 100
-textSequence = SubResource("Resource_poow8")
+textSequence = SubResource("Resource_2himm")
 animationDurationPerCharacter = 0.3
 cooldownOnFailure = 0.69
 shouldRepeatInteractionAfterCooldown = true
@@ -181,8 +205,14 @@ shouldAlwaysShowIndicator = true
 text = "AUTO TALK"
 debugMode = true
 
+[node name="InteractionShape" parent="NPC2/TextInteractionComponent" index="0" unique_id=254682034]
+shape = SubResource("CircleShape2D_sj56h")
+
 [node name="CooldownTimer" parent="NPC2/TextInteractionComponent" index="1" unique_id=57790064]
-cooldownMilliseconds = SubResource("Resource_facn4")
+cooldownMilliseconds = SubResource("Resource_3njpx")
+
+[node name="Label" parent="NPC2/TextInteractionComponent" index="2" unique_id=497469714]
+label_settings = SubResource("LabelSettings_us0gv")
 
 [node name="ManaPot" parent="." unique_id=367078614 instance=ExtResource("9_vpvxn")]
 position = Vector2(-128, 96)
@@ -214,8 +244,11 @@ interactionIndicator = NodePath("Label")
 text = "-50 Mana to +500 Gold"
 debugMode = true
 
+[node name="InteractionShape" parent="GoldPot/InteractionWithCostComponent" index="0" unique_id=254682034]
+shape = SubResource("CircleShape2D_sx188")
+
 [node name="CooldownTimer" parent="GoldPot/InteractionWithCostComponent" index="1" unique_id=57790064]
-cooldownMilliseconds = SubResource("Resource_2himm")
+cooldownMilliseconds = SubResource("Resource_ylyqj")
 
 [node name="Label" type="Label" parent="GoldPot/InteractionWithCostComponent" unique_id=211529003]
 modulate = Color(1, 0.75, 0, 1)
@@ -250,8 +283,8 @@ position = Vector2(0, -128)
 region_rect = Rect2(16, 224, 16, 16)
 
 [node name="MineableComponent" parent="MineableEntity" unique_id=1523802535 node_paths=PackedStringArray("interactionIndicator") instance=ExtResource("18_hevv5")]
-contents = SubResource("Resource_sj56h")
-payload = SubResource("Resource_3njpx")
+contents = SubResource("Resource_nrqcr")
+payload = SubResource("Resource_dmtko")
 interactionIndicator = NodePath("Label")
 text = "DIG GRAVE"
 description = ""

@@ -172,6 +172,15 @@ max = 10000000
 value = 1337
 name = &"playerScore"
 
+[sub_resource type="Resource" id="Resource_b23pp"]
+resource_local_to_scene = true
+script = ExtResource("9_g0ayb")
+max = 10000
+value = 500
+name = &"gunCooldown"
+displayName = "Gun Cooldown"
+metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_swcld"]
 resource_local_to_scene = true
 size = Vector2(14, 14)
@@ -231,6 +240,9 @@ ammoCost = 1
 
 [node name="GunSprite" parent="GunComponent" index="0" unique_id=750546687]
 visible = false
+
+[node name="CooldownTimer" parent="GunComponent" index="1" unique_id=57790064]
+cooldownMilliseconds = SubResource("Resource_b23pp")
 
 [node name="GunRecoilComponent" parent="." unique_id=825286223 instance=ExtResource("11_ea0yk")]
 

@@ -4,6 +4,14 @@
 [ext_resource type="Script" uid="uid://skef6xfeeesu" path="res://UI/Views/StatPips.gd" id="2_2gygj"]
 [ext_resource type="Texture2D" uid="uid://c5xfn2y6rwvas" path="res://Assets/Images/StatPip.png" id="3_csb5x"]
 [ext_resource type="Texture2D" uid="uid://cymqs5685rbo0" path="res://Assets/Images/StatPipDepleted.png" id="4_7605v"]
+[ext_resource type="FontFile" uid="uid://wdvwb23naavb" path="res://Assets/Fonts/PixelOperatorMono8.ttf" id="5_7605v"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_llqix"]
+resource_local_to_scene = true
+font = ExtResource("5_7605v")
+font_size = 8
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
 
 [node name="StatPips" unique_id=791683662 instance=ExtResource("1_bgnbj")]
 theme_override_constants/h_separation = 0
@@ -14,6 +22,9 @@ symbol = ExtResource("3_csb5x")
 depletedSymbol = ExtResource("4_7605v")
 shouldAddSpaceAfterPrefix = false
 shouldShowValue = false
+
+[node name="Label" parent="." index="1" unique_id=1625132942]
+label_settings = SubResource("LabelSettings_llqix")
 
 [node name="Pips" type="HBoxContainer" parent="." index="2" unique_id=384966205]
 custom_minimum_size = Vector2(8, 8)

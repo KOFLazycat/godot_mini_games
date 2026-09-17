@@ -18,7 +18,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_icn6w"]
 size = Vector2(12, 14)
 
-[sub_resource type="Resource" id="Resource_swrev"]
+[sub_resource type="Resource" id="Resource_4wj0d"]
 resource_local_to_scene = true
 resource_name = "monsterHealth"
 script = ExtResource("5_kedlw")
@@ -56,7 +56,7 @@ region_rect = Rect2(416, 96, 16, 16)
 factions = 8
 
 [node name="HealthComponent" parent="." unique_id=1738575026 instance=ExtResource("4_vyhga")]
-health = SubResource("Resource_swrev")
+health = SubResource("Resource_4wj0d")
 
 [node name="DamageReceivingComponent" parent="." unique_id=616953459 instance=ExtResource("7_8kkjp")]
 

@@ -10,6 +10,7 @@ offset_bottom = 20.0
 script = ExtResource("1_nw3x8")
 
 [node name="Icon" type="TextureRect" parent="." unique_id=38061192]
+visible = false
 use_parent_material = true
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2

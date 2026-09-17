@@ -6,10 +6,10 @@
 resource_name = "TurnState"
 script = ExtResource("1_0tasa")
 states = Dictionary[StringName, PackedStringArray]({
-&"turnReady": PackedStringArray("turnBegin"),
 &"turnBegin": PackedStringArray("turnExecute"),
+&"turnEnd": PackedStringArray("turnReady", "turnBegin"),
 &"turnExecute": PackedStringArray("turnEnd"),
-&"turnEnd": PackedStringArray("turnReady", "turnBegin")
+&"turnReady": PackedStringArray("turnBegin")
 })
 initialState = &"turnReady"
 metadata/_custom_type_script = "uid://c5yr0bx83msve"

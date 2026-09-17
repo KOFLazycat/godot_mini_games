@@ -3,11 +3,25 @@
 [ext_resource type="PackedScene" uid="uid://3ousmbcfyuac" path="res://Templates/Entities/BulletEntityTemplate.tscn" id="1_7qvpp"]
 [ext_resource type="Resource" uid="uid://drqkuta0docee" path="res://Templates/Weapon/TemplateBulletDamage.tres" id="2_3efuy"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3efuy"]
+resource_local_to_scene = true
+size = Vector2(4, 4)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8wgsd"]
+resource_local_to_scene = true
+size = Vector2(4, 4)
+
 [node name="Bullet" unique_id=1826691488 instance=ExtResource("1_7qvpp")]
+
+[node name="NonDamageCollisionShape" parent="." index="0" unique_id=1049746291]
+shape = SubResource("RectangleShape2D_3efuy")
 
 [node name="DamageComponent" parent="." index="3" unique_id=1624107160]
 damageOnCollision = 0
 damageModifier = ExtResource("2_3efuy")
+
+[node name="DamageCollisionShape" parent="DamageComponent" index="0" unique_id=1217175677]
+shape = SubResource("RectangleShape2D_8wgsd")
 
 [node name="LinearMotionComponent" parent="." index="4" unique_id=950154230]
 speed = nan

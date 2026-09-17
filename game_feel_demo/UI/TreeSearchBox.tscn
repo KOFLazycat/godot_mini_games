@@ -2,6 +2,10 @@
 
 [ext_resource type="Script" uid="uid://ce67ye4g5xl8x" path="res://UI/TreeSearchBox.gd" id="1_mg701"]
 
+[sub_resource type="DPITexture" id="DPITexture_6vyr6"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#ff5d5d\" d=\"M2 1v8.586l1.293-1.293a1 1 0 0 1 1.414 0L7 10.587l2.293-2.293a1 1 0 0 1 1.414 0L13 10.586l1-1V6H9V1H2zm8 0v4h4zm-6 9.414-2 2V15h12v-2.586l-.293.293a1 1 0 0 1-1.414 0L10 10.414l-2.293 2.293a1 1 0 0 1-1.414 0L4 10.414z\"/></svg>
+"
+
 [node name="TreeSearchBox" type="LineEdit" unique_id=149865309]
 editor_description = "A text box that filters the contents of a Tree."
 anchors_preset = 15
@@ -15,6 +19,7 @@ expand_to_text_length = true
 emoji_menu_enabled = false
 clear_button_enabled = true
 select_all_on_focus = true
+right_icon = SubResource("DPITexture_6vyr6")
 script = ExtResource("1_mg701")
 
 [node name="UpdateDelayTimer" type="Timer" parent="." unique_id=1800866029]

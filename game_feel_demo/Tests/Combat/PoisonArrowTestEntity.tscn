@@ -9,6 +9,10 @@
 resource_local_to_scene = true
 size = Vector2(8, 8)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1ptey"]
+resource_local_to_scene = true
+size = Vector2(8, 8)
+
 [node name="PoisonArrow" unique_id=1208345415 instance=ExtResource("1_5xvy3")]
 isLoggingEnabled = true
 
@@ -22,7 +26,10 @@ region_enabled = true
 region_rect = Rect2(360, 336, 8, 16)
 
 [node name="DamageCollisionShape" parent="DamageComponent" parent_id_path=PackedInt32Array(1624107160) index="0" unique_id=1217175677]
-shape = SubResource("RectangleShape2D_jfxxg")
+shape = SubResource("RectangleShape2D_1ptey")
+
+[node name="LinearMotionComponent" parent="." index="4" unique_id=950154230]
+speed = nan
 
 [node name="InjectorComponent" parent="." index="7" unique_id=545806848 instance=ExtResource("3_m01pb")]
 
@@ -33,4 +40,5 @@ allowNonEntityParent = true
 [connection signal="didCollideReceiver" from="DamageComponent" to="InjectorComponent" method="onAreaOrBodyEntered"]
 
 [editable path="DamageComponent"]
+[editable path="OffscreenRemovalComponent"]
 [editable path="InjectorComponent/DamageOverTimeComponent"]

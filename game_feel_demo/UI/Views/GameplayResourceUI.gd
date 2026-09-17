@@ -93,5 +93,3 @@ func updateText(animate: bool = self.shouldAnimate) -> void:
 	pass
 	# self.label.text = resource.displayName
 	# self.tooltip_text = resource.description
-
-

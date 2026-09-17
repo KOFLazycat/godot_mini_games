@@ -21,7 +21,7 @@
 resource_local_to_scene = true
 size = Vector2(48, 144)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mq5ic"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_446ob"]
 resource_local_to_scene = true
 size = Vector2(16, 48)
 
@@ -29,7 +29,7 @@ size = Vector2(16, 48)
 atlas = ExtResource("13_jt7ij")
 region = Rect2(400, 112, 16, 16)
 
-[sub_resource type="Resource" id="Resource_b0rrs"]
+[sub_resource type="Resource" id="Resource_mq5ic"]
 resource_local_to_scene = true
 script = ExtResource("3_a6r0q")
 max = 10000
@@ -70,7 +70,7 @@ position = Vector2(288, 64)
 
 [node name="SpawnAreaShape" parent="SpawnArea" index="0" unique_id=1648716433]
 position = Vector2(8, 24)
-shape = SubResource("RectangleShape2D_mq5ic")
+shape = SubResource("RectangleShape2D_446ob")
 
 [node name="Spawner" parent="SpawnArea" index="1" unique_id=1827697740]
 sceneToSpawn = "uid://ks8fhlam1j34"
@@ -113,7 +113,7 @@ bulletTemplate = ExtResource("15_lbdmr")
 position = Vector2(16, 0)
 
 [node name="CooldownTimer" parent="ArmedMonsterEntity/GunComponent" index="1" unique_id=57790064]
-cooldownMilliseconds = SubResource("Resource_b0rrs")
+cooldownMilliseconds = SubResource("Resource_mq5ic")
 
 [node name="InputComponent" parent="ArmedMonsterEntity" unique_id=1081696626 instance=ExtResource("17_446ob")]
 isPlayerControlled = false

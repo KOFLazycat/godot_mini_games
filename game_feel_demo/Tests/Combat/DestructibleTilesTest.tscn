@@ -8,6 +8,10 @@
 [ext_resource type="PackedScene" uid="uid://dx0iq5k22enrr" path="res://Tests/Combat/TileDamageBullet.tscn" id="6_g6vvj"]
 [ext_resource type="PackedScene" uid="uid://b0530vu7n5mri" path="res://Components/Physics/TileCollisionComponent.tscn" id="8_s07v7"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_223hs"]
+resource_local_to_scene = true
+size = Vector2(15, 15)
+
 [sub_resource type="Resource" id="Resource_eugu1"]
 resource_local_to_scene = true
 script = ExtResource("5_223hs")
@@ -30,14 +34,17 @@ metadata/_custom_type_script = "uid://ciflnc7p46rqm"
 
 [node name="PlayerEntityTemplate-OverheadCombat" parent="." unique_id=448139783 instance=ExtResource("4_223hs")]
 
-[node name="GunComponent" parent="PlayerEntityTemplate-OverheadCombat" index="9" unique_id=392950478]
+[node name="CollisionShape2D" parent="PlayerEntityTemplate-OverheadCombat" index="0" unique_id=303169715]
+shape = SubResource("RectangleShape2D_223hs")
+
+[node name="GunComponent" parent="PlayerEntityTemplate-OverheadCombat" index="10" unique_id=392950478]
 bulletTemplate = ExtResource("6_g6vvj")
 
 [node name="CooldownTimer" parent="PlayerEntityTemplate-OverheadCombat/GunComponent" index="1" unique_id=57790064]
 wait_time = 0.25
 cooldownMilliseconds = SubResource("Resource_eugu1")
 
-[node name="MouseRotationComponent" parent="PlayerEntityTemplate-OverheadCombat" index="10" unique_id=2087875808]
+[node name="MouseRotationComponent" parent="PlayerEntityTemplate-OverheadCombat" index="11" unique_id=2087875808]
 rotationSpeed = 15.0
 
 [node name="TileCollisionComponent" parent="PlayerEntityTemplate-OverheadCombat" unique_id=1622860889 instance=ExtResource("8_s07v7")]
