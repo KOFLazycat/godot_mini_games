@@ -4,11 +4,7 @@
 [ext_resource type="Script" uid="uid://tenrw04a0cxr" path="res://Components/Interaction/InteractionWithCostComponent.gd" id="2_nrbwt"]
 [ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="3_v8scs"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_v8scs"]
-resource_local_to_scene = true
-radius = 16.0
-
-[sub_resource type="Resource" id="Resource_v6hw0"]
+[sub_resource type="Resource" id="Resource_v8scs"]
 resource_local_to_scene = true
 script = ExtResource("3_v8scs")
 max = 60000
@@ -22,9 +18,6 @@ editor_description = "Subclass of InteractionWithCooldownComponent with a Stat c
 script = ExtResource("2_nrbwt")
 cost = null
 
-[node name="InteractionShape" parent="." index="0" unique_id=254682034]
-shape = SubResource("CircleShape2D_v8scs")
-
 [node name="CooldownTimer" parent="." index="1" unique_id=57790064]
 wait_time = 3.0
-cooldownMilliseconds = SubResource("Resource_v6hw0")
+cooldownMilliseconds = SubResource("Resource_v8scs")

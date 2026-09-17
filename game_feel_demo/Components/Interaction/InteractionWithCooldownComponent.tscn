@@ -5,11 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://5c6fjvrw0w4a" path="res://Scenes/Gameplay/CooldownTimer.tscn" id="3_0cotc"]
 [ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="4_4hyxb"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_0cotc"]
-resource_local_to_scene = true
-radius = 16.0
-
-[sub_resource type="Resource" id="Resource_4hyxb"]
+[sub_resource type="Resource" id="Resource_0cotc"]
 resource_local_to_scene = true
 script = ExtResource("4_4hyxb")
 max = 60000
@@ -24,15 +20,11 @@ shouldCooldownOnFailure = true
 cooldownOnFailure = 0.5
 shouldRepeatInteractionAfterCooldown = false
 shouldModifyIndicatorInCooldown = true
-textInCooldown = "COOLDOWN"
 previousInteractor = null
 canSkipCurrentCooldown = false
 
-[node name="InteractionShape" parent="." index="0" unique_id=254682034]
-shape = SubResource("CircleShape2D_0cotc")
-
 [node name="CooldownTimer" parent="." index="1" unique_id=57790064 instance=ExtResource("3_0cotc")]
-cooldownMilliseconds = SubResource("Resource_4hyxb")
+cooldownMilliseconds = SubResource("Resource_0cotc")
 
 [connection signal="didFinishCooldown" from="CooldownTimer" to="." method="onCooldownTimer_didFinishCooldown"]
 [connection signal="didStartCooldown" from="CooldownTimer" to="." method="onCooldownTimer_didStartCooldown"]

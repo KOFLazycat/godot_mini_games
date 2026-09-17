@@ -3,15 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://c67ee4tfbi3lk" path="res://Components/Physics/AreaCollisionComponent.tscn" id="1_qq1o2"]
 [ext_resource type="Script" uid="uid://tyfp2us4r8id" path="res://Components/Physics/AreaContactComponent.gd" id="2_lah8s"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_lah8s"]
-resource_local_to_scene = true
-size = Vector2(32, 32)
-
 [node name="AreaContactComponent" unique_id=1235984073 instance=ExtResource("1_qq1o2")]
 script = ExtResource("2_lah8s")
 groupToInclude = &""
 shouldConnectSignalsOnReady = true
 shouldNotifyOnEntityReady = true
-
-[node name="AreaDetectorShape" parent="." index="0" unique_id=2019209105]
-shape = SubResource("RectangleShape2D_lah8s")

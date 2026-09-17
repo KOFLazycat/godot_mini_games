@@ -13,11 +13,7 @@ colors = PackedColorArray(1, 1, 1, 1, 0, 1, 1, 1)
 strings = PackedStringArray("String1", "String2", "String3")
 metadata/_custom_type_script = "uid://c8oqfug6bro2n"
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_d1xlq"]
-resource_local_to_scene = true
-radius = 16.0
-
-[sub_resource type="Resource" id="Resource_jps1n"]
+[sub_resource type="Resource" id="Resource_d1xlq"]
 resource_local_to_scene = true
 script = ExtResource("4_ykqwo")
 max = 60000
@@ -41,12 +37,9 @@ shouldSkipInteractorCooldown = true
 allowNoPayload = true
 interactionIndicator = NodePath("Label")
 
-[node name="InteractionShape" parent="." index="0" unique_id=254682034]
-shape = SubResource("CircleShape2D_d1xlq")
-
 [node name="CooldownTimer" parent="." index="1" unique_id=57790064]
 wait_time = 0.2
-cooldownMilliseconds = SubResource("Resource_jps1n")
+cooldownMilliseconds = SubResource("Resource_d1xlq")
 
 [node name="Label" type="Label" parent="." index="2" unique_id=497469714]
 z_index = 100

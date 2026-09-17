@@ -49,3 +49,4 @@ func _process(delta: float) -> void:
 		var rotateTo:	float = entityPosition.angle_to_point(targetPosition)
 
 		compass.global_rotation = rotate_toward(rotateFrom, rotateTo, rotationSpeed * delta)
+
