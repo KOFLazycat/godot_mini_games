@@ -11,6 +11,7 @@ class_name GameplayTags
 
 const Example_Ability_Arrow_Impact: StringName = &"Example.Ability.Arrow.Impact"
 const Example_Ability_Arrow_Shoot: StringName = &"Example.Ability.Arrow.Shoot"
+const Example_Ability_Fireball_Impact: StringName = &"Example.Ability.Fireball.Impact"
 const Example_Ability_Heal_Triggered: StringName = &"Example.Ability.Heal.Triggered"
 const Example_Ability_Poison_Applied: StringName = &"Example.Ability.Poison.Applied"
 const Example_Ability_Poison_Cast: StringName = &"Example.Ability.Poison.Cast"

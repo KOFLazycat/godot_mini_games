@@ -42,7 +42,7 @@ max = 10000000
 value = 1337
 name = &"playerScore"
 
-[sub_resource type="Resource" id="Resource_4p0sd"]
+[sub_resource type="Resource" id="Resource_o3dgs"]
 resource_local_to_scene = true
 script = ExtResource("5_xnmml")
 max = 10000
@@ -51,7 +51,7 @@ name = &"gunCooldown"
 displayName = "Gun Cooldown"
 metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_4xwc4"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o788n"]
 resource_local_to_scene = true
 size = Vector2(26, 39)
 
@@ -99,7 +99,7 @@ ammoCost = 1
 visible = false
 
 [node name="CooldownTimer" parent="GunComponent" index="1" unique_id=57790064]
-cooldownMilliseconds = SubResource("Resource_4p0sd")
+cooldownMilliseconds = SubResource("Resource_o3dgs")
 
 [node name="GunRecoilComponent" parent="." unique_id=825286223 instance=ExtResource("11_nwsfd")]
 
@@ -121,7 +121,7 @@ collision_mask = 40
 
 [node name="ReceivingCollisionShape" parent="DamageReceivingComponent" index="0" unique_id=212184690]
 position = Vector2(0, -19)
-shape = SubResource("RectangleShape2D_4xwc4")
+shape = SubResource("RectangleShape2D_o788n")
 
 [node name="CharacterBodyComponent" parent="." unique_id=709892523 node_paths=PackedStringArray("body") instance=ExtResource("17_3l1gc")]
 body = NodePath("..")
