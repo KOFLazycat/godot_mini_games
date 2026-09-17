@@ -7,14 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://cnu5f0ycxgu8d" path="res://Components/Combat/HealthComponent.tscn" id="6_e1g27"]
 [ext_resource type="PackedScene" uid="uid://bgfxxe60d72c0" path="res://Components/Visual/HealthVisualComponent.tscn" id="7_vwwba"]
 [ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="8_c1fih"]
-[ext_resource type="PackedScene" uid="uid://cd7vapsmxp183" path="res://Components/Combat/InvulnerabilityOnHitComponent.tscn" id="9_0nxcn"]
-[ext_resource type="PackedScene" uid="uid://dusjndm5o8ehr" path="res://Components/Combat/GunComponent.tscn" id="10_274dc"]
-[ext_resource type="PackedScene" uid="uid://cnwfnu6nmsdg0" path="res://Components/Physics/GunRecoilComponent.tscn" id="11_nwsfd"]
-[ext_resource type="PackedScene" uid="uid://dtj1e0h73mikf" path="res://Components/Control/MovementFacingComponent.tscn" id="12_txda5"]
 [ext_resource type="PackedScene" uid="uid://bck0vjn8mg1aw" path="res://Components/Control/JumpComponent.tscn" id="13_768mk"]
 [ext_resource type="PackedScene" uid="uid://bv4nl55gi16vx" path="res://Components/Physics/PlatformerPhysicsComponent.tscn" id="14_5j705"]
-[ext_resource type="PackedScene" uid="uid://bx6cxxpnw2511" path="res://Components/Combat/KnockbackOnHitComponent.tscn" id="15_sqgct"]
-[ext_resource type="PackedScene" uid="uid://ffkcrlcom1kx" path="res://Components/Combat/DamageReceivingComponent.tscn" id="16_2j0qc"]
 [ext_resource type="PackedScene" uid="uid://dn7cpj4u7w1jy" path="res://Components/Physics/CharacterBodyComponent.tscn" id="17_3l1gc"]
 [ext_resource type="PackedScene" uid="uid://cdq0dcwhcrm5p" path="res://Components/Control/InputComponent.tscn" id="19_uxqiu"]
 
@@ -42,19 +36,6 @@ max = 10000000
 value = 1337
 name = &"playerScore"
 
-[sub_resource type="Resource" id="Resource_o3dgs"]
-resource_local_to_scene = true
-script = ExtResource("5_xnmml")
-max = 10000
-value = 500
-name = &"gunCooldown"
-displayName = "Gun Cooldown"
-metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_o788n"]
-resource_local_to_scene = true
-size = Vector2(26, 39)
-
 [node name="Player" type="CharacterBody2D" unique_id=1971183666 node_paths=PackedStringArray("body", "sprite") groups=["entities", "players"]]
 editor_description = "A template for the player character in a platformer game."
 z_index = 10
@@ -74,8 +55,19 @@ shape = SubResource("RectangleShape2D_1q6vm")
 [node name="Body" type="Node2D" parent="." unique_id=1460074601]
 
 [node name="Sprite2D" type="Sprite2D" parent="Body" unique_id=1712025438]
+self_modulate = Color(0.94973356, 0.4631151, 0.54427224, 1)
 position = Vector2(0, -19)
 scale = Vector2(0.8, 1.2)
+texture = ExtResource("2_o788n")
+
+[node name="Sprite2D2" type="Sprite2D" parent="Body/Sprite2D" unique_id=1641160535]
+position = Vector2(9.999998, -10.833333)
+scale = Vector2(0.2, 0.1)
+texture = ExtResource("2_o788n")
+
+[node name="Sprite2D3" type="Sprite2D" parent="Body/Sprite2D" unique_id=1596508938]
+position = Vector2(10.000001, -5.0000005)
+scale = Vector2(0.4, 0.05)
 texture = ExtResource("2_o788n")
 
 [node name="StatsComponent" parent="." unique_id=922307392 instance=ExtResource("4_ynnmr")]
@@ -89,44 +81,11 @@ health = SubResource("Resource_cei4g")
 [node name="FactionComponent" parent="." unique_id=417629176 instance=ExtResource("8_c1fih")]
 factions = 2
 
-[node name="InvulnerabilityOnHitComponent" parent="." unique_id=1034421986 instance=ExtResource("9_0nxcn")]
-
-[node name="GunComponent" parent="." unique_id=2053531727 instance=ExtResource("10_274dc")]
-ammo = SubResource("Resource_puhqw")
-ammoCost = 1
-
-[node name="GunSprite" parent="GunComponent" index="0" unique_id=750546687]
-visible = false
-
-[node name="CooldownTimer" parent="GunComponent" index="1" unique_id=57790064]
-cooldownMilliseconds = SubResource("Resource_o3dgs")
-
-[node name="GunRecoilComponent" parent="." unique_id=825286223 instance=ExtResource("11_nwsfd")]
-
-[node name="MovementFacingComponent" parent="." unique_id=1522539505 node_paths=PackedStringArray("nodeToRotate") instance=ExtResource("12_txda5")]
-nodeToRotate = NodePath("../GunComponent")
-shouldFaceVerticalInput = false
-
 [node name="JumpComponent" parent="." unique_id=753958864 instance=ExtResource("13_768mk")]
 
 [node name="PlatformerPhysicsComponent" parent="." unique_id=1617475570 instance=ExtResource("14_5j705")]
-
-[node name="KnockbackOnHitComponent" parent="." unique_id=665215421 instance=ExtResource("15_sqgct")]
-knockbackForce = 200.0
-additionalVector = Vector2(2.08165e-12, -100)
-
-[node name="DamageReceivingComponent" parent="." unique_id=427106045 instance=ExtResource("16_2j0qc")]
-collision_layer = 4
-collision_mask = 40
-
-[node name="ReceivingCollisionShape" parent="DamageReceivingComponent" index="0" unique_id=212184690]
-position = Vector2(0, -19)
-shape = SubResource("RectangleShape2D_o788n")
 
 [node name="CharacterBodyComponent" parent="." unique_id=709892523 node_paths=PackedStringArray("body") instance=ExtResource("17_3l1gc")]
 body = NodePath("..")
 
 [node name="InputComponent" parent="." unique_id=1492055703 instance=ExtResource("19_uxqiu")]
-
-[editable path="GunComponent"]
-[editable path="DamageReceivingComponent"]
