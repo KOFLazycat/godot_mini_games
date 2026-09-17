@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://bn4jf0edw45q5" path="res://Game/Assets/Images/Backgrounds/Layers/5.png" id="6_vynqk"]
 [ext_resource type="Texture2D" uid="uid://dlg4coj47rhnr" path="res://Game/Assets/Images/Backgrounds/Layers/6.png" id="7_xks64"]
 [ext_resource type="Texture2D" uid="uid://cnrpiif36yor5" path="res://Game/Assets/Images/Backgrounds/Layers/7.png" id="8_js0kk"]
-[ext_resource type="PackedScene" uid="uid://bumu6nhses65v" path="res://Templates/Entities/PlayerEntityTemplate-Platformer.tscn" id="10_wnpya"]
+[ext_resource type="PackedScene" uid="uid://byafgqlqhxfpg" path="res://Game/Entities/Characters/Player.tscn" id="10_wnpya"]
 [ext_resource type="PackedScene" uid="uid://h3pbo0mlj4je" path="res://Templates/Entities/MonsterEntityTemplate-Platformer.tscn" id="11_xnwt5"]
 [ext_resource type="PackedScene" uid="uid://convttrcwh6rm" path="res://Templates/HUDTemplate.tscn" id="12_pebv2"]
 
@@ -204,8 +204,8 @@ tile_set = SubResource("TileSet_kipt4")
 
 [node name="PlayerLayer" type="CanvasLayer" parent="." unique_id=66073999]
 
-[node name="PlayerEntity" parent="PlayerLayer" unique_id=1971183666 instance=ExtResource("10_wnpya")]
-position = Vector2(447, 66)
+[node name="Player" parent="PlayerLayer" unique_id=1971183666 instance=ExtResource("10_wnpya")]
+position = Vector2(458, 68)
 
 [node name="EnemyLayer" type="CanvasLayer" parent="." unique_id=325388218]
 
