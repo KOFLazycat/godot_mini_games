@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://wvpl3yaprvc5"]
+
+[ext_resource type="Script" uid="uid://dqdke1qculxg6" path="res://Game/Components/Combat/HitBoxComponent.gd" id="1_b4u58"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_b4u58"]
+
+[node name="HitBoxComponent" type="Area2D" unique_id=662325706 groups=["components"]]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_b4u58")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1283097502]
+visible = false
+shape = SubResource("CircleShape2D_b4u58")
