@@ -71,6 +71,15 @@ func requestExecutionByProjectileSpellStrategy(attackIndex: int,
 	recoveryEnterMethod: Callable = Callable(),
 	completedMethod: Callable = Callable()) -> bool:
 
+	## -------------------------------------------------------------------------
+	# 调试日志：发射请求
+	# -------------------------------------------------------------------------
+	if debugMode:
+		Debug.printDebug("发射投射物请求 - attackIndex: %d, projIndex: %d, 目标: %s, 起点: %s, 终点: %s" % [attackIndex, projIndex, target, startPosition, targetPosition], self)
+
+	## -------------------------------------------------------------------------
+	# 回调方法处理
+	# -------------------------------------------------------------------------
 	var _moveMethod: Callable = moveMethod if moveMethod != Callable() else onMove
 	var _startMethod: Callable = startMethod if startMethod != Callable() else onStart
 	var _collisionMethod: Callable = collisionMethod if collisionMethod != Callable() else onCollision
@@ -97,6 +106,12 @@ func requestExecutionByProjectileSpellStrategy(attackIndex: int,
 		_collisionMethod,
 		_expiredMethod
 	)
+
+	## -------------------------------------------------------------------------
+	# 调试日志：发射结果
+	# -------------------------------------------------------------------------
+	if debugMode:
+		Debug.printDebug("发射成功 - attackIndex: %d, projIndex: %d, result: %s" % [attackIndex, projIndex, result], self)
 
 	return result
 
@@ -159,7 +174,8 @@ func _registerCallbacks() -> void:
 
 ## 投射物发射回调
 func onStart(proj: Projectile2D) -> void:
-	pass
+	if debugMode:
+		Debug.printDebug("投射物发射 - %s" % proj, self)
 
 
 ## 投射物移动回调
@@ -169,6 +185,9 @@ func onMove(proj: Projectile2D, delta: float, exeption: bool = false) -> Vector2
 
 ## 投射物碰撞回调
 func onCollision(proj: Projectile2D, areaRid: RID, areaNode: Node2D, targetNode: Node2D, areaShapeIndex: int, localShapeIndex: int) -> void:
+	if debugMode:
+		Debug.printDebug("投射物碰撞 - 投射物: %s, 目标: %s" % [proj, targetNode], self)
+
 	if !proj.validate_collision(areaRid, targetNode):
 		return
 
@@ -179,26 +198,35 @@ func onCollision(proj: Projectile2D, areaRid: RID, areaNode: Node2D, targetNode:
 
 ## 投射物过期回调
 func onExpired(proj: Projectile2D) -> void:
-	pass
+	if debugMode:
+		Debug.printDebug("投射物过期 - %s" % proj, self)
 
 
 ## 攻击蓄力回调
 func onChargeEnter(attack: Attack2D) -> void:
+	if debugMode:
+		Debug.printDebug("攻击进入蓄力阶段 - %s" % attack, self)
 	attack.charge_enter()
 
 
 ## 攻击蓄力退出回调
 func onChargeExit(attack: Attack2D) -> void:
+	if debugMode:
+		Debug.printDebug("攻击退出蓄力阶段 - %s" % attack, self)
 	attack.charge_exit()
 
 
 ## 攻击预兆回调
 func onAnticipateEnter(attack: Attack2D) -> void:
+	if debugMode:
+		Debug.printDebug("攻击进入预兆阶段 - %s" % attack, self)
 	attack.anticipate_enter()
 
 
 ## 主攻击回调
 func onMainEnter(attack: Attack2D) -> void:
+	if debugMode:
+		Debug.printDebug("攻击进入主攻击阶段 - %s" % attack, self)
 	attack.pi.position += attack.attack_offset
 	attackBase(attack)
 
@@ -211,9 +239,12 @@ func attackBase(attack: Attack2D) -> void:
 
 ## 攻击恢复回调
 func onRecoveryEnter(attack: Attack2D) -> void:
+	if debugMode:
+		Debug.printDebug("攻击进入恢复阶段 - %s" % attack, self)
 	attack.recovery_enter()
 
 
 ## 攻击完成回调
 func onCompleted(attack: Attack2D) -> void:
-	pass
+	if debugMode:
+		Debug.printDebug("攻击完成 - %s" % attack, self)
