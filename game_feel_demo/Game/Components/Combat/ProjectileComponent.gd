@@ -25,6 +25,9 @@ extends Component
 ## 在 GlobalArbitraryArmory.ProjectileManager2D.projectile_resources 中的 ProjectileBlueprint2D 资源索引
 @export var projectileIndex: int = 0
 
+## 投射物回调策略
+@export var callbackStrategy: ProjectileCallbackStrategy
+
 #endregion
 
 
@@ -127,8 +130,21 @@ func requestProjectile(customTarget: Node2D = null) -> bool:
 	var targetPosition: Vector2 = targetMarker.global_position
 	
 	# -------------------------------------------------------------------------
-	# Step 5: 获取设置回调策略
+	# Step 5: 获取回调策略
 	# -------------------------------------------------------------------------
+	var callbacks: ProjectileCallbackStrategy = callbackStrategy if callbackStrategy else null
+
+	# 如果没有设置策略，使用空 Callable
+	var moveMethod: Callable = Callable(callbacks, "onMove") if callbacks else Callable()
+	var startMethod: Callable = Callable(callbacks, "onStart") if callbacks else Callable()
+	var collisionMethod: Callable = Callable(callbacks, "onCollision") if callbacks else Callable()
+	var expiredMethod: Callable = Callable(callbacks, "onExpired") if callbacks else Callable()
+	var chargeEnterMethod: Callable = Callable(callbacks, "onChargeEnter") if callbacks else Callable()
+	var chargeExitMethod: Callable = Callable(callbacks, "onChargeExit") if callbacks else Callable()
+	var anticipateEnterMethod: Callable = Callable(callbacks, "onAnticipateEnter") if callbacks else Callable()
+	var mainEnterMethod: Callable = Callable(callbacks, "onMainEnter") if callbacks else Callable()
+	var recoveryEnterMethod: Callable = Callable(callbacks, "onRecoveryEnter") if callbacks else Callable()
+	var completedMethod: Callable = Callable(callbacks, "onCompleted") if callbacks else Callable()
 
 	printDebug("开始发射 - attackIndex: %d, projectileIndex: %d" % [attackIndex, projectileIndex])
 	printDebug("startPosition: %s, targetPosition: %s" % [startPosition, targetPosition])
@@ -141,7 +157,17 @@ func requestProjectile(customTarget: Node2D = null) -> bool:
 		projectileIndex,
 		startPosition,
 		targetPosition,
-		targetNode,  # 传入 targetNode 作为目标
+		targetNode,
+		moveMethod,
+		startMethod,
+		collisionMethod,
+		expiredMethod,
+		chargeEnterMethod,
+		chargeExitMethod,
+		anticipateEnterMethod,
+		mainEnterMethod,
+		recoveryEnterMethod,
+		completedMethod
 	)
 
 	if result:
