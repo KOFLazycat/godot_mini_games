@@ -2,6 +2,13 @@
 
 [ext_resource type="Script" uid="uid://c31mycy3sv3aq" path="res://addons/GodotGAS/cues/gameplay_cue_entry.gd" id="1_0ifyl"]
 [ext_resource type="Script" uid="uid://dkt21eabd45kx" path="res://addons/GodotGAS/cues/gameplay_cue_registry.gd" id="2_1ygu3"]
+[ext_resource type="PackedScene" uid="uid://dsplb3v78rq3y" path="res://addons/all_projectiles/demos/scenes/particles/blast_centered_small.tscn" id="2_ikvwp"]
+
+[sub_resource type="Resource" id="Resource_1ygu3"]
+script = ExtResource("1_0ifyl")
+tag = &"Example.Cue.Vfx.Fireball.Impact"
+scene = ExtResource("2_ikvwp")
 
 [resource]
 script = ExtResource("2_1ygu3")
+entries = Array[ExtResource("1_0ifyl")]([SubResource("Resource_1ygu3")])

@@ -2,11 +2,18 @@
 
 [ext_resource type="Script" uid="uid://bisowd0k143yp" path="res://Entities/Characters/PlayerEntity.gd" id="1_uk1m2"]
 [ext_resource type="Texture2D" uid="uid://bg67mujwa8kq1" path="res://Assets/Images/Solid32.png" id="2_o788n"]
+[ext_resource type="Script" uid="uid://bhr4dsrpc4jw8" path="res://addons/GodotGAS/attributes/attribute_set.gd" id="4_wrke2"]
 [ext_resource type="PackedScene" uid="uid://d06m60dgdv8ui" path="res://Components/Data/StatsComponent.tscn" id="4_ynnmr"]
+[ext_resource type="Script" uid="uid://c2pcgnmwpfmn4" path="res://Game/Resources/GodotGas/attributes/example_attribute_set_attribute_set.gd" id="5_pxlx4"]
 [ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="5_xnmml"]
 [ext_resource type="PackedScene" uid="uid://cnu5f0ycxgu8d" path="res://Components/Combat/HealthComponent.tscn" id="6_e1g27"]
+[ext_resource type="Script" uid="uid://cbuvl1wjg3h7u" path="res://Game/Scripts/GAS/GameplayAbilities/GAFireball.gd" id="6_pxlx4"]
+[ext_resource type="Resource" uid="uid://nxku24ofn70s" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballCost.tres" id="7_4p0sd"]
+[ext_resource type="Resource" uid="uid://bve530dnyimdq" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballDamage.tres" id="7_4xwc4"]
 [ext_resource type="PackedScene" uid="uid://bgfxxe60d72c0" path="res://Components/Visual/HealthVisualComponent.tscn" id="7_vwwba"]
+[ext_resource type="Resource" uid="uid://dbj58io8tx3b7" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballCooldown.tres" id="8_4xwc4"]
 [ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="8_c1fih"]
+[ext_resource type="PackedScene" uid="uid://ettfulbm7ww8" path="res://Game/Components/Gameplay/ASCComponent.tscn" id="12_u114y"]
 [ext_resource type="PackedScene" uid="uid://bck0vjn8mg1aw" path="res://Components/Control/JumpComponent.tscn" id="13_768mk"]
 [ext_resource type="PackedScene" uid="uid://bv4nl55gi16vx" path="res://Components/Physics/PlatformerPhysicsComponent.tscn" id="14_5j705"]
 [ext_resource type="PackedScene" uid="uid://dn7cpj4u7w1jy" path="res://Components/Physics/CharacterBodyComponent.tscn" id="17_3l1gc"]
@@ -15,6 +22,10 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1q6vm"]
 resource_local_to_scene = true
 size = Vector2(24, 36)
+
+[sub_resource type="Resource" id="Resource_u114y"]
+script = ExtResource("5_pxlx4")
+metadata/_custom_type_script = "uid://c2pcgnmwpfmn4"
 
 [sub_resource type="Resource" id="Resource_cei4g"]
 resource_name = "health"
@@ -70,6 +81,21 @@ position = Vector2(10.000001, -5.0000005)
 scale = Vector2(0.4, 0.05)
 texture = ExtResource("2_o788n")
 
+[node name="ASCComponent" parent="." unique_id=534797182 instance=ExtResource("12_u114y")]
+position = Vector2(0, -19)
+
+[node name="AbilitySystemComponent" parent="ASCComponent" index="0" unique_id=914177293]
+attribute_sets = Array[ExtResource("4_wrke2")]([SubResource("Resource_u114y")])
+
+[node name="GAFireball" type="Node" parent="ASCComponent/AbilitySystemComponent" index="0" unique_id=529245392]
+script = ExtResource("6_pxlx4")
+damage_effect = ExtResource("7_4xwc4")
+ability_name = "Fireball"
+ability_tag = &"Example.Ability.Fireball.Impact"
+cost_effect = ExtResource("7_4p0sd")
+cooldown_effect = ExtResource("8_4xwc4")
+metadata/_custom_type_script = "uid://cbuvl1wjg3h7u"
+
 [node name="StatsComponent" parent="." unique_id=922307392 instance=ExtResource("4_ynnmr")]
 stats = Array[ExtResource("5_xnmml")]([SubResource("Resource_cei4g"), SubResource("Resource_puhqw"), SubResource("Resource_kl6l5")])
 
@@ -89,3 +115,5 @@ factions = 2
 body = NodePath("..")
 
 [node name="InputComponent" parent="." unique_id=1492055703 instance=ExtResource("19_uxqiu")]
+
+[editable path="ASCComponent"]

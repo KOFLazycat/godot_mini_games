@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="GameplayEffect" format=3 uid="uid://bve530dnyimdq"]
+
+[ext_resource type="Script" uid="uid://b7ovihaaijli7" path="res://addons/GodotGAS/effects/gameplay_execution_calculation.gd" id="1_5l3sp"]
+[ext_resource type="Script" uid="uid://bcow77l0bnh0s" path="res://addons/GodotGAS/effects/gameplay_effect_modifier.gd" id="2_nbmph"]
+[ext_resource type="Script" uid="uid://c81papidngxvg" path="res://addons/GodotGAS/effects/gameplay_effect.gd" id="3_p366v"]
+
+[sub_resource type="Resource" id="Resource_4p0sd"]
+script = ExtResource("2_nbmph")
+attribute_name = "health"
+magnitude = -10.0
+metadata/_custom_type_script = "uid://bcow77l0bnh0s"
+
+[resource]
+script = ExtResource("3_p366v")
+modifiers = Array[ExtResource("2_nbmph")]([SubResource("Resource_4p0sd")])
+metadata/_custom_type_script = "uid://c81papidngxvg"

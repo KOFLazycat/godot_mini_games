@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="GameplayEffect" format=3 uid="uid://dbj58io8tx3b7"]
+
+[ext_resource type="Script" uid="uid://b7ovihaaijli7" path="res://addons/GodotGAS/effects/gameplay_execution_calculation.gd" id="1_3c410"]
+[ext_resource type="Script" uid="uid://bcow77l0bnh0s" path="res://addons/GodotGAS/effects/gameplay_effect_modifier.gd" id="2_0k2cm"]
+[ext_resource type="Script" uid="uid://c81papidngxvg" path="res://addons/GodotGAS/effects/gameplay_effect.gd" id="3_iisp2"]
+
+[resource]
+script = ExtResource("3_iisp2")
+policy = 1
+duration = 5.0
+granted_tags = Array[StringName]([&"Example.State.Cooldown.Fireball"])
+metadata/_custom_type_script = "uid://c81papidngxvg"
