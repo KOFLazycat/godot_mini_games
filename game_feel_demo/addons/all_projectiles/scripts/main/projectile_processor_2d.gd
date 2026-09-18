@@ -42,10 +42,8 @@ func _ready() -> void:
 	world_RID = get_world_2d().space 
 	packed_info = PackedInfo.new()
 
-	#InstancedProjectile2D.current_scene = get_tree().current_scene
-	if Global.currentWorldBase:
-		InstancedProjectile2D.current_scene = Global.currentWorldBase.getProjectilesLayer()
-	else:
+	InstancedProjectile2D.current_scene = get_tree().get_first_node_in_group("projectiles_layer")
+	if InstancedProjectile2D.current_scene == null:
 		InstancedProjectile2D.current_scene = get_tree().current_scene
 	Projectile2D.current_space = get_world_2d().direct_space_state
 

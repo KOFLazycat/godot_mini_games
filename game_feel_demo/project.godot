@@ -117,6 +117,7 @@ targetables="May be targeted by an ability/command/skill/spell which requires a 
 spawners="Nodes that spawn copies of other Scenes."
 props="Miscellaneous objects for superfluous decoration etc."
 climbable="Areas & objects representing ladders, ropes, cliffs etc."
+projectiles_layer=""
 
 [gui]
 

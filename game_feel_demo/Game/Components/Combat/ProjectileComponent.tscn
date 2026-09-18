@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://dfbbj20cgb7r1"]
+
+[ext_resource type="Script" uid="uid://dahqll13powm8" path="res://Game/Components/Combat/ProjectileComponent.gd" id="1_srw2e"]
+
+[node name="ProjectileComponent" type="Node2D" unique_id=1116719074 groups=["components"]]
+script = ExtResource("1_srw2e")
+metadata/_edit_group_ = true
+
+[node name="StartMarker" type="Marker2D" parent="." unique_id=1932518886]
+
+[node name="TargetMarker" type="Marker2D" parent="." unique_id=40935400]

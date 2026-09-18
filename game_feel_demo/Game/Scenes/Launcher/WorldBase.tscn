@@ -212,4 +212,8 @@ position = Vector2(458, 68)
 [node name="MonsterEntity" parent="EnemyLayer" unique_id=1245323086 instance=ExtResource("11_xnwt5")]
 position = Vector2(259, 119)
 
+[node name="VFXLayer" type="CanvasLayer" parent="." unique_id=1307355224]
+
+[node name="Projectiles" type="Node2D" parent="VFXLayer" unique_id=66610788 groups=["projectiles_layer"]]
+
 [node name="HUDTemplate" parent="." unique_id=1336587380 instance=ExtResource("12_pebv2")]

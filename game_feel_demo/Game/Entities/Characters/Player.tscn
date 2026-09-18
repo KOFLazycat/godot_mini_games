@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://bck0vjn8mg1aw" path="res://Components/Control/JumpComponent.tscn" id="13_768mk"]
 [ext_resource type="PackedScene" uid="uid://bv4nl55gi16vx" path="res://Components/Physics/PlatformerPhysicsComponent.tscn" id="14_5j705"]
 [ext_resource type="PackedScene" uid="uid://dn7cpj4u7w1jy" path="res://Components/Physics/CharacterBodyComponent.tscn" id="17_3l1gc"]
+[ext_resource type="PackedScene" uid="uid://dfbbj20cgb7r1" path="res://Game/Components/Combat/ProjectileComponent.tscn" id="19_o3dgs"]
 [ext_resource type="PackedScene" uid="uid://cdq0dcwhcrm5p" path="res://Components/Control/InputComponent.tscn" id="19_uxqiu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1q6vm"]
@@ -116,4 +117,14 @@ body = NodePath("..")
 
 [node name="InputComponent" parent="." unique_id=1492055703 instance=ExtResource("19_uxqiu")]
 
+[node name="ProjectileComponent" parent="." unique_id=1116719074 instance=ExtResource("19_o3dgs")]
+debugMode = true
+
+[node name="StartMarker" parent="ProjectileComponent" index="0" unique_id=1932518886]
+position = Vector2(23, -25)
+
+[node name="TargetMarker" parent="ProjectileComponent" index="1" unique_id=40935400]
+position = Vector2(156, -25)
+
 [editable path="ASCComponent"]
+[editable path="ProjectileComponent"]
