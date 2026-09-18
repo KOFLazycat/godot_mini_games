@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cred0e1bl545e"]
+
+[node name="BloodSpawner" type="Node2D" unique_id=1434615829]
+process_mode = 3
+
+[node name="Timer" type="Timer" parent="." unique_id=1156157956]
+
+[node name="RayCast2D" type="RayCast2D" parent="." unique_id=2011526889]
+enabled = false
+collision_mask = 16

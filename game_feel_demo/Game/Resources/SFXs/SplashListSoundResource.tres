@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ListSoundResource" format=3 uid="uid://bn4x8tigg6c7k"]
+
+[ext_resource type="Script" uid="uid://dd3gdpo8eqdh3" path="res://Game/Scripts/Resources/Sounds/ListSoundResource.gd" id="1_0fwsu"]
+[ext_resource type="AudioStream" uid="uid://c0gs5d2jyi6ai" path="res://Game/Assets/Audios/SFXs/Bloods/splash2.wav" id="2_q06wm"]
+[ext_resource type="AudioStream" uid="uid://b5nh0u0yi8eyg" path="res://Game/Assets/Audios/SFXs/Bloods/splash3.wav" id="3_ncg76"]
+[ext_resource type="AudioStream" uid="uid://1xtfkoo6iek7" path="res://Game/Assets/Audios/SFXs/Bloods/splash4.wav" id="4_0pvmx"]
+
+[resource]
+script = ExtResource("1_0fwsu")
+sound_list = Array[AudioStream]([ExtResource("2_q06wm"), ExtResource("3_ncg76"), ExtResource("4_0pvmx")])
+random_order = true
+pitch_min = 0.9000000000087311
+pitch_max = 1.1000000000058208
+volume = -15.0

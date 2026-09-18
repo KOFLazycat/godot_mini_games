@@ -90,6 +90,13 @@ folder_colors={
 "res://Components/": "blue",
 "res://Entities/": "green",
 "res://Game/": "pink",
+"res://Game/Assets/": "purple",
+"res://Game/AutoLoad/": "orange",
+"res://Game/Components/": "blue",
+"res://Game/Entities/": "green",
+"res://Game/Resources/": "red",
+"res://Game/Scenes/": "yellow",
+"res://Game/Scripts/": "orange",
 "res://Lab/": "gray",
 "res://Notes/": "gray",
 "res://Resources/": "red",
@@ -1180,6 +1187,10 @@ debugBreak={
 2d_physics/layer_12="collectibles"
 2d_physics/layer_13="interactions"
 2d_physics/layer_14="targetables"
+2d_physics/layer_15="playerHitbox"
+2d_physics/layer_16="playerHurtbox"
+2d_physics/layer_17="enemyHitbox"
+2d_physics/layer_18="enemyHurtbox"
 avoidance/layer_1="default"
 avoidance/layer_2="characters"
 avoidance/layer_3="players"

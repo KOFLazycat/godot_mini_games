@@ -1,0 +1,30 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://cpp4fiyfcshcp"]
+
+[ext_resource type="Shader" uid="uid://dndoj32hycrmj" path="res://Game/Assets/Shaders/circle.gdshader" id="1_bl5py"]
+
+[sub_resource type="Curve" id="Curve_1vpbo"]
+_data = [Vector2(0.48, 0), 0.0, 15.2177, 0, 0, Vector2(0.5, 1), 0.0, -8.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_3ml1e"]
+texture_mode = 1
+curve = SubResource("Curve_1vpbo")
+
+[resource]
+resource_local_to_scene = true
+shader = ExtResource("1_bl5py")
+shader_parameter/rings_ease_sampler = SubResource("CurveTexture_3ml1e")
+shader_parameter/use_gradient = true
+shader_parameter/ring_color = Color(0, 0, 0, 1)
+shader_parameter/ring_color_center = Color(0.2784314, 1, 0.92941177, 1)
+shader_parameter/ring_color_edge = Color(0.2784314, 1, 0.92941177, 1)
+shader_parameter/gradient_smooth = true
+shader_parameter/gradient_strength = 2.0
+shader_parameter/ring_scroll_speed = 0.926000043985
+shader_parameter/ring_density = 2.0
+shader_parameter/ring_intensity = 0.8
+shader_parameter/soft_base_intensity = 0.70400003344
+shader_parameter/ring_crop_range = 1.0
+shader_parameter/enable_brightness_pulse = true
+shader_parameter/pulse_speed = 1.0
+shader_parameter/pulse_strength = 0.2

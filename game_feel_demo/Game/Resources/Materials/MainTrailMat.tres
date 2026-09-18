@@ -1,0 +1,32 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://qrgqnpq1flde"]
+
+[ext_resource type="Shader" uid="uid://bhncho3vthmtr" path="res://Game/Assets/Shaders/StarTrail.gdshader" id="1_bvw8n"]
+
+[sub_resource type="Curve" id="Curve_5ig3f"]
+_data = [Vector2(0, 0), 0.0, 5.252625, 0, 1, Vector2(0.190381, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.41939, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_4vhl0"]
+texture_mode = 1
+curve = SubResource("Curve_5ig3f")
+
+[sub_resource type="Curve" id="Curve_js6ha"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.421239, 1), 0.0, 0.0, 0, 0, Vector2(0.6, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_wd6un"]
+texture_mode = 1
+curve = SubResource("Curve_js6ha")
+
+[sub_resource type="Gradient" id="Gradient_irstq"]
+colors = PackedColorArray(0, 0.64705884, 0.76862746, 1, 0.5686275, 1, 0.99215686, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_ld20n"]
+gradient = SubResource("Gradient_irstq")
+
+[resource]
+shader = ExtResource("1_bvw8n")
+shader_parameter/alpha_curve = SubResource("CurveTexture_4vhl0")
+shader_parameter/base_color = SubResource("GradientTexture1D_ld20n")
+shader_parameter/band_gradient = SubResource("CurveTexture_wd6un")
+shader_parameter/deformation = 0.4

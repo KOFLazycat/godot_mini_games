@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://dt1q5yr4gebdt"]
+
+[ext_resource type="Script" uid="uid://trev756nj3ur" path="res://Game/Scenes/VFXs/Particles/TimerFreeParticle.gd" id="1_huyx6"]
+[ext_resource type="Texture2D" uid="uid://bhykml48vo82t" path="res://Game/Assets/Images/VFXs/Particles/spark.png" id="2_x4id0"]
+
+[sub_resource type="Gradient" id="Gradient_uoudu"]
+offsets = PackedFloat32Array(0.812641, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_jimu2"]
+gradient = SubResource("Gradient_uoudu")
+
+[sub_resource type="Curve" id="Curve_u580n"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_vu0b4"]
+curve = SubResource("Curve_u580n")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_g1o6j"]
+lifetime_randomness = 0.5
+particle_flag_align_y = true
+particle_flag_disable_z = true
+direction = Vector3(-1, 0, 0)
+initial_velocity_min = 40.0
+initial_velocity_max = 200.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.2
+scale_max = 0.4
+scale_curve = SubResource("CurveTexture_vu0b4")
+color = Color(0.235294, 0.870588, 0.360784, 1)
+color_ramp = SubResource("GradientTexture1D_jimu2")
+
+[node name="BurstLeft" type="Node2D" unique_id=1557696380]
+script = ExtResource("1_huyx6")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=1157825306]
+amount = 16
+texture = ExtResource("2_x4id0")
+lifetime = 0.25
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_g1o6j")
+
+[node name="Timer" type="Timer" parent="." unique_id=1698774102]
+one_shot = true
