@@ -26,7 +26,11 @@ extends Component
 @export var projectileIndex: int = 0
 
 ## 投射物回调策略
-@export var callbackStrategy: ProjectileCallbackStrategy
+@export var callbackStrategy: ProjectileCallbackStrategy:
+	get:
+		if callbackStrategy == null:
+			callbackStrategy = ProjectileCallbackStrategy.new()
+		return callbackStrategy
 
 #endregion
 

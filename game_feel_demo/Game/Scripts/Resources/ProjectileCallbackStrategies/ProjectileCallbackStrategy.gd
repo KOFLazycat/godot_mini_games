@@ -106,7 +106,7 @@ func onStart(proj: Projectile2D) -> void:
 func onMove(proj: Projectile2D, delta: float, ex: bool = false) -> Vector2:
 	## 获取速度曲线配置
 	var curve: Curve = proj.global_properties.get(GLOBAL_PROPERTIES_KEY_SPEED_CURVE)
-	if curve == null:
+	if curve != null:
 		## 根据剩余寿命百分比采样速度曲线
 		## timeLeftPercent = 1.0 表示刚发射，0.0 表示即将过期
 		var timeLeftPercent: float = (proj.resource.lifetime - proj.lifetime) / proj.resource.lifetime
