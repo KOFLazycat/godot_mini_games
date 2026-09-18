@@ -9,7 +9,6 @@ name = &"MAGIC_BOLT"
 attack_anticipate_time = 0.167
 attack_duration_time = 0.083
 attack_recovery_time = 0.167
-attack_offset = Vector2(11, -86)
 attack_charge_time = 0.167
 override_attack_duration = false
 global_properties = Dictionary[StringName, Variant]({

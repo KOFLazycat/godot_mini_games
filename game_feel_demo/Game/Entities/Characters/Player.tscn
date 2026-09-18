@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://dn7cpj4u7w1jy" path="res://Components/Physics/CharacterBodyComponent.tscn" id="17_3l1gc"]
 [ext_resource type="PackedScene" uid="uid://dfbbj20cgb7r1" path="res://Game/Components/Combat/ProjectileComponent.tscn" id="19_o3dgs"]
 [ext_resource type="PackedScene" uid="uid://cdq0dcwhcrm5p" path="res://Components/Control/InputComponent.tscn" id="19_uxqiu"]
+[ext_resource type="Texture2D" uid="uid://va0xd1tyq1qk" path="res://Assets/Images/Circle8.png" id="20_o788n"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1q6vm"]
 resource_local_to_scene = true
@@ -118,13 +119,20 @@ body = NodePath("..")
 [node name="InputComponent" parent="." unique_id=1492055703 instance=ExtResource("19_uxqiu")]
 
 [node name="ProjectileComponent" parent="." unique_id=1116719074 instance=ExtResource("19_o3dgs")]
-debugMode = true
 
 [node name="StartMarker" parent="ProjectileComponent" index="0" unique_id=1932518886]
 position = Vector2(23, -25)
 
+[node name="Sprite2D" type="Sprite2D" parent="ProjectileComponent/StartMarker" index="0" unique_id=2076818877]
+visible = false
+texture = ExtResource("20_o788n")
+
 [node name="TargetMarker" parent="ProjectileComponent" index="1" unique_id=40935400]
 position = Vector2(156, -25)
+
+[node name="Sprite2D" type="Sprite2D" parent="ProjectileComponent/TargetMarker" index="0" unique_id=1747739697]
+visible = false
+texture = ExtResource("20_o788n")
 
 [editable path="ASCComponent"]
 [editable path="ProjectileComponent"]

@@ -137,7 +137,6 @@ func requestProjectile(customTarget: Node2D = null) -> bool:
 	# Step 5: 获取回调策略
 	# -------------------------------------------------------------------------
 	var callbacks: ProjectileCallbackStrategy = callbackStrategy if callbackStrategy else null
-
 	# 如果没有设置策略，使用空 Callable
 	var moveMethod: Callable = Callable(callbacks, "onMove") if callbacks else Callable()
 	var startMethod: Callable = Callable(callbacks, "onStart") if callbacks else Callable()
@@ -149,9 +148,7 @@ func requestProjectile(customTarget: Node2D = null) -> bool:
 	var mainEnterMethod: Callable = Callable(callbacks, "onMainEnter") if callbacks else Callable()
 	var recoveryEnterMethod: Callable = Callable(callbacks, "onRecoveryEnter") if callbacks else Callable()
 	var completedMethod: Callable = Callable(callbacks, "onCompleted") if callbacks else Callable()
-
-	printDebug("开始发射 - attackIndex: %d, projectileIndex: %d" % [attackIndex, projectileIndex])
-	printDebug("startPosition: %s, targetPosition: %s" % [startPosition, targetPosition])
+	printDebug("开始发射 - attackIndex: %d, projectileIndex: %d, startPosition: %s, targetPosition: %s" % [attackIndex, projectileIndex, startPosition, targetPosition])
 
 	# -------------------------------------------------------------------------
 	# Step 6: 调用 GlobalArbitraryArmory 发射投射物
