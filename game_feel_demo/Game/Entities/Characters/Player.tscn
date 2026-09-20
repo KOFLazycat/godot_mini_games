@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://bgfxxe60d72c0" path="res://Components/Visual/HealthVisualComponent.tscn" id="7_vwwba"]
 [ext_resource type="Resource" uid="uid://dbj58io8tx3b7" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballCooldown.tres" id="8_4xwc4"]
 [ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="8_c1fih"]
+[ext_resource type="PackedScene" uid="uid://ettfulbm7ww8" path="res://Game/Components/Gameplay/ASCComponent.tscn" id="12_u114y"]
 [ext_resource type="PackedScene" uid="uid://bck0vjn8mg1aw" path="res://Components/Control/JumpComponent.tscn" id="13_768mk"]
 [ext_resource type="PackedScene" uid="uid://bv4nl55gi16vx" path="res://Components/Physics/PlatformerPhysicsComponent.tscn" id="14_5j705"]
 [ext_resource type="Script" uid="uid://cbrvrpcenj2cn" path="res://addons/GodotGAS/components/ability_system_component.gd" id="14_o788n"]
@@ -92,10 +93,13 @@ metadata/_custom_type_script = "uid://cbrvrpcenj2cn"
 script = ExtResource("6_pxlx4")
 damage_effect = ExtResource("7_4xwc4")
 ability_name = "Fireball"
-ability_tag = &"Example.Ability.Fireball.Impact"
+ability_tag = &"Example.Ability.Fireball.Shoot"
 cost_effect = ExtResource("7_4p0sd")
 cooldown_effect = ExtResource("8_4xwc4")
 metadata/_custom_type_script = "uid://cbuvl1wjg3h7u"
+
+[node name="ASCComponent" parent="." unique_id=414950625 node_paths=PackedStringArray("asc") instance=ExtResource("12_u114y")]
+asc = NodePath("../AbilitySystemComponent")
 
 [node name="StatsComponent" parent="." unique_id=922307392 instance=ExtResource("4_ynnmr")]
 stats = Array[ExtResource("5_xnmml")]([SubResource("Resource_cei4g"), SubResource("Resource_puhqw"), SubResource("Resource_kl6l5")])

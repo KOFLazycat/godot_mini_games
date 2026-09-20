@@ -11,6 +11,12 @@ extends Component
 		if newValue != isEnabled:
 			isEnabled = newValue
 			self.set_process(isEnabled) # PERFORMANCE: Set once instead of every frame
+## 当前实体所携带的 AbilitySystemComponent
+@export var asc: AbilitySystemComponent:
+	get:
+		if asc == null:
+			asc = entity.findFirstChildOfType(AbilitySystemComponent)
+		return asc
 #endregion
 
 
@@ -25,8 +31,6 @@ extends Component
 #region Dependencies
 # WARNING: "Memoization" (caching the reference) may cause bugs if a component is removed from the entity later.
 
-@onready var abilityAystemComponent: AbilitySystemComponent = $AbilitySystemComponent
-
 ## Returns a list of required component types that this component depends on.
 func getRequiredComponents() -> Array[Script]:
 	return []
@@ -37,6 +41,9 @@ func getRequiredComponents() -> Array[Script]:
 func _ready() -> void:
 	# PLACEHOLDER: Add any code needed to configure and prepare the component.
 	# Apply setters because Godot doesn't on _ready()
+	if asc == null:
+		printError("AbilitySystemComponent 缺失，组件无法正常工作")
+		isEnabled = false
 	self.set_process(isEnabled)
 
 

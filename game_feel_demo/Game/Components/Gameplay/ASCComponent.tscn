@@ -1,12 +1,7 @@
 [gd_scene format=3 uid="uid://ettfulbm7ww8"]
 
 [ext_resource type="Script" uid="uid://c2cqsaijw2egd" path="res://Game/Components/Gameplay/ASCComponent.gd" id="1_es3dm"]
-[ext_resource type="Script" uid="uid://cbrvrpcenj2cn" path="res://addons/GodotGAS/components/ability_system_component.gd" id="2_psjgk"]
 
 [node name="ASCComponent" type="Node2D" unique_id=414950625 groups=["components"]]
 script = ExtResource("1_es3dm")
 metadata/_edit_group_ = true
-
-[node name="AbilitySystemComponent" type="Node" parent="." unique_id=914177293]
-script = ExtResource("2_psjgk")
-metadata/_custom_type_script = "uid://cbrvrpcenj2cn"

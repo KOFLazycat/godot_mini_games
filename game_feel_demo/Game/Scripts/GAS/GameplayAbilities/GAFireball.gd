@@ -9,6 +9,8 @@ func _activate_ability() -> bool:
 	# 1. Pay the mana cost and trigger the cooldown automatically
 	commit_ability()
 	
+	prints("AAAAAAAAAAAAAAAAAA")
+	
 	# 2. Trigger the casting audio/visuals via the Cue Manager
 	#execute_cue(GameplayTags.Example_Cue_Vfx_Fireball_Impact)
 	
