@@ -21,6 +21,7 @@ const Example_Event_Damage_Critical: StringName = &"Example.Event.Damage.Critica
 const Example_Event_Damage_Missed: StringName = &"Example.Event.Damage.Missed"
 const Example_Event_Damage_Normal: StringName = &"Example.Event.Damage.Normal"
 const Example_Event_Defend_Hit: StringName = &"Example.Event.Defend.Hit"
+const Example_Event_Fireball_Shoot: StringName = &"Example.Event.Fireball.Shoot"
 const Example_State_Cooldown_Arrow: StringName = &"Example.State.Cooldown.Arrow"
 const Example_State_Cooldown_Fireball: StringName = &"Example.State.Cooldown.Fireball"
 const Example_State_Cooldown_Poison: StringName = &"Example.State.Cooldown.Poison"

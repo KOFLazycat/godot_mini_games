@@ -5,3 +5,5 @@
 [node name="ASCComponent" type="Node2D" unique_id=414950625 groups=["components"]]
 script = ExtResource("1_es3dm")
 metadata/_edit_group_ = true
+
+[node name="Timer" type="Timer" parent="." unique_id=314741740]

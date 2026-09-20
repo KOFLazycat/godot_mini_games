@@ -7,11 +7,8 @@
 [ext_resource type="Script" uid="uid://c2pcgnmwpfmn4" path="res://Game/Resources/GodotGas/attributes/example_attribute_set_attribute_set.gd" id="5_pxlx4"]
 [ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="5_xnmml"]
 [ext_resource type="PackedScene" uid="uid://cnu5f0ycxgu8d" path="res://Components/Combat/HealthComponent.tscn" id="6_e1g27"]
-[ext_resource type="Script" uid="uid://cbuvl1wjg3h7u" path="res://Game/Scripts/GAS/GameplayAbilities/GAFireball.gd" id="6_pxlx4"]
-[ext_resource type="Resource" uid="uid://nxku24ofn70s" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballCost.tres" id="7_4p0sd"]
-[ext_resource type="Resource" uid="uid://bve530dnyimdq" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballDamage.tres" id="7_4xwc4"]
+[ext_resource type="PackedScene" uid="uid://dfd2rww8n067c" path="res://Game/Scenes/GAS/GameplayAbilities/GAbilityFireball.tscn" id="7_4xwc4"]
 [ext_resource type="PackedScene" uid="uid://bgfxxe60d72c0" path="res://Components/Visual/HealthVisualComponent.tscn" id="7_vwwba"]
-[ext_resource type="Resource" uid="uid://dbj58io8tx3b7" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballCooldown.tres" id="8_4xwc4"]
 [ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="8_c1fih"]
 [ext_resource type="PackedScene" uid="uid://ettfulbm7ww8" path="res://Game/Components/Gameplay/ASCComponent.tscn" id="12_u114y"]
 [ext_resource type="PackedScene" uid="uid://bck0vjn8mg1aw" path="res://Components/Control/JumpComponent.tscn" id="13_768mk"]
@@ -87,19 +84,12 @@ texture = ExtResource("2_o788n")
 [node name="AbilitySystemComponent" type="Node" parent="." unique_id=1265606891]
 script = ExtResource("14_o788n")
 attribute_sets = Array[ExtResource("4_wrke2")]([SubResource("Resource_u114y")])
+debug_signal_log = true
 metadata/_custom_type_script = "uid://cbrvrpcenj2cn"
-
-[node name="GAFireball" type="Node" parent="AbilitySystemComponent" unique_id=1296410427]
-script = ExtResource("6_pxlx4")
-damage_effect = ExtResource("7_4xwc4")
-ability_name = "Fireball"
-ability_tag = &"Example.Ability.Fireball.Shoot"
-cost_effect = ExtResource("7_4p0sd")
-cooldown_effect = ExtResource("8_4xwc4")
-metadata/_custom_type_script = "uid://cbuvl1wjg3h7u"
 
 [node name="ASCComponent" parent="." unique_id=414950625 node_paths=PackedStringArray("asc") instance=ExtResource("12_u114y")]
 asc = NodePath("../AbilitySystemComponent")
+baseAblityScenes = Array[PackedScene]([ExtResource("7_4xwc4")])
 
 [node name="StatsComponent" parent="." unique_id=922307392 instance=ExtResource("4_ynnmr")]
 stats = Array[ExtResource("5_xnmml")]([SubResource("Resource_cei4g"), SubResource("Resource_puhqw"), SubResource("Resource_kl6l5")])

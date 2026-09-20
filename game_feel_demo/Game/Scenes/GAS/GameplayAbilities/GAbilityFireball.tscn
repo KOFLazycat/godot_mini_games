@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://dfd2rww8n067c"]
+
+[ext_resource type="Script" uid="uid://cbuvl1wjg3h7u" path="res://Game/Scenes/GAS/GameplayAbilities/GAbilityFireball.gd" id="1_fqkn6"]
+[ext_resource type="Resource" uid="uid://bve530dnyimdq" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballDamage.tres" id="2_fd4nu"]
+[ext_resource type="Resource" uid="uid://nxku24ofn70s" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballCost.tres" id="3_nflwv"]
+[ext_resource type="Resource" uid="uid://dbj58io8tx3b7" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballCooldown.tres" id="4_w7frb"]
+
+[node name="GAbilityFireball" type="Node" unique_id=1956526492]
+script = ExtResource("1_fqkn6")
+damage_effect = ExtResource("2_fd4nu")
+ability_name = "Fireball"
+ability_tag = &"Example.Ability.Fireball.Shoot"
+cost_effect = ExtResource("3_nflwv")
+cooldown_effect = ExtResource("4_w7frb")
+trigger_event_tag = &"Example.Event.Fireball.Shoot"
+metadata/_custom_type_script = "uid://cbuvl1wjg3h7u"

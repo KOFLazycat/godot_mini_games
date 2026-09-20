@@ -1,4 +1,4 @@
-class_name GAFireball
+class_name GAbilityFireball
 extends GameplayAbility
 
 

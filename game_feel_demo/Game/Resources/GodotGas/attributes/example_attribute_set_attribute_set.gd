@@ -9,7 +9,7 @@ class_name ExampleAttributeSetAttributeSet extends AttributeSet
 
 var health: AttributeData = AttributeData.new(100.0)
 var max_health: AttributeData = AttributeData.new(100.0)
-var min_health: AttributeData = AttributeData.new(10.0)
+var min_health: AttributeData = AttributeData.new(0.0)
 var damage: AttributeData = AttributeData.new(10.0)
 
 
