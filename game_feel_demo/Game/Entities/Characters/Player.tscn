@@ -13,9 +13,9 @@
 [ext_resource type="PackedScene" uid="uid://bgfxxe60d72c0" path="res://Components/Visual/HealthVisualComponent.tscn" id="7_vwwba"]
 [ext_resource type="Resource" uid="uid://dbj58io8tx3b7" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballCooldown.tres" id="8_4xwc4"]
 [ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="8_c1fih"]
-[ext_resource type="PackedScene" uid="uid://ettfulbm7ww8" path="res://Game/Components/Gameplay/ASCComponent.tscn" id="12_u114y"]
 [ext_resource type="PackedScene" uid="uid://bck0vjn8mg1aw" path="res://Components/Control/JumpComponent.tscn" id="13_768mk"]
 [ext_resource type="PackedScene" uid="uid://bv4nl55gi16vx" path="res://Components/Physics/PlatformerPhysicsComponent.tscn" id="14_5j705"]
+[ext_resource type="Script" uid="uid://cbrvrpcenj2cn" path="res://addons/GodotGAS/components/ability_system_component.gd" id="14_o788n"]
 [ext_resource type="PackedScene" uid="uid://dn7cpj4u7w1jy" path="res://Components/Physics/CharacterBodyComponent.tscn" id="17_3l1gc"]
 [ext_resource type="PackedScene" uid="uid://dfbbj20cgb7r1" path="res://Game/Components/Combat/ProjectileComponent.tscn" id="19_o3dgs"]
 [ext_resource type="PackedScene" uid="uid://cdq0dcwhcrm5p" path="res://Components/Control/InputComponent.tscn" id="19_uxqiu"]
@@ -83,13 +83,12 @@ position = Vector2(10.000001, -5.0000005)
 scale = Vector2(0.4, 0.05)
 texture = ExtResource("2_o788n")
 
-[node name="ASCComponent" parent="." unique_id=534797182 instance=ExtResource("12_u114y")]
-position = Vector2(0, -19)
-
-[node name="AbilitySystemComponent" parent="ASCComponent" index="0" unique_id=914177293]
+[node name="AbilitySystemComponent" type="Node" parent="." unique_id=1265606891]
+script = ExtResource("14_o788n")
 attribute_sets = Array[ExtResource("4_wrke2")]([SubResource("Resource_u114y")])
+metadata/_custom_type_script = "uid://cbrvrpcenj2cn"
 
-[node name="GAFireball" type="Node" parent="ASCComponent/AbilitySystemComponent" index="0" unique_id=529245392]
+[node name="GAFireball" type="Node" parent="AbilitySystemComponent" unique_id=1296410427]
 script = ExtResource("6_pxlx4")
 damage_effect = ExtResource("7_4xwc4")
 ability_name = "Fireball"
@@ -134,5 +133,4 @@ position = Vector2(156, -25)
 visible = false
 texture = ExtResource("20_o788n")
 
-[editable path="ASCComponent"]
 [editable path="ProjectileComponent"]
