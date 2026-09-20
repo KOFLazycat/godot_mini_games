@@ -188,6 +188,7 @@ func requestProjectile(customTarget: Node2D = null) -> bool:
 
 func onInputComponent_didUpdateInputActionsList(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed(GlobalInput.Actions.fire):
-		requestProjectile()
+		#requestProjectile()
+		pass
 
 #endregion

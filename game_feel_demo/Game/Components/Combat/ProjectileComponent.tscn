@@ -1,9 +1,15 @@
 [gd_scene format=3 uid="uid://dfbbj20cgb7r1"]
 
 [ext_resource type="Script" uid="uid://dahqll13powm8" path="res://Game/Components/Combat/ProjectileComponent.gd" id="1_srw2e"]
+[ext_resource type="Script" uid="uid://pm4v2icmisac" path="res://Game/Scripts/Resources/ProjectileCallbackStrategies/ProjectileCallbackStrategy.gd" id="2_2qubj"]
+
+[sub_resource type="Resource" id="Resource_o3dgs"]
+script = ExtResource("2_2qubj")
+metadata/_custom_type_script = "uid://pm4v2icmisac"
 
 [node name="ProjectileComponent" type="Node2D" unique_id=1116719074 groups=["components"]]
 script = ExtResource("1_srw2e")
+callbackStrategy = SubResource("Resource_o3dgs")
 metadata/_edit_group_ = true
 
 [node name="StartMarker" type="Marker2D" parent="." unique_id=1932518886]
