@@ -46,31 +46,41 @@ extends Resource
 
 ## 过期场景键 - 投射物过期时显示的场景
 const GLOBAL_PROPERTIES_KEY_EXPIRED_SCENE = "ON_EXPIRED_PACKED_SCENE"
-
 ## 速度曲线键 - 控制投射物速度随时间变化（Curve 资源）
 const GLOBAL_PROPERTIES_KEY_SPEED_CURVE = "SPEED_CURVE"
-
 ## 碰撞音效键 - 投射物击中目标时播放的音效
 const GLOBAL_PROPERTIES_KEY_COLLISION_AUDIO: String = "COLLISION_AUDIO"
-
 ## 伤害音效键 - 造成伤害时播放的音效
 const GLOBAL_PROPERTIES_KEY_DAMAGE_AUDIO: String = "DAMAGE_AUDIO"
-
 ## 暴击音效键 - 暴击时播放的音效
 const GLOBAL_PROPERTIES_KEY_CRIT_AUDIO: String = "CRIT_AUDIO"
-
 ## 闪避音效键 - 闪避时播放的音效
 const GLOBAL_PROPERTIES_KEY_DODGE_AUDIO: String = "DODGE_AUDIO"
-
 ## 过期音效键 - 投射物过期消失时播放的音效
 const GLOBAL_PROPERTIES_KEY_EXPIRED_AUDIO: String = "EXPIRED_AUDIO"
-
 ## 释放音效键 - 攻击释放/发射时播放的音效
 const GLOBAL_PROPERTIES_KEY_RELEASE_AUDIO: String = "RELEASE_AUDIO"
-
 ## 蓄力音效键 - 攻击蓄力时播放的音效
 const GLOBAL_PROPERTIES_KEY_CHARGE_AUDIO: String = "CHARGE_AUDIO"
 
+## ============================================================================
+## 常量定义 - 私有属性键
+## 用于在投射物/攻击的 individual_properties 中存储配置
+## ============================================================================
+
+## 投射物关联的能力
+const INDIVIDUAL_PROPERTIES_KEY_GABILITY = "GABILITY"
+## 投射物对目标施加的效果
+const INDIVIDUAL_PROPERTIES_KEY_GEFFECTS = "GEFFECTS"
+## 目标数据
+const INDIVIDUAL_PROPERTIES_KEY_TARGETDATA = "TARGETDATA"
+
+#endregion
+
+
+#region State
+var gability: GameplayAbility
+var geffects: Array[GameplayEffect]
 #endregion
 
 
@@ -87,7 +97,8 @@ const GLOBAL_PROPERTIES_KEY_CHARGE_AUDIO: String = "CHARGE_AUDIO"
 ##
 ## @param proj - 投射物实例
 func onStart(proj: Projectile2D) -> void:
-	pass
+	proj.individual_properties.set(INDIVIDUAL_PROPERTIES_KEY_GABILITY, gability)
+	proj.individual_properties.set(INDIVIDUAL_PROPERTIES_KEY_GEFFECTS, geffects)
 
 
 ## 投射物每帧移动回调
@@ -133,6 +144,26 @@ func onCollision(proj: Projectile2D, areaRid: RID, areaNode: Node2D, targetNode:
 	## 验证碰撞是否有效
 	if not proj.validate_collision(areaRid, targetNode):
 		return
+	
+	## 查询碰撞结果
+	var query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(proj.position - (proj.direction * 10), targetNode.global_position, proj.collision_mask)
+	query.collide_with_areas = true
+	var result: Dictionary = proj.current_space.intersect_ray(query)
+	if not result.is_empty():
+		var collider: HurtBoxComponent = result["collider"] as HurtBoxComponent
+		if collider:
+			var colliderEntity: Entity = collider.entity
+			if colliderEntity:
+				# 找到真正的collider实体
+				result["collider"] = colliderEntity
+				var targetData: GameplayAbilityTargetData = GameplayAbilityTargetData.new()
+				targetData.append_physics_hit(result)
+				proj.individual_properties.set(INDIVIDUAL_PROPERTIES_KEY_TARGETDATA, targetData)
+		## 弹射逻辑
+		#var prev: float = proj.direction.angle()
+		#proj.direction = proj.direction.bounce(result.normal)
+		#if (proj.look_at):
+			#proj.transform = proj.transform.rotated(proj.direction.angle() - prev)
 
 	## 调用目标的受击方法
 	if targetNode.has_method(proj.on_hit_call):

@@ -205,12 +205,12 @@ tile_set = SubResource("TileSet_kipt4")
 [node name="PlayerLayer" type="CanvasLayer" parent="." unique_id=66073999]
 
 [node name="Player" parent="PlayerLayer" unique_id=1971183666 instance=ExtResource("10_wnpya")]
-position = Vector2(458, 68)
+position = Vector2(146, 140)
 
 [node name="EnemyLayer" type="CanvasLayer" parent="." unique_id=325388218]
 
 [node name="Monster" parent="EnemyLayer" unique_id=1245323086 instance=ExtResource("11_wnpya")]
-position = Vector2(254, 131)
+position = Vector2(275, 147)
 
 [node name="VFXLayer" type="CanvasLayer" parent="." unique_id=1307355224]
 

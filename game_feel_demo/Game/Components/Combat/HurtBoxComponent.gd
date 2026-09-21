@@ -196,9 +196,16 @@ func _getHitBoxComponent(area: Area2D) -> HitBoxComponent:
 
 ## all_projectile 插件碰撞后的回调函数
 func onHitWithProjectile(proj: Projectile2D) -> void:
-	var targetData: GameplayAbilityTargetData = GameplayAbilityTargetData.new()
-	targetData.append_node(entity)
-	if GlobalArbitraryArmory.tmpAbility and GlobalArbitraryArmory.tmpEffect:
-		GlobalArbitraryArmory.tmpAbility.apply_effect_to_targets(GlobalArbitraryArmory.tmpEffect, targetData)
+	var gability: GameplayAbility = proj.individual_properties.get(ProjectileCallbackStrategy.INDIVIDUAL_PROPERTIES_KEY_GABILITY, null)
+	var geffects: Array[GameplayEffect] = proj.individual_properties.get(ProjectileCallbackStrategy.INDIVIDUAL_PROPERTIES_KEY_GEFFECTS, [])
+	var targetData: GameplayAbilityTargetData = proj.individual_properties.get(ProjectileCallbackStrategy.INDIVIDUAL_PROPERTIES_KEY_TARGETDATA, null)
+	
+	if gability == null or geffects.is_empty() or targetData == null:
+		printError("onHitWithProjectile 回调失败，gability: %s, geffects: %s, targetData: %s" % [gability, geffects, targetData])
+	else:
+		for ge: GameplayEffect in geffects:
+			if ge:
+				gability.apply_effect_to_targets(ge, targetData)
+
 	printDebug("Hit By Projectile: %s" % [proj])
 	didHitWithProjectile.emit(proj)

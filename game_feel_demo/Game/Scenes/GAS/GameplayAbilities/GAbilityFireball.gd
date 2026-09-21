@@ -17,9 +17,7 @@ func _activate_ability() -> bool:
 	var projectileComponent: ProjectileComponent = ownerEntity.getComponent(ProjectileComponent)
 	if projectileComponent == null:
 		return false
-	GlobalArbitraryArmory.tmpAbility = self
-	GlobalArbitraryArmory.tmpEffect = damageEffect
-	projectileComponent.requestProjectile()
+	projectileComponent.requestProjectile(null, self, [damageEffect])
 	#
 	## Pass the ability reference and the damage data down to the fireball
 	#fireball.setup(self, damage_effect) 

@@ -86,8 +86,10 @@ func _ready() -> void:
 ## 3. 调用 requestProjectile() 发射
 ##
 ## @param customTarget - 可选的自定义目标节点，优先级高于 targetNode
+## @param gability - 发射投射物的能力节点
+## @param geffects - 投射物对碰撞对象施加的效果集，注意碰撞对象与投射目标不一定一致
 ## @return - 发射成功返回 true
-func requestProjectile(customTarget: Node2D = null) -> bool:
+func requestProjectile(customTarget: Node2D = null, gability: GameplayAbility = null, geffects: Array[GameplayEffect] = []) -> bool:
 	# -------------------------------------------------------------------------
 	# Step 1: 参数验证
 	# -------------------------------------------------------------------------
@@ -137,6 +139,8 @@ func requestProjectile(customTarget: Node2D = null) -> bool:
 	# Step 5: 获取回调策略
 	# -------------------------------------------------------------------------
 	var callbacks: ProjectileCallbackStrategy = callbackStrategy if callbackStrategy else null
+	callbacks.gability = gability
+	callbacks.geffects = geffects
 	# 如果没有设置策略，使用空 Callable
 	var moveMethod: Callable = Callable(callbacks, "onMove") if callbacks else Callable()
 	var startMethod: Callable = Callable(callbacks, "onStart") if callbacks else Callable()
