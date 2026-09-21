@@ -146,7 +146,14 @@ func onCollision(proj: Projectile2D, areaRid: RID, areaNode: Node2D, targetNode:
 		return
 	
 	## 查询碰撞结果
-	var query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(proj.position - (proj.direction * 10), targetNode.global_position, proj.collision_mask)
+	## 方案2：射线起点向外偏移，确保在碰撞体外部
+	## 当投射物在目标碰撞体内部时，原方案(起点 -direction * 10)可能仍在碰撞体内部，导致射线查询返回null
+	var toTarget: Vector2 = targetNode.global_position - proj.position
+	var distance: float = toTarget.length()
+	## 起点向外偏移，确保在碰撞体外部（至少偏移50单位）
+	var fromPos: Vector2 = proj.position - toTarget.normalized() * max(distance + 50, 50)
+
+	var query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(fromPos, targetNode.global_position, proj.collision_mask)
 	query.collide_with_areas = true
 	var result: Dictionary = proj.current_space.intersect_ray(query)
 	if not result.is_empty():
