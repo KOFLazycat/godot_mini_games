@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://dlg4coj47rhnr" path="res://Game/Assets/Images/Backgrounds/Layers/6.png" id="7_xks64"]
 [ext_resource type="Texture2D" uid="uid://cnrpiif36yor5" path="res://Game/Assets/Images/Backgrounds/Layers/7.png" id="8_js0kk"]
 [ext_resource type="PackedScene" uid="uid://byafgqlqhxfpg" path="res://Game/Entities/Characters/Player.tscn" id="10_wnpya"]
-[ext_resource type="PackedScene" uid="uid://h3pbo0mlj4je" path="res://Templates/Entities/MonsterEntityTemplate-Platformer.tscn" id="11_xnwt5"]
+[ext_resource type="PackedScene" uid="uid://clmw160jj7t4k" path="res://Game/Entities/Characters/Monster.tscn" id="11_wnpya"]
 [ext_resource type="PackedScene" uid="uid://convttrcwh6rm" path="res://Templates/HUDTemplate.tscn" id="12_pebv2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4ltid"]
@@ -209,8 +209,8 @@ position = Vector2(458, 68)
 
 [node name="EnemyLayer" type="CanvasLayer" parent="." unique_id=325388218]
 
-[node name="MonsterEntity" parent="EnemyLayer" unique_id=1245323086 instance=ExtResource("11_xnwt5")]
-position = Vector2(259, 119)
+[node name="Monster" parent="EnemyLayer" unique_id=1245323086 instance=ExtResource("11_wnpya")]
+position = Vector2(254, 131)
 
 [node name="VFXLayer" type="CanvasLayer" parent="." unique_id=1307355224]
 

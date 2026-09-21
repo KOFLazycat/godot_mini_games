@@ -1,7 +1,7 @@
 class_name GAbilityFireball
 extends GameplayAbility
 
-@export var damage_effect: GameplayEffect
+@export var damageEffect: GameplayEffect
 
 func _activate_ability() -> bool:
 	# 1. Pay the mana cost and trigger the cooldown automatically
@@ -17,6 +17,8 @@ func _activate_ability() -> bool:
 	var projectileComponent: ProjectileComponent = ownerEntity.getComponent(ProjectileComponent)
 	if projectileComponent == null:
 		return false
+	GlobalArbitraryArmory.tmpAbility = self
+	GlobalArbitraryArmory.tmpEffect = damageEffect
 	projectileComponent.requestProjectile()
 	#
 	## Pass the ability reference and the damage data down to the fireball

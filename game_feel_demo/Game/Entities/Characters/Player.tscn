@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bg67mujwa8kq1" path="res://Assets/Images/Solid32.png" id="2_o788n"]
 [ext_resource type="Script" uid="uid://bhr4dsrpc4jw8" path="res://addons/GodotGAS/attributes/attribute_set.gd" id="4_wrke2"]
 [ext_resource type="PackedScene" uid="uid://d06m60dgdv8ui" path="res://Components/Data/StatsComponent.tscn" id="4_ynnmr"]
-[ext_resource type="Script" uid="uid://c2pcgnmwpfmn4" path="res://Game/Resources/GodotGas/attributes/example_attribute_set_attribute_set.gd" id="5_pxlx4"]
+[ext_resource type="Script" uid="uid://dhp2bvi0ikx77" path="res://Game/Resources/GodotGas/attributes/base_attribute_set.gd" id="5_4xwc4"]
 [ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="5_xnmml"]
 [ext_resource type="PackedScene" uid="uid://cnu5f0ycxgu8d" path="res://Components/Combat/HealthComponent.tscn" id="6_e1g27"]
 [ext_resource type="PackedScene" uid="uid://dfd2rww8n067c" path="res://Game/Scenes/GAS/GameplayAbilities/GAbilityFireball.tscn" id="7_4xwc4"]
@@ -23,9 +23,9 @@
 resource_local_to_scene = true
 size = Vector2(24, 36)
 
-[sub_resource type="Resource" id="Resource_u114y"]
-script = ExtResource("5_pxlx4")
-metadata/_custom_type_script = "uid://c2pcgnmwpfmn4"
+[sub_resource type="Resource" id="Resource_nkbvq"]
+script = ExtResource("5_4xwc4")
+metadata/_custom_type_script = "uid://dhp2bvi0ikx77"
 
 [sub_resource type="Resource" id="Resource_cei4g"]
 resource_name = "health"
@@ -83,7 +83,7 @@ texture = ExtResource("2_o788n")
 
 [node name="AbilitySystemComponent" type="Node" parent="." unique_id=1265606891]
 script = ExtResource("14_o788n")
-attribute_sets = Array[ExtResource("4_wrke2")]([SubResource("Resource_u114y")])
+attribute_sets = Array[ExtResource("4_wrke2")]([SubResource("Resource_nkbvq")])
 debug_signal_log = true
 metadata/_custom_type_script = "uid://cbrvrpcenj2cn"
 

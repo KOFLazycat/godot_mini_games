@@ -8,5 +8,5 @@
 script = ExtResource("3_iisp2")
 policy = 1
 duration = 5.0
-granted_tags = Array[StringName]([&"Example.State.Cooldown.Fireball"])
+granted_tags = Array[StringName]([&"State.Cooldown.Fireball"])
 metadata/_custom_type_script = "uid://c81papidngxvg"

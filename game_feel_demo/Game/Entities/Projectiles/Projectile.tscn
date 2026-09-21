@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://nvr4ien3uh8t"]
 
-[ext_resource type="Script" uid="uid://b3tgnb1y0hgk1" path="res://Entities/Entity.gd" id="1_hmmum"]
-[ext_resource type="PackedScene" uid="uid://wvpl3yaprvc5" path="res://Game/Components/Combat/HitBoxComponent.tscn" id="2_p4hfu"]
-[ext_resource type="Texture2D" uid="uid://bahr7m3dk2pq3" path="res://addons/all_projectiles/icons/Circle.png" id="3_k08it"]
-[ext_resource type="Texture2D" uid="uid://dndhi304035x0" path="res://addons/all_projectiles/demos/textures/projectiles/circle_05.png" id="4_0cxnd"]
+[ext_resource type="Script" uid="uid://b3tgnb1y0hgk1" path="res://Entities/Entity.gd" id="1_6ub84"]
+[ext_resource type="Texture2D" uid="uid://bahr7m3dk2pq3" path="res://addons/all_projectiles/icons/Circle.png" id="2_omguh"]
+[ext_resource type="Texture2D" uid="uid://dndhi304035x0" path="res://addons/all_projectiles/demos/textures/projectiles/circle_05.png" id="3_qk2mn"]
+[ext_resource type="PackedScene" uid="uid://wvpl3yaprvc5" path="res://Game/Components/Combat/HitBoxComponent.tscn" id="4_iy75c"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_vunnu"]
 
@@ -26,8 +26,8 @@ point_count = 2
 offsets = PackedFloat32Array(0, 0.151832, 0.659686, 0.769634, 1)
 colors = PackedColorArray(0.635543, 0.733178, 1, 0, 0.278431, 1, 0.929412, 1, 0.224006, 0.493954, 0.899099, 1, 0.0709259, 0.210945, 0.390208, 0.676923, 0.0273626, 0.226981, 0.368344, 0)
 
-[node name="ProjectileEntity" type="Node2D" unique_id=464733286 node_paths=PackedStringArray("sprite") groups=["entities", "interactions"]]
-script = ExtResource("1_hmmum")
+[node name="Projectile" type="Node2D" unique_id=464733286 node_paths=PackedStringArray("sprite") groups=["entities", "interactions"]]
+script = ExtResource("1_6ub84")
 sprite = NodePath("BodySprite/Head/Sprite2D")
 isLoggingEnabled = false
 metadata/_edit_group_ = true
@@ -50,7 +50,7 @@ scale = Vector2(0.5, 0.5)
 [node name="Bubbling" type="CPUParticles2D" parent="Particles" unique_id=437693562]
 material = SubResource("CanvasItemMaterial_vunnu")
 amount = 50
-texture = ExtResource("3_k08it")
+texture = ExtResource("2_omguh")
 lifetime = 3.5
 preprocess = 1.0
 speed_scale = 5.0
@@ -80,7 +80,7 @@ hue_variation_max = 0.32
 [node name="Light" type="CPUParticles2D" parent="Particles" unique_id=1939098706]
 material = SubResource("CanvasItemMaterial_h0bpq")
 amount = 20
-texture = ExtResource("4_0cxnd")
+texture = ExtResource("3_qk2mn")
 lifetime = 3.0
 preprocess = 3.0
 fixed_fps = 30
@@ -103,7 +103,8 @@ color_ramp = SubResource("Gradient_wof87")
 
 [node name="MainAnimationPlayer" type="AnimationPlayer" parent="Animations" unique_id=1177871904]
 
-[node name="HitBoxComponent" parent="." unique_id=662325706 instance=ExtResource("2_p4hfu")]
+[node name="HitBoxComponent" parent="." unique_id=662325706 instance=ExtResource("4_iy75c")]
+debugMode = true
 
 [node name="CollisionShape2D" parent="HitBoxComponent" index="0" unique_id=1283097502]
 visible = true

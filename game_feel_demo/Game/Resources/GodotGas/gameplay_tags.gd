@@ -9,6 +9,7 @@
 @tool
 class_name GameplayTags
 
+const Ability_Attack_Fireball: StringName = &"Ability.Attack.Fireball"
 const Example_Ability_Arrow_Impact: StringName = &"Example.Ability.Arrow.Impact"
 const Example_Ability_Arrow_Shoot: StringName = &"Example.Ability.Arrow.Shoot"
 const Example_Ability_Fireball_Impact: StringName = &"Example.Ability.Fireball.Impact"
@@ -25,3 +26,4 @@ const Example_Event_Fireball_Shoot: StringName = &"Example.Event.Fireball.Shoot"
 const Example_State_Cooldown_Arrow: StringName = &"Example.State.Cooldown.Arrow"
 const Example_State_Cooldown_Fireball: StringName = &"Example.State.Cooldown.Fireball"
 const Example_State_Cooldown_Poison: StringName = &"Example.State.Cooldown.Poison"
+const State_Cooldown_Fireball: StringName = &"State.Cooldown.Fireball"

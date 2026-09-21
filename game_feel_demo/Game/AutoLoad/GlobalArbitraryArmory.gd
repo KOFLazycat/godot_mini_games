@@ -30,6 +30,9 @@ extends Node2D
 ## 从子节点获取 ProjectileManager2D 实例
 @onready var projectileManager: ProjectileManager2D = $ProjectileManager2D
 
+var tmpAbility: GameplayAbility
+var tmpEffect: GameplayEffect
+
 
 # ============================================================================
 # 生命周期方法

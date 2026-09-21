@@ -19,7 +19,7 @@
 ## - HitBoxComponent 是"主动"检测方
 ## - 通过 Area2D 的 area_entered/area_exited 信号检测碰撞
 ##=================================================================================================
-
+@icon("res://addons/at-icons/node2d/out_of_bounds.svg")
 # meta-default: true
 
 class_name HurtBoxComponent
@@ -196,4 +196,9 @@ func _getHitBoxComponent(area: Area2D) -> HitBoxComponent:
 
 ## all_projectile 插件碰撞后的回调函数
 func onHitWithProjectile(proj: Projectile2D) -> void:
+	var targetData: GameplayAbilityTargetData = GameplayAbilityTargetData.new()
+	targetData.append_node(entity)
+	if GlobalArbitraryArmory.tmpAbility and GlobalArbitraryArmory.tmpEffect:
+		GlobalArbitraryArmory.tmpAbility.apply_effect_to_targets(GlobalArbitraryArmory.tmpEffect, targetData)
+	printDebug("Hit By Projectile: %s" % [proj])
 	didHitWithProjectile.emit(proj)

@@ -19,7 +19,7 @@
 ## - HurtBoxComponent 是"被动"接收方
 ## - 通过 Area2D 的 area_entered/area_exited 信号检测碰撞
 ##=================================================================================================
-
+@icon("res://addons/at-icons/node2d/swords.svg")
 # meta-default: true
 
 class_name HitBoxComponent
