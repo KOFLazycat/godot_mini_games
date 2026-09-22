@@ -211,6 +211,18 @@ func onCollision(proj: Projectile2D, areaRid: RID, areaNode: Node2D, targetNode:
 
 	## 处理穿透逻辑
 	proj.on_pierced(areaRid)
+	
+	var instancedProj: InstancedProjectile2D = proj as InstancedProjectile2D
+	if instancedProj:
+		## 获取爆炸场景并实例化
+		var blastScene: PackedScene = proj.global_properties.get(GLOBAL_PROPERTIES_KEY_EXPIRED_PACKED_SCENE)
+		if (blastScene != null):
+			var blast: TimedParticleBase = blastScene.instantiate()
+			blast.transform = proj.transform
+			blast.timeToFree = 0.5
+			instancedProj.current_scene.add_child(blast)
+			## 自动释放爆炸效果
+			blast.startParticles()
 
 	## 播放碰撞音效
 	var collisionAudio: ListSoundResource = proj.global_properties.get(GLOBAL_PROPERTIES_KEY_COLLISION_AUDIO, null)
