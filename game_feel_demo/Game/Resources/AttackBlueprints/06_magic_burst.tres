@@ -6,10 +6,11 @@
 [resource]
 script = ExtResource("2_dk33d")
 name = &"MAGIC_BURST"
-attack_anticipate_time = 0.167
+attack_anticipate_time = 0.01
 attack_duration_time = 0.083
-attack_recovery_time = 0.167
-attack_charge_time = 0.251
+attack_recovery_time = 0.01
+override_position = true
+attack_charge_time = 0.01
 override_attack_duration = false
 global_properties = Dictionary[StringName, Variant]({
 &"RELEASE_AUDIO": ExtResource("1_d6p7g")

@@ -74,6 +74,10 @@ func _ready() -> void:
 	printDebug("ProjectileComponent 初始化完成 - attackIndex: %d, projectileIndex: %d" % [attackIndex, projectileIndex])
 
 
+func _physics_process(_delta: float) -> void:
+	GlobalArbitraryArmory.projectileManager.global_position = startMarker.global_position
+
+
 # ============================================================================
 # 投射物发射请求
 # ============================================================================
