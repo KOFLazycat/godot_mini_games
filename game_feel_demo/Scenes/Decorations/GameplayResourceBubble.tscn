@@ -26,9 +26,6 @@ size_flags_horizontal = 6
 theme_override_constants/h_separation = 0
 columns = 2
 
-[node name="Icon" parent="GameplayResourceUI" index="0" unique_id=38061192]
-visible = false
-
 [node name="Label" parent="GameplayResourceUI" index="1" unique_id=2033234159]
 label_settings = SubResource("LabelSettings_y46m7")
 

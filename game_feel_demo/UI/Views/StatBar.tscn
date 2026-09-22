@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://ce5c5eqoeiw0d" path="res://UI/Views/StatBar.gd" id="1_u04ku"]
 [ext_resource type="FontFile" uid="uid://wdvwb23naavb" path="res://Assets/Fonts/PixelOperatorMono8.ttf" id="3_r66j6"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_4n7uc"]
+[sub_resource type="LabelSettings" id="LabelSettings_r66j6"]
 resource_local_to_scene = true
 font = ExtResource("3_r66j6")
 font_size = 8
@@ -29,4 +29,4 @@ step = 1.0
 show_percentage = false
 
 [node name="Label" parent="." index="2" unique_id=1625132942]
-label_settings = SubResource("LabelSettings_4n7uc")
+label_settings = SubResource("LabelSettings_r66j6")

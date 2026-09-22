@@ -4,8 +4,15 @@
 [ext_resource type="Script" uid="uid://up6v8hd3samm" path="res://Components/Gameplay/AbilityReactionComponent.gd" id="2_buawl"]
 [ext_resource type="Script" uid="uid://dua4cd3nlawsb" path="res://Resources/Payloads/Payload.gd" id="3_ib5yy"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cocmd"]
+resource_local_to_scene = true
+size = Vector2(16, 16)
+
 [node name="AbilityReactionComponent" unique_id=1605715762 instance=ExtResource("1_cfycj")]
 editor_description = "A component that executes its own Payload when targeted by an Ability."
 script = ExtResource("2_buawl")
 reactionPayloads = Dictionary[StringName, ExtResource("3_ib5yy")]({})
 fallbackPayload = null
+
+[node name="CollisionShape2D" parent="." index="0" unique_id=986726483]
+shape = SubResource("RectangleShape2D_cocmd")

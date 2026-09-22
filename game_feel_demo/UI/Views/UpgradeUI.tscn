@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://bwceey4rmvjrq" path="res://UI/Views/UpgradeUI.gd" id="2_fhd43"]
 [ext_resource type="FontFile" uid="uid://wdvwb23naavb" path="res://Assets/Fonts/PixelOperatorMono8.ttf" id="3_qcyny"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_o07hl"]
+[sub_resource type="LabelSettings" id="LabelSettings_qcyny"]
 resource_local_to_scene = true
 font = ExtResource("3_qcyny")
 font_size = 8
@@ -22,5 +22,5 @@ shouldBeHiddenUntilAcquired = false
 
 [node name="Label" parent="." index="1" unique_id=2033234159]
 text = "UPGRADE"
-label_settings = SubResource("LabelSettings_o07hl")
+label_settings = SubResource("LabelSettings_qcyny")
 vertical_alignment = 1

@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cymqs5685rbo0" path="res://Assets/Images/StatPipDepleted.png" id="4_7605v"]
 [ext_resource type="FontFile" uid="uid://wdvwb23naavb" path="res://Assets/Fonts/PixelOperatorMono8.ttf" id="5_7605v"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_llqix"]
+[sub_resource type="LabelSettings" id="LabelSettings_7605v"]
 resource_local_to_scene = true
 font = ExtResource("5_7605v")
 font_size = 8
@@ -24,7 +24,7 @@ shouldAddSpaceAfterPrefix = false
 shouldShowValue = false
 
 [node name="Label" parent="." index="1" unique_id=1625132942]
-label_settings = SubResource("LabelSettings_llqix")
+label_settings = SubResource("LabelSettings_7605v")
 
 [node name="Pips" type="HBoxContainer" parent="." index="2" unique_id=384966205]
 custom_minimum_size = Vector2(8, 8)

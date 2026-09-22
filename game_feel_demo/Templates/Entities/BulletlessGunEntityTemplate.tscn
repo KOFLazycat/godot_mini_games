@@ -9,11 +9,11 @@
 [ext_resource type="PackedScene" uid="uid://cdq0dcwhcrm5p" path="res://Components/Control/InputComponent.tscn" id="7_c21oh"]
 [ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="7_o4nvn"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_nbb7k"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_o4nvn"]
 resource_local_to_scene = true
 radius = 24.0
 
-[sub_resource type="Resource" id="Resource_l7efc"]
+[sub_resource type="Resource" id="Resource_nbb7k"]
 resource_local_to_scene = true
 script = ExtResource("7_o4nvn")
 max = 10000
@@ -39,7 +39,7 @@ region_rect = Rect2(688, 336, 16, 16)
 shouldDamageOnCollision = false
 
 [node name="DamageCollisionShape" parent="DamageComponent" index="0" unique_id=1217175677]
-shape = SubResource("CircleShape2D_nbb7k")
+shape = SubResource("CircleShape2D_o4nvn")
 
 [node name="AimingCursorComponent" parent="." unique_id=796424677 node_paths=PackedStringArray("nodeToRotate") instance=ExtResource("5_o4nvn")]
 nodeToRotate = NodePath("../BulletlessGunComponent/GunSprite")
@@ -49,7 +49,7 @@ position = Vector2(0, -16)
 dontShootIfNoTargets = true
 
 [node name="CooldownTimer" parent="BulletlessGunComponent" index="0" unique_id=57790064]
-cooldownMilliseconds = SubResource("Resource_l7efc")
+cooldownMilliseconds = SubResource("Resource_nbb7k")
 
 [node name="InputComponent" parent="." unique_id=1060454979 instance=ExtResource("7_c21oh")]
 

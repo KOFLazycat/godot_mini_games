@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://clmyolud4k7m1" path="res://UI/Views/InventoryItemUI.gd" id="2_ihf84"]
 [ext_resource type="FontFile" uid="uid://wdvwb23naavb" path="res://Assets/Fonts/PixelOperatorMono8.ttf" id="3_yk6eg"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_vbj7e"]
+[sub_resource type="LabelSettings" id="LabelSettings_yk6eg"]
 resource_local_to_scene = true
 font = ExtResource("3_yk6eg")
 font_size = 8
@@ -20,4 +20,4 @@ shouldShowText = false
 
 [node name="Label" parent="." index="1" unique_id=2033234159]
 visible = false
-label_settings = SubResource("LabelSettings_vbj7e")
+label_settings = SubResource("LabelSettings_yk6eg")

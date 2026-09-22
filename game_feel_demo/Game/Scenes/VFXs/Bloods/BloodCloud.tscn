@@ -36,7 +36,6 @@ autostart = true
 
 [node name="BloodCloudParticles" type="GPUParticles2D" parent="." unique_id=1637890136]
 material = SubResource("CanvasItemMaterial_3ujoo")
-emitting = false
 amount = 6
 texture = ExtResource("1_obtwa")
 one_shot = true

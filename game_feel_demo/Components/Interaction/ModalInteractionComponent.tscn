@@ -3,9 +3,16 @@
 [ext_resource type="PackedScene" uid="uid://jfccby4pnore" path="res://Components/Interaction/InteractionComponent.tscn" id="1_67fj5"]
 [ext_resource type="Script" uid="uid://c03yty53peje0" path="res://Components/Interaction/ModalInteractionComponent.gd" id="2_wyebb"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_fuh8y"]
+resource_local_to_scene = true
+radius = 16.0
+
 [node name="ModalInteractionComponent" unique_id=649762631 instance=ExtResource("1_67fj5")]
 process_mode = 3
 script = ExtResource("2_wyebb")
 modalScene = null
 setViewGlobalPositionToEntity = false
 viewPositionOffset = Vector2(0, 0)
+
+[node name="InteractionShape" parent="." index="0" unique_id=254682034]
+shape = SubResource("CircleShape2D_fuh8y")

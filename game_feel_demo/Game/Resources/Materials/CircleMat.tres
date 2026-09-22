@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://cpp4fiyfcshcp"]
 
-[ext_resource type="Shader" uid="uid://dndoj32hycrmj" path="res://Game/Assets/Shaders/circle.gdshader" id="1_bl5py"]
+[ext_resource type="Shader" uid="uid://dndoj32hycrmj" path="res://Game/Assets/Shaders/Circle.gdshader" id="1_bl5py"]
 
 [sub_resource type="Curve" id="Curve_1vpbo"]
 _data = [Vector2(0.48, 0), 0.0, 15.2177, 0, 0, Vector2(0.5, 1), 0.0, -8.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]

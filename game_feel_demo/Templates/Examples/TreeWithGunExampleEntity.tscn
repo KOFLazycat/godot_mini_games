@@ -11,7 +11,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8iuf5"]
 size = Vector2(14, 14)
 
-[sub_resource type="Resource" id="Resource_36k6a"]
+[sub_resource type="Resource" id="Resource_rmtvy"]
 resource_local_to_scene = true
 script = ExtResource("5_rmtvy")
 max = 10000
@@ -42,7 +42,7 @@ factions = 6
 [node name="GunComponent" parent="." unique_id=335321454 instance=ExtResource("3_ppngh")]
 
 [node name="CooldownTimer" parent="GunComponent" index="1" unique_id=57790064]
-cooldownMilliseconds = SubResource("Resource_36k6a")
+cooldownMilliseconds = SubResource("Resource_rmtvy")
 
 [node name="NodeFacingComponent" parent="." unique_id=1728329491 node_paths=PackedStringArray("nodeToRotate") instance=ExtResource("5_yl0fu")]
 nodeToRotate = NodePath("../GunComponent")

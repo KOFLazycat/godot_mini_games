@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ksyl4yy0v23l"]
 
-[ext_resource type="Script" uid="uid://dma3ix6p7xhpi" path="res://addons/GodotDataTables/editor/data_table_dock.gd" id="1_aju01"]
+[ext_resource type="Script" uid="uid://10sbwmvajghu" path="res://addons/GodotDataTables/editor/data_table_dock.gd" id="1_aju01"]
 [ext_resource type="Texture2D" uid="uid://172yfrtaait" path="res://addons/GodotDataTables/icons/data_table_structure.svg" id="2_80rmk"]
 [ext_resource type="PackedScene" uid="uid://4q3kwjnxqi2i" path="res://addons/GodotDataTables/editor/structure_panel.tscn" id="2_104kd"]
 [ext_resource type="Texture2D" uid="uid://g6u0lon3tjjm" path="res://addons/GodotDataTables/icons/data_table.svg" id="3_ug3tg"]
