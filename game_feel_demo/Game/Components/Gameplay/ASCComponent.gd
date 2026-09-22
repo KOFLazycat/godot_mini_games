@@ -54,9 +54,9 @@ func _ready() -> void:
 	self.set_process(isEnabled)
 	initializeAbility()
 	
-	#asc.bind_ability_to_input(fireball_ability, 1)
-	Tools.connectSignal(inputComponent.didUpdateInputActionsList, self.onInputComponent_didUpdateInputActionsList)
 	Tools.connectSignal(timer.timeout, onTimer_timeout)
+	if inputComponent:
+		Tools.connectSignal(inputComponent.didUpdateInputActionsList, self.onInputComponent_didUpdateInputActionsList)
 
 
 func initializeAbility() -> void:

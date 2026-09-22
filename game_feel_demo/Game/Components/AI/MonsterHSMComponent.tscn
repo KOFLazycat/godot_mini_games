@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://cktlk4chajbl5"]
+
+[ext_resource type="Script" uid="uid://bduk71u1u1fsu" path="res://Game/Components/AI/MonsterHSMComponent.gd" id="1_ttlrb"]
+
+[node name="MonsterHSMComponent" type="Node" unique_id=182877559 groups=["components"]]
+script = ExtResource("1_ttlrb")
+metadata/_edit_group_ = true
+
+[node name="LimboHSM" type="LimboHSM" parent="." unique_id=1399374478]
+
+[node name="IdleState" type="LimboState" parent="LimboHSM" unique_id=613026682]

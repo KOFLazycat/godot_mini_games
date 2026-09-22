@@ -3,20 +3,11 @@
 [ext_resource type="Script" uid="uid://b3tgnb1y0hgk1" path="res://Entities/Entity.gd" id="1_y2bt4"]
 [ext_resource type="Texture2D" uid="uid://ryppvokjjk70" path="res://Game/Assets/Images/Sheets/dummy_sheet.png" id="2_nrpjp"]
 [ext_resource type="Script" uid="uid://cbrvrpcenj2cn" path="res://addons/GodotGAS/components/ability_system_component.gd" id="3_ibqny"]
-[ext_resource type="PackedScene" uid="uid://cnu5f0ycxgu8d" path="res://Components/Combat/HealthComponent.tscn" id="3_kwudu"]
-[ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="4_00ibh"]
 [ext_resource type="Script" uid="uid://bhr4dsrpc4jw8" path="res://addons/GodotGAS/attributes/attribute_set.gd" id="4_ysnw6"]
 [ext_resource type="Script" uid="uid://dhp2bvi0ikx77" path="res://Game/Resources/GodotGas/attributes/base_attribute_set.gd" id="5_nrpjp"]
 [ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="5_v8pln"]
-[ext_resource type="PackedScene" uid="uid://ylultcpjxp6" path="res://Components/Physics/CornerCollisionComponent.tscn" id="6_e3jto"]
-[ext_resource type="PackedScene" uid="uid://cwposw6wqg1mi" path="res://Components/Movement/PlatformerPatrolComponent.tscn" id="7_fjp7y"]
 [ext_resource type="PackedScene" uid="uid://bv4nl55gi16vx" path="res://Components/Physics/PlatformerPhysicsComponent.tscn" id="8_yho47"]
-[ext_resource type="PackedScene" uid="uid://bx6cxxpnw2511" path="res://Components/Combat/KnockbackOnHitComponent.tscn" id="9_vhosj"]
-[ext_resource type="PackedScene" uid="uid://cpklu2uieedw7" path="res://Components/Combat/DamageComponent.tscn" id="10_munpv"]
-[ext_resource type="PackedScene" uid="uid://ffkcrlcom1kx" path="res://Components/Combat/DamageReceivingComponent.tscn" id="11_4mhyt"]
 [ext_resource type="PackedScene" uid="uid://dn7cpj4u7w1jy" path="res://Components/Physics/CharacterBodyComponent.tscn" id="12_5q4w6"]
-[ext_resource type="PackedScene" uid="uid://cdq0dcwhcrm5p" path="res://Components/Control/InputComponent.tscn" id="13_d2om3"]
-[ext_resource type="PackedScene" uid="uid://b1bqp8r4wjcg3" path="res://Components/Visual/DamageVisualComponent.tscn" id="14_prpod"]
 [ext_resource type="PackedScene" uid="uid://ettfulbm7ww8" path="res://Game/Components/Gameplay/ASCComponent.tscn" id="18_ysnw6"]
 [ext_resource type="PackedScene" uid="uid://cbcacmmmb42mo" path="res://Game/Components/Combat/HurtBoxComponent.tscn" id="19_nrpjp"]
 
@@ -637,25 +628,7 @@ _data = {
 script = ExtResource("5_nrpjp")
 metadata/_custom_type_script = "uid://dhp2bvi0ikx77"
 
-[sub_resource type="Resource" id="Resource_nrpjp"]
-resource_local_to_scene = true
-resource_name = "monsterHealth"
-script = ExtResource("4_00ibh")
-max = 5
-value = 5
-name = &"monsterHealth"
-displayName = "Monster HP"
-metadata/_custom_type_script = "uid://dif3dj8k5ixfw"
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_p7w0n"]
-resource_local_to_scene = true
-size = Vector2(25, 37)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nkbvq"]
-size = Vector2(28, 40)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_uypw7"]
-resource_local_to_scene = true
 size = Vector2(28, 40)
 
 [node name="Monster" type="CharacterBody2D" unique_id=1245323086 node_paths=PackedStringArray("body", "sprite") groups=["enemies", "entities"]]
@@ -697,29 +670,13 @@ metadata/_custom_type_script = "uid://cbrvrpcenj2cn"
 [node name="ASCComponent" parent="." unique_id=414950625 node_paths=PackedStringArray("asc") instance=ExtResource("18_ysnw6")]
 asc = NodePath("../AbilitySystemComponent")
 
-[node name="HealthComponent" parent="." unique_id=1983200482 instance=ExtResource("3_kwudu")]
-health = SubResource("Resource_nrpjp")
-
 [node name="FactionComponent" parent="." unique_id=210162572 instance=ExtResource("5_v8pln")]
 factions = 8
 
-[node name="CornerCollisionComponent" parent="." unique_id=615354246 instance=ExtResource("6_e3jto")]
-
-[node name="PlatformerPatrolComponent" parent="." unique_id=900796945 instance=ExtResource("7_fjp7y")]
-detectionGap = 2.0
-randomizeInitialDirection = true
-
 [node name="PlatformerPhysicsComponent" parent="." unique_id=1807756268 instance=ExtResource("8_yho47")]
 
-[node name="KnockbackOnHitComponent" parent="." unique_id=960243277 instance=ExtResource("9_vhosj")]
-
-[node name="DamageComponent" parent="." unique_id=196118322 instance=ExtResource("10_munpv")]
-collision_layer = 1032
-collision_mask = 1028
-
-[node name="DamageCollisionShape" parent="DamageComponent" index="0" unique_id=1217175677]
-position = Vector2(0, -19)
-shape = SubResource("RectangleShape2D_p7w0n")
+[node name="CharacterBodyComponent" parent="." unique_id=2068876203 node_paths=PackedStringArray("body") instance=ExtResource("12_5q4w6")]
+body = NodePath("..")
 
 [node name="HurtBoxComponent" parent="." unique_id=865192381 instance=ExtResource("19_nrpjp")]
 collision_layer = 131072
@@ -728,24 +685,4 @@ collision_layer = 131072
 position = Vector2(0, -19)
 shape = SubResource("RectangleShape2D_nkbvq")
 
-[node name="DamageReceivingComponent" parent="." unique_id=1827559037 instance=ExtResource("11_4mhyt")]
-collision_layer = 1032
-collision_mask = 1060
-
-[node name="ReceivingCollisionShape" parent="DamageReceivingComponent" index="0" unique_id=212184690]
-position = Vector2(0, -19)
-shape = SubResource("RectangleShape2D_uypw7")
-
-[node name="CharacterBodyComponent" parent="." unique_id=2068876203 node_paths=PackedStringArray("body") instance=ExtResource("12_5q4w6")]
-body = NodePath("..")
-
-[node name="InputComponent" parent="." unique_id=555896481 instance=ExtResource("13_d2om3")]
-isPlayerControlled = false
-
-[node name="DamageVisualComponent" parent="." unique_id=974188272 node_paths=PackedStringArray("nodeToAnimate") instance=ExtResource("14_prpod")]
-nodeToAnimate = NodePath("../Body/Sprite2D")
-blinkCount = 1
-
-[editable path="DamageComponent"]
 [editable path="HurtBoxComponent"]
-[editable path="DamageReceivingComponent"]
