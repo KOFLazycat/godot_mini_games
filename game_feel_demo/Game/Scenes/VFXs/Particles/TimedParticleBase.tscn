@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://c71clot3mcvut"]
+[gd_scene format=3 uid="uid://dea6npvsdda73"]
 
-[ext_resource type="Script" uid="uid://bkrkbt678a787" path="res://Game/Scenes/VFXs/Particles/TimedParticleBase.gd" id="1_ooqy3"]
-[ext_resource type="Texture2D" uid="uid://dpo7ca8q28kso" path="res://Game/Assets/Images/VFXs/Particles/star_07.png" id="2_ooqy3"]
+[ext_resource type="Script" uid="uid://bkrkbt678a787" path="res://Game/Scenes/VFXs/Particles/TimedParticleBase.gd" id="1_5asbb"]
+[ext_resource type="Texture2D" uid="uid://dpo7ca8q28kso" path="res://Game/Assets/Images/VFXs/Particles/star_07.png" id="2_6px77"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ooqy3"]
 blend_mode = 1
@@ -15,14 +15,14 @@ offsets = PackedFloat32Array(0, 0.633508, 1)
 colors = PackedColorArray(0.3033736, 0.46309662, 0.99997836, 1, 0.15174419, 0.3699236, 0.9999234, 1, 0, 0, 0, 0)
 
 [node name="TimedParticleBase" type="Node2D" unique_id=1557696380]
-script = ExtResource("1_ooqy3")
+script = ExtResource("1_5asbb")
 
 [node name="Particles" type="Node2D" parent="." unique_id=1572101932]
 
 [node name="Trail" type="CPUParticles2D" parent="Particles" unique_id=829476186]
 material = SubResource("CanvasItemMaterial_ooqy3")
 amount = 24
-texture = ExtResource("2_ooqy3")
+texture = ExtResource("2_6px77")
 lifetime = 0.7
 randomness = 0.43
 lifetime_randomness = 0.47

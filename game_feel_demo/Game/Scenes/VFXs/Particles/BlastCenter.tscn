@@ -1,24 +1,25 @@
-[gd_scene format=3 uid="uid://b86xl50oit76u"]
+[gd_scene format=3 uid="uid://c71clot3mcvut"]
 
-[ext_resource type="Script" uid="uid://trev756nj3ur" path="res://Game/Scenes/VFXs/Particles/TimerFreeParticle.gd" id="1_5v3v6"]
-[ext_resource type="Texture2D" uid="uid://i3h642lpqb6r" path="res://Game/Assets/Images/VFXs/Explosions/CartoonExplosionFX/Fx07/Effect-fx07_1x18.png" id="2_5v3v6"]
-[ext_resource type="Texture2D" uid="uid://cj6dv5xucny1e" path="res://Game/Assets/Images/VFXs/Dusts/smoke.png" id="2_j7lm6"]
+[ext_resource type="Script" uid="uid://bkrkbt678a787" path="res://Game/Scenes/VFXs/Particles/TimedParticleBase.gd" id="1_ooqy3"]
+[ext_resource type="Texture2D" uid="uid://cj6dv5xucny1e" path="res://Game/Assets/Images/VFXs/Dusts/smoke.png" id="2_d4u5r"]
 
-[sub_resource type="Gradient" id="Gradient_uoudu"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_nkbvq"]
+
+[sub_resource type="Gradient" id="Gradient_gxpyc"]
 offsets = PackedFloat32Array(0, 0.7937743, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0.50534403, 0.5053441, 0.50534403, 1, 0, 0, 0, 0)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_jimu2"]
-gradient = SubResource("Gradient_uoudu")
+gradient = SubResource("Gradient_gxpyc")
 
-[sub_resource type="Curve" id="Curve_u580n"]
+[sub_resource type="Curve" id="Curve_krdmk"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="CurveTexture" id="CurveTexture_vu0b4"]
-curve = SubResource("Curve_u580n")
+curve = SubResource("Curve_krdmk")
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_g1o6j"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ua643"]
 lifetime_randomness = 0.5
 particle_flag_align_y = true
 particle_flag_disable_z = true
@@ -36,235 +37,24 @@ scale_max = 0.59999996
 scale_curve = SubResource("CurveTexture_vu0b4")
 color_ramp = SubResource("GradientTexture1D_jimu2")
 
-[sub_resource type="Animation" id="Animation_5v3v6"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:texture")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("2_5v3v6")]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:offset")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-18, -20)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:hframes")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [18]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Sprite2D:vframes")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [1]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("Sprite2D:frame")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-tracks/5/type = "value"
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/path = NodePath("Sprite2D:scale")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0.3, 0.3)]
-}
-tracks/6/type = "value"
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/path = NodePath("Sprite2D:visible")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [true]
-}
-tracks/7/type = "value"
-tracks/7/imported = false
-tracks/7/enabled = true
-tracks/7/path = NodePath("Sprite2D:modulate")
-tracks/7/interp = 1
-tracks/7/loop_wrap = true
-tracks/7/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
-}
-
-[sub_resource type="Animation" id="Animation_a2cx1"]
-resource_name = "default"
-length = 0.6
-step = 0.0333333
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:texture")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("2_5v3v6")]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:offset")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-18, -20)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:hframes")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [18]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Sprite2D:vframes")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [1]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("Sprite2D:frame")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0, 0.033333335, 0.06666667, 0.10000001, 0.13333334, 0.16666667, 0.20000002, 0.23333335, 0.26666668, 0.3, 0.33333334, 0.36666667, 0.40000004, 0.43333337, 0.4666667, 0.5, 0.53333336, 0.5666667),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
-}
-tracks/5/type = "value"
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/path = NodePath("Sprite2D:scale")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0.3, 0.3)]
-}
-tracks/6/type = "value"
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/path = NodePath("Sprite2D:visible")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [true]
-}
-tracks/7/type = "value"
-tracks/7/imported = false
-tracks/7/enabled = true
-tracks/7/path = NodePath("Sprite2D:modulate")
-tracks/7/interp = 1
-tracks/7/loop_wrap = true
-tracks/7/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_5v3v6"]
-_data = {
-&"RESET": SubResource("Animation_5v3v6"),
-&"default": SubResource("Animation_a2cx1")
-}
-
 [node name="BlastCenter" type="Node2D" unique_id=1557696380]
-script = ExtResource("1_5v3v6")
-timeToFree = 2.0
-shouldRandomRotation = true
+script = ExtResource("1_ooqy3")
 
-[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=1157825306]
+[node name="Particles" type="Node2D" parent="." unique_id=1572101932]
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="Particles" unique_id=1443961289]
+material = SubResource("CanvasItemMaterial_nkbvq")
 emitting = false
 amount = 20
-texture = ExtResource("2_j7lm6")
+texture = ExtResource("2_d4u5r")
 lifetime = 0.56
 one_shot = true
 explosiveness = 1.0
 local_coords = true
-process_material = SubResource("ParticleProcessMaterial_g1o6j")
+process_material = SubResource("ParticleProcessMaterial_ua643")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1565040799]
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("2_5v3v6")
-offset = Vector2(-18, -20)
-hframes = 18
+[node name="Sprites" type="Node2D" parent="." unique_id=1585890199]
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=992097052]
-libraries/ = SubResource("AnimationLibrary_5v3v6")
+[node name="Animations" type="Node2D" parent="." unique_id=981304306]
 
 [node name="Timer" type="Timer" parent="." unique_id=1698774102]
-one_shot = true

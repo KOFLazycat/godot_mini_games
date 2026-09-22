@@ -1,23 +1,23 @@
-[gd_scene format=3 uid="uid://dt1q5yr4gebdt"]
+[gd_scene format=3 uid="uid://yj1psidsgkw8"]
 
-[ext_resource type="Script" uid="uid://trev756nj3ur" path="res://Game/Scenes/VFXs/Particles/TimerFreeParticle.gd" id="1_huyx6"]
+[ext_resource type="Script" uid="uid://bkrkbt678a787" path="res://Game/Scenes/VFXs/Particles/TimedParticleBase.gd" id="1_wfefw"]
 [ext_resource type="Texture2D" uid="uid://bhykml48vo82t" path="res://Game/Assets/Images/VFXs/Particles/spark.png" id="2_x4id0"]
 
-[sub_resource type="Gradient" id="Gradient_uoudu"]
+[sub_resource type="Gradient" id="Gradient_6px77"]
 offsets = PackedFloat32Array(0.812641, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_jimu2"]
-gradient = SubResource("Gradient_uoudu")
+gradient = SubResource("Gradient_6px77")
 
-[sub_resource type="Curve" id="Curve_u580n"]
+[sub_resource type="Curve" id="Curve_xbv55"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="CurveTexture" id="CurveTexture_vu0b4"]
-curve = SubResource("Curve_u580n")
+curve = SubResource("Curve_xbv55")
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_g1o6j"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xmi7r"]
 lifetime_randomness = 0.5
 particle_flag_align_y = true
 particle_flag_disable_z = true
@@ -32,14 +32,19 @@ color = Color(0.235294, 0.870588, 0.360784, 1)
 color_ramp = SubResource("GradientTexture1D_jimu2")
 
 [node name="BurstLeft" type="Node2D" unique_id=1557696380]
-script = ExtResource("1_huyx6")
+script = ExtResource("1_wfefw")
 
-[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=1157825306]
+[node name="Particles" type="Node2D" parent="." unique_id=1572101932]
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="Particles" unique_id=1990450267]
 amount = 16
 texture = ExtResource("2_x4id0")
 lifetime = 0.25
 local_coords = true
-process_material = SubResource("ParticleProcessMaterial_g1o6j")
+process_material = SubResource("ParticleProcessMaterial_xmi7r")
+
+[node name="Sprites" type="Node2D" parent="." unique_id=1585890199]
+
+[node name="Animations" type="Node2D" parent="." unique_id=981304306]
 
 [node name="Timer" type="Timer" parent="." unique_id=1698774102]
-one_shot = true

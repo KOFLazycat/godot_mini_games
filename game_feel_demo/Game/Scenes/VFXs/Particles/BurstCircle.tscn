@@ -1,23 +1,23 @@
-[gd_scene format=3 uid="uid://8b22rsg76a3h"]
+[gd_scene format=3 uid="uid://cmik6opwqmao5"]
 
-[ext_resource type="Script" uid="uid://trev756nj3ur" path="res://Game/Scenes/VFXs/Particles/TimerFreeParticle.gd" id="1_a1001"]
+[ext_resource type="Script" uid="uid://bkrkbt678a787" path="res://Game/Scenes/VFXs/Particles/TimedParticleBase.gd" id="1_oqbtn"]
 [ext_resource type="Texture2D" uid="uid://chh706r8wmb84" path="res://Game/Assets/Images/VFXs/Particles/circle_small.png" id="2_ncrhl"]
 
-[sub_resource type="Gradient" id="Gradient_0q6oh"]
+[sub_resource type="Gradient" id="Gradient_6px77"]
 offsets = PackedFloat32Array(0.812641, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_4c1i1"]
-gradient = SubResource("Gradient_0q6oh")
+gradient = SubResource("Gradient_6px77")
 
-[sub_resource type="Curve" id="Curve_i6t1n"]
+[sub_resource type="Curve" id="Curve_xbv55"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="CurveTexture" id="CurveTexture_dy2b4"]
-curve = SubResource("Curve_i6t1n")
+curve = SubResource("Curve_xbv55")
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_mj7qd"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xmi7r"]
 lifetime_randomness = 0.5
 particle_flag_align_y = true
 particle_flag_disable_z = true
@@ -32,14 +32,19 @@ scale_curve = SubResource("CurveTexture_dy2b4")
 color = Color(0.294118, 0.980392, 0.847059, 1)
 color_ramp = SubResource("GradientTexture1D_4c1i1")
 
-[node name="BurstCircle" type="Node2D" unique_id=1582262220]
-script = ExtResource("1_a1001")
+[node name="BurstCircle" type="Node2D" unique_id=1557696380]
+script = ExtResource("1_oqbtn")
 
-[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=1820281227]
+[node name="Particles" type="Node2D" parent="." unique_id=1572101932]
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="Particles" unique_id=1976147680]
 amount = 16
 texture = ExtResource("2_ncrhl")
 lifetime = 0.5
-process_material = SubResource("ParticleProcessMaterial_mj7qd")
+process_material = SubResource("ParticleProcessMaterial_xmi7r")
 
-[node name="Timer" type="Timer" parent="." unique_id=723347099]
-one_shot = true
+[node name="Sprites" type="Node2D" parent="." unique_id=1585890199]
+
+[node name="Animations" type="Node2D" parent="." unique_id=981304306]
+
+[node name="Timer" type="Timer" parent="." unique_id=1698774102]

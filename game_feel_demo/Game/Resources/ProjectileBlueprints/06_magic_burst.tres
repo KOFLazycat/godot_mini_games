@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://reqatt3u5ce4"]
 
-[ext_resource type="PackedScene" uid="uid://c71clot3mcvut" path="res://Game/Scenes/VFXs/Particles/TimedParticleBase.tscn" id="1_pcutv"]
+[ext_resource type="PackedScene" uid="uid://c71clot3mcvut" path="res://Game/Scenes/VFXs/Particles/BlastCenter.tscn" id="1_pcutv"]
 [ext_resource type="PackedScene" uid="uid://10yul0483am7" path="res://Game/Scenes/VFXs/Particles/BlastSmall.tscn" id="2_4pu4a"]
 [ext_resource type="PackedScene" uid="uid://ddotbo5p37c1p" path="res://Game/Entities/Projectiles/MagicBurst.tscn" id="3_pcutv"]
 [ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="4_ap7t7"]
