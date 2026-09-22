@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://cktlk4chajbl5"]
 
 [ext_resource type="Script" uid="uid://bduk71u1u1fsu" path="res://Game/Components/AI/MonsterHSMComponent.gd" id="1_ttlrb"]
+[ext_resource type="Script" uid="uid://b80uq4wgfr4k8" path="res://Game/Scripts/LimboStates/Monsters/IdleState.gd" id="2_108rw"]
+[ext_resource type="Script" uid="uid://b20ix2okxdlom" path="res://Game/Scripts/LimboStates/Monsters/HurtState.gd" id="3_ge5jh"]
+[ext_resource type="Script" uid="uid://b471lt0p0p1y8" path="res://Game/Scripts/LimboStates/Monsters/DieState.gd" id="4_031ya"]
 
 [node name="MonsterHSMComponent" type="Node" unique_id=182877559 groups=["components"]]
 script = ExtResource("1_ttlrb")
@@ -9,3 +12,12 @@ metadata/_edit_group_ = true
 [node name="LimboHSM" type="LimboHSM" parent="." unique_id=1399374478]
 
 [node name="IdleState" type="LimboState" parent="LimboHSM" unique_id=613026682]
+script = ExtResource("2_108rw")
+animationName = &"Idle"
+
+[node name="HurtState" type="LimboState" parent="LimboHSM" unique_id=1603525524]
+script = ExtResource("3_ge5jh")
+
+[node name="DieState" type="LimboState" parent="LimboHSM" unique_id=1678462464]
+script = ExtResource("4_031ya")
+animationName = &"Die"
