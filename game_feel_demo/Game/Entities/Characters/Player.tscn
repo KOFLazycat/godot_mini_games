@@ -57,6 +57,7 @@ platform_on_leave = 2
 script = ExtResource("1_uk1m2")
 body = NodePath(".")
 sprite = NodePath("Body/Sprite2D")
+isLoggingEnabled = false
 metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1903598439]

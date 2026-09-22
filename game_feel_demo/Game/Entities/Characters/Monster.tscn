@@ -26,7 +26,7 @@ size = Vector2(24, 37)
 
 [sub_resource type="Animation" id="Animation_nrpjp"]
 resource_name = "BackHit"
-length = 0.19999999999999998
+length = 0.2
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -226,7 +226,7 @@ tracks/7/keys = {
 
 [sub_resource type="Animation" id="Animation_f6ypi"]
 resource_name = "FrontHit"
-length = 0.19999999999999998
+length = 0.2
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -667,6 +667,7 @@ platform_on_leave = 2
 script = ExtResource("1_y2bt4")
 body = NodePath(".")
 sprite = NodePath("Body/Sprite2D")
+isLoggingEnabled = false
 metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1133374290]
