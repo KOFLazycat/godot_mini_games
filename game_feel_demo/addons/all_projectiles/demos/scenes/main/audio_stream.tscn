@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://b36flrckb0ul5"]
-
-[ext_resource type="Script" uid="uid://b504dg8vmtoxc" path="res://addons/all_projectiles/demos/scripts/timed_audio.gd" id="1_yn81n"]
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" unique_id=967450525]
-script = ExtResource("1_yn81n")

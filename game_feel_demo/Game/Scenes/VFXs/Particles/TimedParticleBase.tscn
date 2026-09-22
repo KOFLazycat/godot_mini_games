@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c71clot3mcvut"]
 
 [ext_resource type="Script" uid="uid://bkrkbt678a787" path="res://Game/Scenes/VFXs/Particles/TimedParticleBase.gd" id="1_ooqy3"]
-[ext_resource type="Texture2D" uid="uid://b2u1upkvv65sh" path="res://addons/all_projectiles/demos/textures/projectiles/star_07.png" id="2_d4u5r"]
+[ext_resource type="Texture2D" uid="uid://dpo7ca8q28kso" path="res://Game/Assets/Images/VFXs/Particles/star_07.png" id="2_ooqy3"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ooqy3"]
 blend_mode = 1
@@ -22,7 +22,7 @@ script = ExtResource("1_ooqy3")
 [node name="Trail" type="CPUParticles2D" parent="Particles" unique_id=829476186]
 material = SubResource("CanvasItemMaterial_ooqy3")
 amount = 24
-texture = ExtResource("2_d4u5r")
+texture = ExtResource("2_ooqy3")
 lifetime = 0.7
 randomness = 0.43
 lifetime_randomness = 0.47

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ddyhlhaoip487"
-path="res://.godot/imported/Mark.png-0e372e6ce81e31663fc6e0eaccc29bac.ctex"
+uid="uid://ryppvokjjk70"
+path="res://.godot/imported/dummy_sheet.png-bebc793a2077ba0e63fe1755867d22ef.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/all_projectiles/demos/textures/projectiles/Mark.png"
-dest_files=["res://.godot/imported/Mark.png-0e372e6ce81e31663fc6e0eaccc29bac.ctex"]
+source_file="res://Game/Assets/Images/Sheets/dummy_sheet.png"
+dest_files=["res://.godot/imported/dummy_sheet.png-bebc793a2077ba0e63fe1755867d22ef.ctex"]
 
 [params]
 
@@ -24,7 +24,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 mipmaps/preserve_alpha_test_coverage=false
 mipmaps/alpha_test_threshold=0.5

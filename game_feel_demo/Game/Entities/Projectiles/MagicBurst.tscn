@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://ddotbo5p37c1p"]
 
 [ext_resource type="Script" uid="uid://b3tgnb1y0hgk1" path="res://Entities/Entity.gd" id="1_nn70i"]
-[ext_resource type="Texture2D" uid="uid://bahr7m3dk2pq3" path="res://addons/all_projectiles/icons/Circle.png" id="2_kr2fq"]
-[ext_resource type="Texture2D" uid="uid://dndhi304035x0" path="res://addons/all_projectiles/demos/textures/projectiles/circle_05.png" id="3_g40ug"]
+[ext_resource type="Texture2D" uid="uid://b8qggdw8o0xk6" path="res://Game/Assets/Images/VFXs/Particles/Circle.png" id="2_nn70i"]
+[ext_resource type="Texture2D" uid="uid://t7j1u3cmgfut" path="res://Game/Assets/Images/VFXs/Particles/circle_05.png" id="3_nn70i"]
 [ext_resource type="PackedScene" uid="uid://wvpl3yaprvc5" path="res://Game/Components/Combat/HitBoxComponent.tscn" id="4_ntocf"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_vunnu"]
@@ -50,7 +50,7 @@ scale = Vector2(0.5, 0.5)
 [node name="Bubbling" type="CPUParticles2D" parent="Particles" unique_id=437693562]
 material = SubResource("CanvasItemMaterial_vunnu")
 amount = 50
-texture = ExtResource("2_kr2fq")
+texture = ExtResource("2_nn70i")
 lifetime = 3.5
 preprocess = 1.0
 speed_scale = 5.0
@@ -80,7 +80,7 @@ hue_variation_max = 0.32
 [node name="Light" type="CPUParticles2D" parent="Particles" unique_id=1939098706]
 material = SubResource("CanvasItemMaterial_h0bpq")
 amount = 20
-texture = ExtResource("3_g40ug")
+texture = ExtResource("3_nn70i")
 lifetime = 3.0
 preprocess = 3.0
 fixed_fps = 30
