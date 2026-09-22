@@ -1,0 +1,131 @@
+[gd_scene format=3 uid="uid://dxoshdmflksa3"]
+
+[ext_resource type="Texture2D" uid="uid://do823aomehorb" path="res://addons/all_projectiles/demos/textures/projectiles/muzzle_02.png" id="1_vkjm6"]
+[ext_resource type="Script" uid="uid://xktarep1x05t" path="res://addons/all_projectiles/demos/scripts/timed_particle.gd" id="2_jb2jv"]
+[ext_resource type="Texture2D" uid="uid://jtxr73g72u4m" path="res://addons/all_projectiles/demos/textures/projectiles/star_2.png" id="3_v2bcv"]
+[ext_resource type="Texture2D" uid="uid://yu7667q8adu8" path="res://addons/all_projectiles/demos/textures/projectiles/star_3.png" id="4_2re0v"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_kwsts"]
+blend_mode = 4
+
+[sub_resource type="Curve" id="Curve_754ok"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.726027, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_auqdl"]
+offsets = PackedFloat32Array(0, 0.151832, 0.623037, 0.827225, 1)
+colors = PackedColorArray(0.705882, 0.396078, 0.921569, 0, 0.78805, 0.56936, 0.957716, 1, 0.468103, 0.154746, 0.876633, 1, 0.568627, 0.341176, 0.972549, 0.678431, 0.274652, 0.0195157, 0.516841, 0)
+
+[sub_resource type="Curve" id="Curve_rnkvj"]
+_limits = [0.0, 100.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 100), 256.186, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_6igi3"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.292237, 0.197802), -6.87598, -6.87598, 0, 0, Vector2(0.461187, 0.538462), -0.164086, -0.164086, 0, 0, Vector2(0.625571, 0.142857), -0.701922, -0.701922, 0, 0, Vector2(0.995434, 0), 0.695239, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Gradient" id="Gradient_bgf3m"]
+offsets = PackedFloat32Array(0, 0.151832, 0.623037, 0.827225, 1)
+colors = PackedColorArray(0.705882, 0.396078, 0.921569, 0, 0.78805, 0.56936, 0.957716, 1, 0.468103, 0.154746, 0.876633, 1, 0.568627, 0.341176, 0.972549, 0.678431, 0.274652, 0.0195157, 0.516841, 0)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fhsef"]
+
+[sub_resource type="Curve" id="Curve_c8qto"]
+_limits = [0.0, 100.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 100), 256.186, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_5777d"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.835616, 0), -2.02373, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_iil0q"]
+offsets = PackedFloat32Array(0, 0.151832, 0.623037, 0.827225, 1)
+colors = PackedColorArray(0.705882, 0.396078, 0.921569, 0, 0.78805, 0.56936, 0.957716, 1, 0.468103, 0.154746, 0.876633, 1, 0.568627, 0.341176, 0.972549, 0.678431, 0.274652, 0.0195157, 0.516841, 0)
+
+[node name="Light" type="CPUParticles2D" unique_id=534823093]
+z_index = 10
+material = SubResource("CanvasItemMaterial_kwsts")
+amount = 16
+texture = ExtResource("1_vkjm6")
+preprocess = 3.0
+speed_scale = 6.0
+local_coords = true
+draw_order = 1
+emission_shape = 1
+emission_sphere_radius = 10.0
+direction = Vector2(0, -1)
+spread = 0.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 80.0
+initial_velocity_max = 150.0
+linear_accel_max = 3.36
+radial_accel_min = -6.0
+radial_accel_max = 6.0
+angle_min = -3.0
+angle_max = 3.0
+scale_amount_min = 0.18
+scale_amount_max = 0.3
+scale_amount_curve = SubResource("Curve_754ok")
+color_ramp = SubResource("Gradient_auqdl")
+script = ExtResource("2_jb2jv")
+
+[node name="Bubbling2" type="CPUParticles2D" parent="." unique_id=719676186]
+z_index = 9
+amount = 11
+texture = ExtResource("3_v2bcv")
+lifetime = 0.4
+lifetime_randomness = 0.34
+draw_order = 1
+emission_shape = 1
+emission_sphere_radius = 8.53
+direction = Vector2(0, 0)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 50.0
+initial_velocity_max = 90.0
+angular_velocity_min = 60.0
+angular_velocity_max = 240.0
+linear_accel_min = 5.04
+linear_accel_max = 12.0
+damping_min = 8.0
+damping_max = 16.0
+damping_curve = SubResource("Curve_rnkvj")
+scale_amount_min = 0.4
+scale_amount_max = 0.75
+scale_amount_curve = SubResource("Curve_6igi3")
+color_ramp = SubResource("Gradient_bgf3m")
+hue_variation_min = 0.2
+hue_variation_max = 0.32
+
+[node name="Bubbling3" type="CPUParticles2D" parent="." unique_id=2067043608]
+z_index = 9
+material = SubResource("CanvasItemMaterial_fhsef")
+texture = ExtResource("4_2re0v")
+lifetime = 0.4
+lifetime_randomness = 0.34
+draw_order = 1
+emission_shape = 1
+emission_sphere_radius = 8.53
+direction = Vector2(0, 0)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 70.0
+initial_velocity_max = 120.0
+angular_velocity_min = 70.0
+angular_velocity_max = 120.0
+linear_accel_min = 5.04
+linear_accel_max = 12.0
+radial_accel_min = -3.0
+radial_accel_max = 6.0
+damping_min = 8.0
+damping_max = 16.0
+damping_curve = SubResource("Curve_c8qto")
+angle_max = 90.0
+scale_amount_min = 0.28
+scale_amount_max = 0.4
+scale_amount_curve = SubResource("Curve_5777d")
+color_ramp = SubResource("Gradient_iil0q")
+hue_variation_min = 0.2
+hue_variation_max = 0.32

@@ -1,12 +1,14 @@
 [gd_resource type="Resource" script_class="ListSoundResource" format=3 uid="uid://cr83pxd1bxdsw"]
 
 [ext_resource type="Script" uid="uid://dd3gdpo8eqdh3" path="res://Game/Scripts/Resources/Sounds/ListSoundResource.gd" id="1_40qk1"]
-[ext_resource type="AudioStream" uid="uid://hmht0dlp3g3h" path="res://addons/all_projectiles/demos/audio/magic-spell-shoot-sound-effect-236816.mp3" id="2_pvsdq"]
+[ext_resource type="AudioStream" uid="uid://dqlhtak2jvqbj" path="res://Game/Assets/Audios/SFXs/magic-spell-shoot-sound-effect-236816.mp3" id="2_40qk1"]
 
 [resource]
 script = ExtResource("1_40qk1")
-sound_list = Array[AudioStream]([ExtResource("2_pvsdq")])
+sound_list = Array[AudioStream]([ExtResource("2_40qk1")])
 random_order = true
 pitch_min = 0.9
 pitch_max = 1.1
+volume = -10.0
+from_position = 0.4
 metadata/_custom_type_script = "uid://dd3gdpo8eqdh3"

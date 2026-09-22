@@ -44,8 +44,10 @@ extends Resource
 ## 用于在投射物/攻击的 global_properties 中存储配置
 ## ============================================================================
 
+## 发射开始场景键 - 投射物运动过程中的轨迹粒子场景
+const GLOBAL_PROPERTIES_KEY_START_TIMED_PARTICLE_TRAIL = "START_TIMED_PARTICLE_TRAIL"
 ## 过期场景键 - 投射物过期时显示的场景
-const GLOBAL_PROPERTIES_KEY_EXPIRED_SCENE = "ON_EXPIRED_PACKED_SCENE"
+const GLOBAL_PROPERTIES_KEY_EXPIRED_PACKED_SCENE = "EXPIRED_PACKED_SCENE"
 ## 速度曲线键 - 控制投射物速度随时间变化（Curve 资源）
 const GLOBAL_PROPERTIES_KEY_SPEED_CURVE = "SPEED_CURVE"
 ## 碰撞音效键 - 投射物击中目标时播放的音效
@@ -99,6 +101,23 @@ var geffects: Array[GameplayEffect]
 func onStart(proj: Projectile2D) -> void:
 	proj.individual_properties.set(INDIVIDUAL_PROPERTIES_KEY_GABILITY, gability)
 	proj.individual_properties.set(INDIVIDUAL_PROPERTIES_KEY_GEFFECTS, geffects)
+	
+	var instancedProj: InstancedProjectile2D = proj as InstancedProjectile2D
+	if instancedProj:
+		## 从全局属性获取粒子拖尾场景
+		var trailScene: PackedScene = instancedProj.global_properties.get(GLOBAL_PROPERTIES_KEY_START_TIMED_PARTICLE_TRAIL)
+		if (trailScene != null):
+			## 实例化粒子节点
+			var trail: TimedParticleBase = trailScene.instantiate()
+			## 设置初始位置为投射物位置
+			trail.global_position = instancedProj.position
+			trail.timeToFree = 1.0
+			instancedProj.current_scene.add_child(trail)
+			## 如果有等待时间（在发射前等待），隐藏粒子
+			if (proj.wait_time <= 0):
+				trail.showParticles()
+			## 保存粒子引用以便后续更新
+			proj.individual_properties[GLOBAL_PROPERTIES_KEY_START_TIMED_PARTICLE_TRAIL] = trail
 
 
 ## 投射物每帧移动回调
@@ -115,6 +134,20 @@ func onStart(proj: Projectile2D) -> void:
 ## @param ex - 扩展参数，用于特殊处理
 ## @return - 返回投射物的新方向向量
 func onMove(proj: Projectile2D, delta: float, ex: bool = false) -> Vector2:
+	## 获取粒子引用
+	var trail: TimedParticleBase = proj.individual_properties.get(GLOBAL_PROPERTIES_KEY_START_TIMED_PARTICLE_TRAIL)
+	if (trail != null):
+		## 同步变换
+		trail.transform = proj.transform
+		## 粒子位置：在投射物位置前方
+		trail.global_position = proj.position + (proj.direction * delta * proj.speed)
+		## 如果需要旋转（火焰效果），旋转粒子
+		if (ex):
+			trail.rotate(proj.direction.angle())
+		## 等待时间结束后显示粒子
+		if (proj.wait_time <= 0):
+			trail.startParticles()
+	
 	## 获取速度曲线配置
 	var curve: Curve = proj.global_properties.get(GLOBAL_PROPERTIES_KEY_SPEED_CURVE)
 	if curve != null:
@@ -195,6 +228,11 @@ func onCollision(proj: Projectile2D, areaRid: RID, areaNode: Node2D, targetNode:
 ##
 ## @param proj - 投射物实例
 func onExpired(proj: Projectile2D) -> void:
+	## 获取粒子引用
+	var trail: TimedParticleBase = proj.individual_properties.get(GLOBAL_PROPERTIES_KEY_START_TIMED_PARTICLE_TRAIL)
+	if trail:
+		trail.stopParticles()
+	
 	## 播放过期音效
 	var expiredAudio: ListSoundResource = proj.global_properties.get(GLOBAL_PROPERTIES_KEY_EXPIRED_AUDIO, null)
 	if expiredAudio:

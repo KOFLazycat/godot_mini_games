@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://0g0uyv37ji25"]
 
 [ext_resource type="PackedScene" uid="uid://draxjbos17c1a" path="res://addons/all_projectiles/demos/scenes/particles/blast_small.tscn" id="1_6uxu6"]
-[ext_resource type="PackedScene" uid="uid://b7ssvyikpthcj" path="res://addons/all_projectiles/demos/scenes/particles/trail_stars.tscn" id="2_subic"]
+[ext_resource type="PackedScene" uid="uid://c71clot3mcvut" path="res://Game/Scenes/VFXs/Particles/TimedParticleBase.tscn" id="2_6uxu6"]
 [ext_resource type="PackedScene" uid="uid://nvr4ien3uh8t" path="res://Game/Entities/Projectiles/Projectile.tscn" id="3_6uxu6"]
 [ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="4_88snj"]
 
@@ -21,5 +21,5 @@ angular_speed = 0.0
 after_hit_angular_speed = 0.0
 global_properties = Dictionary[StringName, Variant]({
 &"ON_EXPIRED_PACKED_SCENE": ExtResource("1_6uxu6"),
-&"START_TIMED_PARTICLE_TRAIL": ExtResource("2_subic")
+&"START_TIMED_PARTICLE_TRAIL": ExtResource("2_6uxu6")
 })

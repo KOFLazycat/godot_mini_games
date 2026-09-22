@@ -112,8 +112,6 @@ body = NodePath("..")
 [node name="InputComponent" parent="." unique_id=1492055703 instance=ExtResource("19_uxqiu")]
 
 [node name="ProjectileComponent" parent="." unique_id=1116719074 instance=ExtResource("19_o3dgs")]
-attackIndex = 1
-projectileIndex = 1
 
 [node name="StartMarker" parent="ProjectileComponent" index="0" unique_id=1932518886]
 position = Vector2(23, -25)

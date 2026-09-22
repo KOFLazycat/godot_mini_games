@@ -50,6 +50,9 @@ Juicee="*res://addons/juicee/core/juicee.gd"
 GlobalArbitraryArmory="*uid://1wutg0yfimox"
 SoundManager="*uid://bv1mtytgsybkp"
 GameplayCueManager="*res://addons/GodotGAS/managers/gameplay_cue_manager.gd"
+VFX="*res://addons/vfx_library/vfx.gd"
+EnvVFX="*res://addons/vfx_library/env_vfx.gd"
+VFXPro="*uid://55pkk4xdilsv"
 
 [comedot]
 
@@ -80,7 +83,7 @@ naming/script_name_casing=1
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Comedot/plugin.cfg", "res://addons/GodotDataTables/plugin.cfg", "res://addons/GodotGAS/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/TweenFX/plugin.cfg", "res://addons/all_projectiles/plugin.cfg", "res://addons/at-icons/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/juicee/plugin.cfg", "res://addons/script-ide/plugin.cfg", "res://addons/shaker/plugin.cfg")
+enabled=PackedStringArray("res://addons/Comedot/plugin.cfg", "res://addons/GodotDataTables/plugin.cfg", "res://addons/GodotGAS/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/TweenFX/plugin.cfg", "res://addons/all_projectiles/plugin.cfg", "res://addons/at-icons/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/juicee/plugin.cfg", "res://addons/script-ide/plugin.cfg", "res://addons/shaker/plugin.cfg", "res://addons/vfx_library/plugin.cfg")
 
 [file_customization]
 

@@ -75,7 +75,8 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	GlobalArbitraryArmory.projectileManager.global_position = startMarker.global_position
+	#GlobalArbitraryArmory.projectileManager.global_position = startMarker.global_position
+	pass
 
 
 # ============================================================================
