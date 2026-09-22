@@ -441,7 +441,7 @@ func attack_base(attack: Attack2D) -> void:
 	attack.request_projectile()
 
 	## 播放攻击释放音效（如果配置了）
-	var audio: AudioStream = attack.global_properties.get("RELEASE_AUDIO")
+	var audio: AudioStream = attack.global_properties.get("RELEASE_AUDIO") as AudioStream
 	if (audio != null):
 		var volume: float = attack.global_properties["RELEASE_DB"]
 		var start: float = attack.global_properties["RELEASE_HEADSTART"]

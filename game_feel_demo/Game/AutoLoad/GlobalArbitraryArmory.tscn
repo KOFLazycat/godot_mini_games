@@ -4,14 +4,16 @@
 [ext_resource type="Script" uid="uid://bl54v4twdmrmy" path="res://addons/all_projectiles/scripts/main/projectile_manager_2d.gd" id="2_h0ytl"]
 [ext_resource type="Script" uid="uid://ddrcv1svwbx38" path="res://addons/all_projectiles/scripts/resources/attack_blueprint_2d.gd" id="3_csv5t"]
 [ext_resource type="Resource" uid="uid://dfj5efn22ajai" path="res://Game/Resources/AttackBlueprints/01_magic_bolt.tres" id="4_hyg7f"]
+[ext_resource type="Resource" uid="uid://c1an6s1k08jkk" path="res://Game/Resources/AttackBlueprints/06_magic_burst.tres" id="5_3c01m"]
 [ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="5_hyg7f"]
 [ext_resource type="Resource" uid="uid://0g0uyv37ji25" path="res://Game/Resources/ProjectileBlueprints/01_magic_bolt.tres" id="6_8mxc2"]
+[ext_resource type="Resource" uid="uid://reqatt3u5ce4" path="res://Game/Resources/ProjectileBlueprints/06_magic_burst.tres" id="8_usqvg"]
 
 [node name="GlobalArbitraryArmory" type="Node2D" unique_id=1945854906]
 script = ExtResource("1_3sjbb")
 
 [node name="ProjectileManager2D" type="Node2D" parent="." unique_id=1661746887]
 script = ExtResource("2_h0ytl")
-attack_resources = Array[ExtResource("3_csv5t")]([ExtResource("4_hyg7f")])
-projectile_resources = Array[ExtResource("5_hyg7f")]([ExtResource("6_8mxc2")])
+attack_resources = Array[ExtResource("3_csv5t")]([ExtResource("4_hyg7f"), ExtResource("5_3c01m")])
+projectile_resources = Array[ExtResource("5_hyg7f")]([ExtResource("6_8mxc2"), ExtResource("8_usqvg")])
 metadata/_custom_type_script = "uid://bl54v4twdmrmy"

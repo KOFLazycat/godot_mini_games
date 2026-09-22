@@ -17,6 +17,7 @@ collision_mask = 2
 instance = ExtResource("3_eoe65")
 angular_speed = 0.0
 after_hit_angular_speed = 0.0
+instances = 10
 global_properties = Dictionary[StringName, Variant]({
 &"ON_EXPIRED_PACKED_SCENE": ExtResource("1_sm31r"),
 &"START_TIMED_PARTICLE_TRAIL": ExtResource("2_00kc3")

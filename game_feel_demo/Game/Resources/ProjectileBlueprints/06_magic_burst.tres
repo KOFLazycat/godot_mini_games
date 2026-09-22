@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="ProjectileBlueprint2D" format=3 uid="uid://reqatt3u5ce4"]
+
+[ext_resource type="PackedScene" uid="uid://bsdwmf6wf2v77" path="res://addons/all_projectiles/demos/scenes/particles/blast_mini.tscn" id="1_pcutv"]
+[ext_resource type="PackedScene" uid="uid://dgwj0p18icsq3" path="res://addons/all_projectiles/demos/scenes/particles/trail_bubbling_mini.tscn" id="2_4pu4a"]
+[ext_resource type="PackedScene" uid="uid://ddotbo5p37c1p" path="res://Game/Entities/Projectiles/MagicBurst.tscn" id="3_pcutv"]
+[ext_resource type="Script" uid="uid://dhkmxwdl7x2fl" path="res://addons/all_projectiles/scripts/resources/projectile_blueprint_2d.gd" id="4_ap7t7"]
+
+[resource]
+script = ExtResource("4_ap7t7")
+name = &"MAGIC_BURST"
+proj_type = 2
+lifetime = 3.0
+linear_speed = 800.0
+radius = 20
+collision_layer = 16384
+on_hit_call = "onHitWithProjectile"
+collision_path = "HitBoxComponent"
+instance = ExtResource("3_pcutv")
+angular_speed = 0.0
+after_hit_angular_speed = 0.0
+instances = 4
+spawn_interval = 0.1
+proj_spread = 2
+angular_spread = 5.0
+randomize_spread = true
+linear_deviation = 500.0
+global_properties = Dictionary[StringName, Variant]({
+&"ON_EXPIRED_PACKED_SCENE": ExtResource("1_pcutv"),
+&"START_TIMED_PARTICLE_TRAIL": ExtResource("2_4pu4a")
+})

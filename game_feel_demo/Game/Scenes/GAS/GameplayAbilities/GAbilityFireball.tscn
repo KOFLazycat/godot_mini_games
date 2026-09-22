@@ -1,12 +1,14 @@
 [gd_scene format=3 uid="uid://dfd2rww8n067c"]
 
 [ext_resource type="Script" uid="uid://cbuvl1wjg3h7u" path="res://Game/Scenes/GAS/GameplayAbilities/GAbilityFireball.gd" id="1_fqkn6"]
-[ext_resource type="Resource" uid="uid://bve530dnyimdq" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballDamage.tres" id="2_fd4nu"]
-[ext_resource type="Resource" uid="uid://dbj58io8tx3b7" path="res://Game/Resources/GodotGas/GameplayEffects/GeFireballCooldown.tres" id="4_w7frb"]
+[ext_resource type="Resource" uid="uid://bve530dnyimdq" path="res://Game/Resources/GodotGas/GameplayEffects/Fireball.Damage.tres" id="2_fd4nu"]
+[ext_resource type="Script" uid="uid://c81papidngxvg" path="res://addons/GodotGAS/effects/gameplay_effect.gd" id="2_fqkn6"]
+[ext_resource type="Resource" uid="uid://ds27tjywqkc2m" path="res://Game/Resources/GodotGas/GameplayEffects/State.Debuff.Poision.tres" id="4_fd4nu"]
+[ext_resource type="Resource" uid="uid://dbj58io8tx3b7" path="res://Game/Resources/GodotGas/GameplayEffects/State.Cooldown.Fireball.tres" id="4_w7frb"]
 
 [node name="GAbilityFireball" type="Node" unique_id=1956526492]
 script = ExtResource("1_fqkn6")
-damageEffect = ExtResource("2_fd4nu")
+targetEffects = Array[ExtResource("2_fqkn6")]([ExtResource("2_fd4nu"), ExtResource("4_fd4nu")])
 ability_name = "Fireball"
 ability_tag = &"Ability.Attack.Fireball"
 cooldown_effect = ExtResource("4_w7frb")

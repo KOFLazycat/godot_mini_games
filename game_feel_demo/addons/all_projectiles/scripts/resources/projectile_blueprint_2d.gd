@@ -180,8 +180,8 @@ extends Resource
 ## [实例] 方向类型
 ## 投射物实例化后的方向模式
 ## - FIXED：固定方向
+## - ADAPTATIVE：自适应
 ## - MODIFIABLE：可修改方向
-## - TOWARD_SOURCE：朝向发射源
 @export var proj_directionality: Projectile2D.ProjectileDirectionality = Projectile2D.ProjectileDirectionality.MODIFIABLE
 
 
