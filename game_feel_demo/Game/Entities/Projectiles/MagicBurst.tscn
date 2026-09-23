@@ -26,6 +26,9 @@ point_count = 2
 offsets = PackedFloat32Array(0, 0.151832, 0.659686, 0.769634, 1)
 colors = PackedColorArray(0.635543, 0.733178, 1, 0, 0.278431, 1, 0.929412, 1, 0.224006, 0.493954, 0.899099, 1, 0.0709259, 0.210945, 0.390208, 0.676923, 0.0273626, 0.226981, 0.368344, 0)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_nn70i"]
+radius = 4.0
+
 [node name="MagicBurst" type="Node2D" unique_id=464733286 node_paths=PackedStringArray("sprite") groups=["entities", "interactions"]]
 script = ExtResource("1_nn70i")
 sprite = NodePath("BodySprite/Head/Sprite2D")
@@ -45,7 +48,7 @@ metadata/_edit_group_ = true
 [node name="Sprite2D" type="Sprite2D" parent="BodySprite/Head" unique_id=2058144476]
 
 [node name="Particles" type="Node2D" parent="." unique_id=1709615174]
-scale = Vector2(0.5, 0.5)
+scale = Vector2(0.2, 0.2)
 
 [node name="Bubbling" type="CPUParticles2D" parent="Particles" unique_id=437693562]
 material = SubResource("CanvasItemMaterial_vunnu")
@@ -107,5 +110,6 @@ color_ramp = SubResource("Gradient_wof87")
 
 [node name="CollisionShape2D" parent="HitBoxComponent" index="0" unique_id=1283097502]
 visible = true
+shape = SubResource("CircleShape2D_nn70i")
 
 [editable path="HitBoxComponent"]

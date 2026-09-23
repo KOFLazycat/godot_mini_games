@@ -1,6 +1,7 @@
 [gd_scene format=4 uid="uid://bpsjfhd4bcoqp"]
 
 [ext_resource type="Script" uid="uid://qbdtj8iouink" path="res://Game/Scenes/Launcher/WorldBase.gd" id="1_1o58t"]
+[ext_resource type="Resource" uid="uid://lduauetwe088" path="res://Game/Resources/SFXs/LightningAudioDemo.tres" id="2_4o0ia"]
 [ext_resource type="Texture2D" uid="uid://cxpq0h817gqa8" path="res://Game/Assets/Images/Backgrounds/Layers/1.png" id="2_kipt4"]
 [ext_resource type="Texture2D" uid="uid://v8i1qt66ehhf" path="res://Game/Assets/Images/Backgrounds/Layers/2.png" id="3_4ltid"]
 [ext_resource type="Texture2D" uid="uid://rfxfaq5p80os" path="res://Game/Assets/Images/Tilesets/Tileset.png" id="3_akmjq"]
@@ -12,6 +13,13 @@
 [ext_resource type="PackedScene" uid="uid://byafgqlqhxfpg" path="res://Game/Entities/Characters/Player.tscn" id="10_wnpya"]
 [ext_resource type="PackedScene" uid="uid://clmw160jj7t4k" path="res://Game/Entities/Characters/Monster.tscn" id="11_wnpya"]
 [ext_resource type="PackedScene" uid="uid://convttrcwh6rm" path="res://Templates/HUDTemplate.tscn" id="12_pebv2"]
+[ext_resource type="Script" uid="uid://bk1u1pv7ytvtr" path="res://Game/Scripts/OvaniPlugin/OvaniPlayer.gd" id="13_xnwt5"]
+[ext_resource type="Script" uid="uid://dmtb8hlmmqlvt" path="res://addons/juicee/core/juicee_player.gd" id="13_y0o4p"]
+[ext_resource type="Script" uid="uid://cregwquc2qbte" path="res://Game/Scripts/OvaniPlugin/OvaniSong.gd" id="14_5ecgx"]
+[ext_resource type="Script" uid="uid://8xfugwudyp6n" path="res://addons/juicee/effects/juicee_effect.gd" id="14_yw48t"]
+[ext_resource type="Script" uid="uid://bcbrlr1dfi4v0" path="res://addons/juicee/effects/screen_tint_effect.gd" id="15_4o0ia"]
+[ext_resource type="Script" uid="uid://v73jghomx6uw" path="res://addons/juicee/core/juicee_sequence.gd" id="15_6qwt7"]
+[ext_resource type="AudioStream" uid="uid://chuoicfbtbhkv" path="res://Game/Assets/Audios/Musics/rain_window.ogg" id="15_y0o4p"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wnpya"]
 texture = ExtResource("3_akmjq")
@@ -143,8 +151,51 @@ physics_layer_0/collision_layer = 16
 physics_layer_0/collision_mask = 0
 sources/0 = SubResource("TileSetAtlasSource_wnpya")
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wnpya"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(600, 25, 1)
+direction = Vector3(0, 1, 0)
+spread = 5.0
+initial_velocity_min = 327.19998
+initial_velocity_max = 327.19998
+gravity = Vector3(0, 980, 0)
+scale_min = 0.5
+color = Color(1, 1, 1, 0.22745098)
+collision_mode = 1
+collision_friction = 0.45
+collision_bounce = 0.16
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_wnpya"]
+polygon = PackedVector2Array(128, 160, 288, 160, 288, 192, 128, 192)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_xnwt5"]
+polygon = PackedVector2Array(-319, 64, 1, 64, -1, 162, -129, 161, -129, 224, 33, 226, 33, 319, 96, 320, 96, 287, 160, 287, 159, 321, 194, 321, 256, 257, 384, 256, 384, 223, 513, 224, 513, 191, 671, 191, 672, 63, 930, 63, 941, 483, -325, 463)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_pebv2"]
+polygon = PackedVector2Array(415, 95, 416, 129, 577, 128, 576, 95)
+
+[sub_resource type="Resource" id="Resource_wu13t"]
+script = ExtResource("15_4o0ia")
+tint_color = Color(1, 1, 1, 0.5019608)
+duration = 0.1
+
+[sub_resource type="Resource" id="Resource_bkaqs"]
+script = ExtResource("15_6qwt7")
+effects = Array[ExtResource("14_yw48t")]([SubResource("Resource_wu13t")])
+graph_connections = PackedStringArray()
+metadata/_custom_type_script = "uid://v73jghomx6uw"
+
+[sub_resource type="Resource" id="Resource_pebv2"]
+script = ExtResource("14_5ecgx")
+Intensity1 = ExtResource("15_y0o4p")
+Intensity2 = ExtResource("15_y0o4p")
+Intensity3 = ExtResource("15_y0o4p")
+metadata/_custom_type_script = "uid://cregwquc2qbte"
+
 [node name="WorldBase" type="Node2D" unique_id=1248151831]
 script = ExtResource("1_1o58t")
+lightningSoundResource = ExtResource("2_4o0ia")
 
 [node name="BackgroundLayer" type="Node2D" parent="." unique_id=818009264]
 position = Vector2(217, 66)
@@ -198,6 +249,28 @@ texture = ExtResource("8_js0kk")
 tile_map_data = PackedByteArray("AAAAAAkAAAACAAEAAAABAAoAAAABAAAAAAACAAoAAAAJAAMAAAADAAkAAAAAAAAAAAAEAAoAAAAHAAUAAAAFAAoAAAABAAAAAAAGAAoAAAAGAAUAAAAGAAkAAAAGAAQAAAAHAAkAAAAGAAUAAAAIAAkAAAABAAEAAAAJAAkAAAABAAEAAAD7/wYAAAACAAEAAAD7/wUAAAACAAEAAAD8/wQAAAAEAAAAAAD9/wQAAAAEAAAAAAD+/wQAAAAEAAAAAAD//wQAAAACAAIAAAD//wMAAAACAAEAAAAEAAkAAAACAAAAAAAAAAoAAAAHAAUAAAD7/wQAAAAHAAUAAFADAAoAAAAGAAUAAAAHAAgAAAAGAAQAAAAIAAgAAAABAAAAAAAJAAgAAAAJAAMAAAAEAAUAAAABAAMAAAAFAAUAAAACAAMAAAAGAAUAAAACAAMAAAAHAAUAAAACAAMAAAAIAAUAAAADAAMAAAAKAAgAAAAJAAAAAAALAAgAAAABAAAAAAANAAMAAAABAAMAAAAOAAMAAAACAAMAAAAPAAMAAAACAAMAAAAQAAMAAAACAAMAAAARAAMAAAADAAMAAAAMAAgAAAAGAAUAAAANAAgAAAABAAEAAAANAAcAAAABAAAAAAAOAAcAAAAJAAMAAAAPAAcAAAABAAAAAAAQAAcAAAAGAAUAAAAQAAYAAAAAAAAAAAARAAYAAAABAAAAAAASAAYAAAAJAAAAAAATAAYAAAABAAAAAAAVAAUAAAAAAAEAAAAUAAYAAAABAAAAAAAVAAYAAAAGAAUAAAAVAAQAAAAAAAEAAAAVAAMAAAAAAAEAAAAVAAIAAAAAAAAAAAAHAAoAAAABAAEAAAAIAAoAAAABAAEAAAAJAAoAAAABAAEAAAAKAAoAAAABAAEAAAALAAoAAAABAAEAAAAMAAoAAAABAAEAAAANAAoAAAABAAEAAAAOAAoAAAABAAEAAAAPAAoAAAABAAEAAAAQAAoAAAABAAEAAAARAAoAAAABAAEAAAASAAoAAAABAAEAAAATAAoAAAABAAEAAAAUAAoAAAABAAEAAAAVAAoAAAABAAEAAAAVAAkAAAABAAEAAAAVAAgAAAABAAEAAAAVAAcAAAABAAEAAAAUAAcAAAABAAEAAAATAAcAAAABAAEAAAASAAcAAAABAAEAAAARAAcAAAABAAEAAAARAAgAAAABAAEAAAASAAgAAAABAAEAAAATAAgAAAABAAEAAAAUAAgAAAABAAEAAAAUAAkAAAABAAEAAAATAAkAAAABAAEAAAASAAkAAAABAAEAAAARAAkAAAABAAEAAAAQAAkAAAABAAEAAAAPAAkAAAABAAEAAAAOAAkAAAABAAEAAAANAAkAAAABAAEAAAAMAAkAAAABAAEAAAALAAkAAAABAAEAAAAKAAkAAAABAAEAAAAOAAgAAAABAAEAAAAPAAgAAAABAAEAAAAQAAgAAAABAAEAAAAWAAcAAAABAAEAAAAWAAYAAAABAAEAAAAWAAUAAAABAAEAAAAWAAQAAAABAAEAAAAWAAMAAAABAAEAAAAWAAIAAAAJAAEAAAAWAAgAAAABAAEAAAAWAAkAAAABAAEAAAAWAAoAAAABAAEAAAAXAAoAAAABAAEAAAAXAAkAAAABAAEAAAAXAAgAAAABAAEAAAAXAAcAAAABAAEAAAAXAAYAAAABAAEAAAAXAAUAAAABAAEAAAAXAAQAAAABAAEAAAAXAAMAAAABAAEAAAAXAAIAAAABAAAAAAAXAAsAAAABAAEAAAAXAAwAAAABAAEAAAAXAA0AAAABAAEAAAAWAA0AAAABAAEAAAAVAA0AAAABAAEAAAAUAA0AAAABAAEAAAATAA0AAAABAAEAAAASAA0AAAABAAEAAAARAA0AAAABAAEAAAAQAA0AAAABAAEAAAAPAA0AAAABAAEAAAAOAA0AAAABAAEAAAANAA0AAAABAAEAAAAMAA0AAAABAAEAAAALAA0AAAABAAEAAAAKAA0AAAABAAEAAAAJAA0AAAABAAEAAAAIAA0AAAABAAEAAAAHAA0AAAABAAEAAAAGAA0AAAABAAEAAAAFAA0AAAABAAEAAAAEAA0AAAABAAEAAAADAA0AAAABAAEAAAACAA0AAAABAAEAAAABAA0AAAABAAEAAAAAAA0AAAABAAEAAAD//w0AAAABAAEAAAD+/w0AAAABAAEAAAD9/w0AAAABAAEAAAD8/w0AAAABAAEAAAD7/w0AAAABAAEAAAD6/w0AAAABAAEAAAD5/w0AAAABAAEAAAD4/w0AAAABAAEAAAD3/w0AAAABAAEAAAD2/w0AAAABAAEAAAD2/wwAAAABAAEAAAD2/wsAAAABAAEAAAD2/woAAAABAAEAAAD2/wkAAAABAAEAAAD2/wgAAAABAAEAAAD2/wcAAAABAAEAAAD2/wYAAAABAAEAAAD2/wUAAAABAAEAAAD2/wQAAAABAAEAAAD2/wMAAAABAAEAAAD2/wIAAAABAAAAAAAYAAIAAAABAAAAAAAYAAMAAAABAAEAAAAYAAQAAAABAAEAAAAYAAUAAAABAAEAAAAYAAYAAAABAAEAAAAYAAcAAAABAAEAAAAYAAgAAAABAAEAAAAYAAkAAAABAAEAAAAYAAoAAAABAAEAAAAYAAsAAAABAAEAAAAYAAwAAAABAAEAAAAYAA0AAAABAAEAAAD//wIAAAACAAAAAAD+/wIAAAABAAAAAAD+/wMAAAABAAEAAAD9/wMAAAABAAEAAAD8/wMAAAABAAEAAAD7/wMAAAABAAEAAAD6/wMAAAABAAEAAAD5/wMAAAABAAEAAAD4/wMAAAABAAEAAAD3/wMAAAABAAEAAAD3/wIAAAABAAAAAAD9/wIAAAAJAAEAAAD8/wIAAAABAAAAAAD7/wIAAAABAAAAAAD6/wIAAAABAAAAAAD5/wIAAAAJAAEAAAD4/wIAAAABAAAAAAD3/wQAAAABAAEAAAD3/wUAAAABAAEAAAD3/wYAAAABAAEAAAD3/wcAAAABAAEAAAD3/wgAAAABAAEAAAD3/wkAAAABAAEAAAD3/woAAAABAAEAAAD3/wsAAAABAAEAAAD3/wwAAAABAAEAAAD4/wwAAAABAAEAAAD5/wsAAAABAAEAAAD6/wsAAAABAAEAAAD7/wsAAAABAAEAAAD8/wsAAAABAAEAAAD9/wsAAAABAAEAAAD+/wsAAAABAAEAAAD//wsAAAABAAEAAAAAAAsAAAABAAEAAAABAAsAAAABAAEAAAACAAsAAAABAAEAAAADAAsAAAABAAEAAAAEAAsAAAABAAEAAAAFAAsAAAABAAEAAAAGAAsAAAABAAEAAAD6/wwAAAABAAEAAAD5/wwAAAABAAEAAAD7/wwAAAABAAEAAAD8/wwAAAABAAEAAAD9/wwAAAABAAEAAAD+/wwAAAABAAEAAAD//wwAAAABAAEAAAAAAAwAAAABAAEAAAABAAwAAAABAAEAAAACAAwAAAABAAEAAAADAAwAAAABAAEAAAAEAAwAAAABAAEAAAAFAAwAAAABAAEAAAAGAAwAAAABAAEAAAAHAAwAAAABAAEAAAAIAAwAAAABAAEAAAAJAAwAAAABAAEAAAAKAAwAAAABAAEAAAALAAwAAAABAAEAAAAMAAwAAAABAAEAAAANAAwAAAABAAEAAAAOAAwAAAABAAEAAAAPAAwAAAABAAEAAAAQAAwAAAABAAEAAAARAAwAAAABAAEAAAASAAwAAAABAAEAAAATAAwAAAABAAEAAAAUAAwAAAABAAEAAAAVAAwAAAABAAEAAAAWAAwAAAABAAEAAAAWAAsAAAABAAEAAAAVAAsAAAABAAEAAAAUAAsAAAABAAEAAAATAAsAAAABAAEAAAASAAsAAAABAAEAAAARAAsAAAABAAEAAAAQAAsAAAABAAEAAAAPAAsAAAABAAEAAAAOAAsAAAABAAEAAAANAAsAAAABAAEAAAAMAAsAAAABAAEAAAALAAsAAAABAAEAAAAKAAsAAAABAAEAAAAJAAsAAAABAAEAAAAIAAsAAAABAAEAAAAHAAsAAAABAAEAAAD4/wsAAAABAAEAAAD4/woAAAABAAEAAAD5/woAAAABAAEAAAD6/woAAAABAAEAAAD7/woAAAABAAEAAAD//woAAAABAAEAAAD+/woAAAABAAEAAAD9/woAAAABAAEAAAD8/woAAAABAAEAAAD4/wkAAAABAAEAAAD5/wkAAAABAAEAAAD6/wkAAAABAAEAAAD7/wkAAAABAAEAAAD8/wkAAAABAAEAAAD9/wkAAAABAAEAAAD+/wkAAAABAAEAAAD//wkAAAABAAEAAAD4/wgAAAABAAEAAAD5/wgAAAABAAEAAAD6/wgAAAABAAEAAAD6/wcAAAABAAEAAAD6/wYAAAABAAEAAAD6/wUAAAABAAEAAAD6/wQAAAABAAEAAAD5/wQAAAABAAEAAAD4/wQAAAABAAEAAAD4/wUAAAABAAEAAAD4/wYAAAABAAEAAAD4/wcAAAABAAEAAAD5/wYAAAABAAEAAAD5/wUAAAABAAEAAAD5/wcAAAABAAEAAAAZAAIAAAABAAAAAAAaAAIAAAABAAAAAAAbAAIAAAABAAAAAAAcAAIAAAABAAAAAAAMAAcAAAAAAAAAAAD7/wcAAAAHAAUAAAD8/wcAAAABAAAAAAD9/wcAAAAJAAAAAAD+/wcAAAABAAAAAAD//wcAAAAJAAAAAAAAAAcAAAACAAAAAAAAAAgAAAACAAEAAAD//wgAAAABAAEAAAD+/wgAAAABAAEAAAD9/wgAAAABAAEAAAD8/wgAAAABAAEAAAD7/wgAAAABAAEAAAA=")
 tile_set = SubResource("TileSet_kipt4")
 
+[node name="GPUParticles2D" type="GPUParticles2D" parent="TileLayer" unique_id=83562310]
+position = Vector2(228, -10)
+amount = 200
+lifetime = 0.8
+visibility_rect = Rect2(-400, -100, 1000, 600)
+trail_enabled = true
+trail_lifetime = 0.09999999999999999
+trail_sections = 2
+trail_section_subdivisions = 1
+process_material = SubResource("ParticleProcessMaterial_wnpya")
+
+[node name="RainOccluders" type="Node2D" parent="TileLayer" unique_id=640311071]
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="TileLayer/RainOccluders" unique_id=761121847]
+occluder = SubResource("OccluderPolygon2D_wnpya")
+
+[node name="LightOccluder2D2" type="LightOccluder2D" parent="TileLayer/RainOccluders" unique_id=1096393402]
+occluder = SubResource("OccluderPolygon2D_xnwt5")
+
+[node name="LightOccluder2D3" type="LightOccluder2D" parent="TileLayer/RainOccluders" unique_id=1867008212]
+occluder = SubResource("OccluderPolygon2D_pebv2")
+
 [node name="PlayerLayer" type="Node2D" parent="." unique_id=1275278497]
 
 [node name="Player" parent="PlayerLayer" unique_id=1971183666 instance=ExtResource("10_wnpya")]
@@ -217,3 +290,15 @@ layer = 50
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1621698335]
 color = Color(0.86898494, 0.8689849, 0.8689849, 1)
+
+[node name="JuiceePlayer" type="Node" parent="." unique_id=1582948701]
+script = ExtResource("13_y0o4p")
+sequence = SubResource("Resource_bkaqs")
+target_path = NodePath("..")
+metadata/_custom_type_script = "uid://dmtb8hlmmqlvt"
+
+[node name="OvaniPlayer" type="Node" parent="." unique_id=924820232]
+script = ExtResource("13_xnwt5")
+QueuedSongs = Array[ExtResource("14_5ecgx")]([SubResource("Resource_pebv2")])
+Volume = -10.936999999999998
+metadata/_custom_type_script = "uid://bk1u1pv7ytvtr"

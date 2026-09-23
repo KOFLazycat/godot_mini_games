@@ -10,10 +10,10 @@
 [ext_resource type="Script" uid="uid://d0gul7klmdrlw" path="res://addons/juicee/effects/shake_effect.gd" id="5_chcuk"]
 [ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="5_xnmml"]
 [ext_resource type="Script" uid="uid://bcbrlr1dfi4v0" path="res://addons/juicee/effects/screen_tint_effect.gd" id="6_83hcy"]
-[ext_resource type="Script" uid="uid://rxvrjjgjpbt4" path="res://addons/juicee/effects/zoom_effect.gd" id="6_chcuk"]
 [ext_resource type="PackedScene" uid="uid://cnu5f0ycxgu8d" path="res://Components/Combat/HealthComponent.tscn" id="6_e1g27"]
 [ext_resource type="Script" uid="uid://v73jghomx6uw" path="res://addons/juicee/core/juicee_sequence.gd" id="6_p4g8e"]
 [ext_resource type="PackedScene" uid="uid://dfd2rww8n067c" path="res://Game/Scenes/GAS/GameplayAbilities/GAbilityFireball.tscn" id="7_4xwc4"]
+[ext_resource type="Script" uid="uid://pl47idij8i6c" path="res://addons/juicee/effects/squash_land_effect.gd" id="7_chcuk"]
 [ext_resource type="PackedScene" uid="uid://bgfxxe60d72c0" path="res://Components/Visual/HealthVisualComponent.tscn" id="7_vwwba"]
 [ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="8_c1fih"]
 [ext_resource type="PackedScene" uid="uid://ettfulbm7ww8" path="res://Game/Components/Gameplay/ASCComponent.tscn" id="12_u114y"]
@@ -38,13 +38,11 @@ use_noise = false
 graph_position = Vector2(330, 80)
 
 [sub_resource type="Resource" id="Resource_p4g8e"]
-script = ExtResource("6_chcuk")
-zoom_factor = 1.05
-duration = 0.15000000000000002
+script = ExtResource("7_chcuk")
 
 [sub_resource type="Resource" id="Resource_chcuk"]
 script = ExtResource("6_83hcy")
-tint_color = Color(0.26666668, 0.90588236, 1, 0.09019608)
+tint_color = Color(1, 1, 1, 0.09019608)
 duration = 0.3
 graph_position = Vector2(580, 80)
 
@@ -153,6 +151,8 @@ body = NodePath("..")
 [node name="InputComponent" parent="." unique_id=1492055703 instance=ExtResource("19_uxqiu")]
 
 [node name="ProjectileComponent" parent="." unique_id=1116719074 instance=ExtResource("19_o3dgs")]
+attackIndex = 1
+projectileIndex = 1
 
 [node name="StartMarker" parent="ProjectileComponent" index="0" unique_id=1932518886]
 position = Vector2(23, -25)

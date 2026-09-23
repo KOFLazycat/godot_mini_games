@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ListSoundResource" format=3 uid="uid://lduauetwe088"]
+
+[ext_resource type="Script" uid="uid://dd3gdpo8eqdh3" path="res://Game/Scripts/Resources/Sounds/ListSoundResource.gd" id="1_rllnl"]
+[ext_resource type="AudioStream" uid="uid://bvdvdrkxns3go" path="res://Game/Assets/Audios/Musics/lightning_strike_01.ogg" id="2_gmf7r"]
+[ext_resource type="AudioStream" uid="uid://3r0i1iam4v6l" path="res://Game/Assets/Audios/Musics/lightning_strike_02.ogg" id="3_j0cd5"]
+[ext_resource type="AudioStream" uid="uid://emfgfa2fwfp2" path="res://Game/Assets/Audios/Musics/lightning_strike_03.ogg" id="4_o3ckp"]
+
+[resource]
+script = ExtResource("1_rllnl")
+sound_list = Array[AudioStream]([ExtResource("2_gmf7r"), ExtResource("3_j0cd5"), ExtResource("4_o3ckp")])
+random_order = true
+pitch_min = 0.9
+pitch_max = 1.1
+volume = -10.0
+from_position = 0.08
+metadata/_custom_type_script = "uid://dd3gdpo8eqdh3"
