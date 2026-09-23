@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ListSoundResource" format=3 uid="uid://d4igq84qj3j3c"]
+
+[ext_resource type="Script" uid="uid://dd3gdpo8eqdh3" path="res://Game/Scripts/Resources/Sounds/ListSoundResource.gd" id="1_3kcmp"]
+[ext_resource type="AudioStream" uid="uid://c08l1odfvcf2e" path="res://Game/Assets/Audios/SFXs/hit-by-a-wood-230542.mp3" id="2_3kcmp"]
+
+[resource]
+script = ExtResource("1_3kcmp")
+sound_list = Array[AudioStream]([ExtResource("2_3kcmp")])
+random_order = true
+pitch_min = 0.9
+pitch_max = 1.1
+volume = -10.0
+from_position = 0.08
+metadata/_custom_type_script = "uid://dd3gdpo8eqdh3"
