@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://d0gul7klmdrlw" path="res://addons/juicee/effects/shake_effect.gd" id="5_chcuk"]
 [ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="5_xnmml"]
 [ext_resource type="Script" uid="uid://bcbrlr1dfi4v0" path="res://addons/juicee/effects/screen_tint_effect.gd" id="6_83hcy"]
+[ext_resource type="Script" uid="uid://rxvrjjgjpbt4" path="res://addons/juicee/effects/zoom_effect.gd" id="6_chcuk"]
 [ext_resource type="PackedScene" uid="uid://cnu5f0ycxgu8d" path="res://Components/Combat/HealthComponent.tscn" id="6_e1g27"]
 [ext_resource type="Script" uid="uid://v73jghomx6uw" path="res://addons/juicee/core/juicee_sequence.gd" id="6_p4g8e"]
 [ext_resource type="PackedScene" uid="uid://dfd2rww8n067c" path="res://Game/Scenes/GAS/GameplayAbilities/GAbilityFireball.tscn" id="7_4xwc4"]
@@ -31,17 +32,25 @@ size = Vector2(24, 36)
 [sub_resource type="Resource" id="Resource_5cjxc"]
 script = ExtResource("5_chcuk")
 intensity = 2.0
-duration = 0.1
+duration = 0.15000000000000002
 decay = 0.5
 use_noise = false
+graph_position = Vector2(330, 80)
+
+[sub_resource type="Resource" id="Resource_p4g8e"]
+script = ExtResource("6_chcuk")
+zoom_factor = 1.05
+duration = 0.15000000000000002
 
 [sub_resource type="Resource" id="Resource_chcuk"]
 script = ExtResource("6_83hcy")
 tint_color = Color(0.26666668, 0.90588236, 1, 0.09019608)
+duration = 0.3
+graph_position = Vector2(580, 80)
 
 [sub_resource type="Resource" id="Resource_xhgo0"]
 script = ExtResource("6_p4g8e")
-effects = Array[ExtResource("4_83hcy")]([SubResource("Resource_5cjxc"), SubResource("Resource_chcuk")])
+effects = Array[ExtResource("4_83hcy")]([SubResource("Resource_5cjxc"), SubResource("Resource_p4g8e"), SubResource("Resource_chcuk")])
 parallel = true
 graph_connections = PackedStringArray()
 metadata/_custom_type_script = "uid://v73jghomx6uw"
