@@ -26,7 +26,7 @@ point_count = 2
 offsets = PackedFloat32Array(0, 0.151832, 0.659686, 0.769634, 1)
 colors = PackedColorArray(0.635543, 0.733178, 1, 0, 0.278431, 1, 0.929412, 1, 0.224006, 0.493954, 0.899099, 1, 0.0709259, 0.210945, 0.390208, 0.676923, 0.0273626, 0.226981, 0.368344, 0)
 
-[node name="Projectile" type="Node2D" unique_id=464733286 node_paths=PackedStringArray("sprite") groups=["entities", "interactions"]]
+[node name="MagicBurst" type="Node2D" unique_id=464733286 node_paths=PackedStringArray("sprite") groups=["entities", "interactions"]]
 script = ExtResource("1_nn70i")
 sprite = NodePath("BodySprite/Head/Sprite2D")
 isLoggingEnabled = false
