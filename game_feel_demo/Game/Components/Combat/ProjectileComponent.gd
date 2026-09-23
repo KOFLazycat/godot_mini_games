@@ -20,10 +20,10 @@ extends Component
 			self.set_process(isEnabled)
 
 ## 在 GlobalArbitraryArmory.ProjectileManager2D.attack_resources 中的 AttackBlueprint2D 资源索引
-@export var attackIndex: int = 0
+@export_range(0, 10, 1) var attackIndex: int = 0
 
 ## 在 GlobalArbitraryArmory.ProjectileManager2D.projectile_resources 中的 ProjectileBlueprint2D 资源索引
-@export var projectileIndex: int = 0
+@export_range(0, 10, 1) var projectileIndex: int = 0
 
 ## 投射物回调策略
 @export var callbackStrategy: ProjectileCallbackStrategy:

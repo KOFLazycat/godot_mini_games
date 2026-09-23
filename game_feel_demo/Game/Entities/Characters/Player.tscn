@@ -30,8 +30,9 @@ size = Vector2(24, 36)
 
 [sub_resource type="Resource" id="Resource_5cjxc"]
 script = ExtResource("5_chcuk")
-intensity = 3.0
+intensity = 2.0
 duration = 0.1
+decay = 0.5
 use_noise = false
 
 [sub_resource type="Resource" id="Resource_chcuk"]

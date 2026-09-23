@@ -214,3 +214,6 @@ position = Vector2(275, 147)
 
 [node name="HUDTemplate" parent="." unique_id=1336587380 instance=ExtResource("12_pebv2")]
 layer = 50
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1621698335]
+color = Color(0.86898494, 0.8689849, 0.8689849, 1)
