@@ -16,6 +16,8 @@
 resource_local_to_scene = true
 size = Vector2(24, 37)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nkbvq"]
+
 [sub_resource type="Animation" id="Animation_nrpjp"]
 resource_name = "BackHit"
 length = 0.2
@@ -652,6 +654,7 @@ shape = SubResource("RectangleShape2D_dpspd")
 [node name="Body" type="Node2D" parent="." unique_id=238887401]
 
 [node name="Sprite2D" type="Sprite2D" parent="Body" unique_id=782586473]
+material = SubResource("ShaderMaterial_nkbvq")
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("2_nrpjp")
 offset = Vector2(6, -104)

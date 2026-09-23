@@ -18,6 +18,7 @@ func _enter() -> void:
 				animationPlayer.play("FrontHit")
 				animationPlayer.clear_queue()
 				animationPlayer.queue("FrontOvershoot")
+			Juicee.flash(agent.sprite, Color.WHITE)
 			await animationPlayer.animation_finished
 	if is_active():
 		get_root().dispatch(EVENT_FINISHED)

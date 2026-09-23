@@ -18,6 +18,8 @@ func _activate_ability() -> bool:
 	var projectileComponent: ProjectileComponent = ownerEntity.getComponent(ProjectileComponent)
 	if projectileComponent == null:
 		return false
+	var juiceePlayer: JuiceePlayer = ownerEntity.findFirstChildOfType(JuiceePlayer)
+	if juiceePlayer: juiceePlayer.play()
 	projectileComponent.requestProjectile(null, self, targetEffects)
 	#
 	## Pass the ability reference and the damage data down to the fireball

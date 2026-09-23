@@ -2,11 +2,16 @@
 
 [ext_resource type="Script" uid="uid://bisowd0k143yp" path="res://Entities/Characters/PlayerEntity.gd" id="1_uk1m2"]
 [ext_resource type="Texture2D" uid="uid://bg67mujwa8kq1" path="res://Assets/Images/Solid32.png" id="2_o788n"]
+[ext_resource type="Script" uid="uid://dmtb8hlmmqlvt" path="res://addons/juicee/core/juicee_player.gd" id="3_4s8tl"]
+[ext_resource type="Script" uid="uid://8xfugwudyp6n" path="res://addons/juicee/effects/juicee_effect.gd" id="4_83hcy"]
 [ext_resource type="Script" uid="uid://bhr4dsrpc4jw8" path="res://addons/GodotGAS/attributes/attribute_set.gd" id="4_wrke2"]
 [ext_resource type="PackedScene" uid="uid://d06m60dgdv8ui" path="res://Components/Data/StatsComponent.tscn" id="4_ynnmr"]
 [ext_resource type="Script" uid="uid://dhp2bvi0ikx77" path="res://Game/Resources/GodotGas/attributes/base_attribute_set.gd" id="5_4xwc4"]
+[ext_resource type="Script" uid="uid://d0gul7klmdrlw" path="res://addons/juicee/effects/shake_effect.gd" id="5_chcuk"]
 [ext_resource type="Script" uid="uid://dif3dj8k5ixfw" path="res://Resources/Stats/Stat.gd" id="5_xnmml"]
+[ext_resource type="Script" uid="uid://bcbrlr1dfi4v0" path="res://addons/juicee/effects/screen_tint_effect.gd" id="6_83hcy"]
 [ext_resource type="PackedScene" uid="uid://cnu5f0ycxgu8d" path="res://Components/Combat/HealthComponent.tscn" id="6_e1g27"]
+[ext_resource type="Script" uid="uid://v73jghomx6uw" path="res://addons/juicee/core/juicee_sequence.gd" id="6_p4g8e"]
 [ext_resource type="PackedScene" uid="uid://dfd2rww8n067c" path="res://Game/Scenes/GAS/GameplayAbilities/GAbilityFireball.tscn" id="7_4xwc4"]
 [ext_resource type="PackedScene" uid="uid://bgfxxe60d72c0" path="res://Components/Visual/HealthVisualComponent.tscn" id="7_vwwba"]
 [ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="8_c1fih"]
@@ -22,6 +27,23 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1q6vm"]
 resource_local_to_scene = true
 size = Vector2(24, 36)
+
+[sub_resource type="Resource" id="Resource_5cjxc"]
+script = ExtResource("5_chcuk")
+intensity = 3.0
+duration = 0.1
+use_noise = false
+
+[sub_resource type="Resource" id="Resource_chcuk"]
+script = ExtResource("6_83hcy")
+tint_color = Color(0.26666668, 0.90588236, 1, 0.09019608)
+
+[sub_resource type="Resource" id="Resource_xhgo0"]
+script = ExtResource("6_p4g8e")
+effects = Array[ExtResource("4_83hcy")]([SubResource("Resource_5cjxc"), SubResource("Resource_chcuk")])
+parallel = true
+graph_connections = PackedStringArray()
+metadata/_custom_type_script = "uid://v73jghomx6uw"
 
 [sub_resource type="Resource" id="Resource_nkbvq"]
 script = ExtResource("5_4xwc4")
@@ -82,6 +104,14 @@ position = Vector2(10.000001, -5.0000005)
 scale = Vector2(0.4, 0.05)
 texture = ExtResource("2_o788n")
 
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1779496723]
+
+[node name="JuiceePlayer" type="Node" parent="." unique_id=2116649741]
+script = ExtResource("3_4s8tl")
+sequence = SubResource("Resource_xhgo0")
+target_path = NodePath("..")
+metadata/_custom_type_script = "uid://dmtb8hlmmqlvt"
+
 [node name="AbilitySystemComponent" type="Node" parent="." unique_id=1265606891]
 script = ExtResource("14_o788n")
 attribute_sets = Array[ExtResource("4_wrke2")]([SubResource("Resource_nkbvq")])
@@ -113,8 +143,6 @@ body = NodePath("..")
 [node name="InputComponent" parent="." unique_id=1492055703 instance=ExtResource("19_uxqiu")]
 
 [node name="ProjectileComponent" parent="." unique_id=1116719074 instance=ExtResource("19_o3dgs")]
-attackIndex = 1
-projectileIndex = 1
 
 [node name="StartMarker" parent="ProjectileComponent" index="0" unique_id=1932518886]
 position = Vector2(23, -25)
