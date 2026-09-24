@@ -250,12 +250,13 @@ tile_map_data = PackedByteArray("AAAAAAkAAAACAAEAAAABAAoAAAABAAAAAAACAAoAAAAJAAM
 tile_set = SubResource("TileSet_kipt4")
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="TileLayer" unique_id=83562310]
+visible = false
 position = Vector2(228, -10)
 amount = 200
 lifetime = 0.8
 visibility_rect = Rect2(-400, -100, 1000, 600)
 trail_enabled = true
-trail_lifetime = 0.09999999999999999
+trail_lifetime = 0.1
 trail_sections = 2
 trail_section_subdivisions = 1
 process_material = SubResource("ParticleProcessMaterial_wnpya")
@@ -289,7 +290,7 @@ position = Vector2(275, 147)
 layer = 50
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1621698335]
-color = Color(0.86898494, 0.8689849, 0.8689849, 1)
+color = Color(0.62152386, 0.62152386, 0.6215238, 1)
 
 [node name="JuiceePlayer" type="Node" parent="." unique_id=1582948701]
 script = ExtResource("13_y0o4p")
