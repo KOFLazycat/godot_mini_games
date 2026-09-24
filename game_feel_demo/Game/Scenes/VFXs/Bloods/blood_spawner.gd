@@ -2,70 +2,77 @@ class_name BloodSpawner extends Node2D
 
 ## Spawns blood clouds and flings splatters
 
-@export var blood_splatter_scene: PackedScene = preload("res://Game/Scenes/VFXs/Bloods/blood_splatter.tscn")
-@export var blood_cloud_scene: PackedScene = preload("res://Game/Scenes/VFXs/Bloods/blood_cloud.tscn")
+@export var bloodSplatterScene: PackedScene = preload("res://Game/Scenes/VFXs/Bloods/blood_splatter.tscn")
+@export var bloodCloudScene: PackedScene = preload("res://Game/Scenes/VFXs/Bloods/blood_cloud.tscn")
 
-@export var max_splatter_dist = 130.0
-@export var blood_wall_offset = 15.0
+@export var maxSplatterDist: float = 130.0
+@export var bloodWallOffset: float = 15.0
 
-@export var max_splatter_count = 5
-@export var min_splatter_count = 3
+@export var maxSplatterCount: int = 5
+@export var minSplatterCount: int = 3
 
-@export var blood_spray_arc = 180.0
+@export var bloodSprayArc: float = 180.0
 
 @export var impactSoundResource: SoundResource
 
-@onready var ray_cast_2d = $RayCast2D
+@onready var rayCast2d: RayCast2D = $RayCast2D
 
 
-func spawn_blood_from_damage_data(damage_position: Vector2, hit_normal: Vector2, damage_direction: Vector2, play_sound: bool, spawn_extra_blood: bool, spawn_blood_cloud: bool):
-	global_position = damage_position
-	# average hit normal and damage direction
-	var dir = hit_normal - damage_direction
-	
-	# spray blood in both directions
-	splatter_blood(dir / 2.0, play_sound)
-	splatter_extra_blood(-dir / 2.0, play_sound)
-	if spawn_extra_blood:
-		splatter_extra_blood(hit_normal, play_sound)
-	
-	if spawn_blood_cloud:
-		spawn_blood_cloud()
-	if play_sound and impactSoundResource:
+func spawnBloodFromDamageData(damagePosition: Vector2, hitNormal: Vector2, damageDirection: Vector2, shouldPlaySound: bool, shouldSpawnExtraBlood: bool, shouldSpawnBloodCloud: bool) -> void:
+	global_position = damagePosition
+
+	var dir: Vector2 = hitNormal - damageDirection
+
+	splatterBlood(dir / 2.0, shouldPlaySound)
+	splatterExtraBlood(-dir / 2.0, shouldPlaySound)
+
+	if shouldSpawnExtraBlood:
+		splatterExtraBlood(hitNormal, shouldPlaySound)
+
+	if shouldSpawnBloodCloud:
+		spawnBloodCloud()
+
+	if shouldPlaySound and impactSoundResource:
 		impactSoundResource.play_managed()
 
-func splatter_blood(dir = Vector2.DOWN, play_sound=true):
-	var splatter_count = randi_range(min_splatter_count, max_splatter_count)
-	for i in splatter_count:
-		spawn_blood(get_splatter_offset(dir), i%3==0 and play_sound)
 
-func splatter_extra_blood(dir = Vector2.DOWN, play_sound=true):
-	var splatter_count = randi_range(min_splatter_count, max_splatter_count) * 2
-	for i in splatter_count:
-		spawn_blood(get_splatter_offset(dir) * 1.5, i%3==0 and play_sound)
+func splatterBlood(dir: Vector2 = Vector2.DOWN, shouldPlaySound: bool = true) -> void:
+	var splatterCount: int = randi_range(minSplatterCount, maxSplatterCount)
+	for i in splatterCount:
+		spawnBlood(getSplatterOffset(dir), i % 3 == 0 and shouldPlaySound)
 
-func get_splatter_offset(dir = Vector2.DOWN):
-	var splatter_dir = dir.rotated(deg_to_rad(randf_range(-blood_spray_arc, blood_spray_arc)/2.0))
-	var splatter_dist = randf_range(0.0, max_splatter_dist)
-	return splatter_dir * splatter_dist
 
-func spawn_blood(pos_offset=Vector2.ZERO, play_splatter_sound=false):
-	var blood_splatter = blood_splatter_scene.instantiate()
-	blood_splatter.add_to_group("instanced")
-	get_tree().get_root().add_child(blood_splatter)
-	
-	var goal_pos = global_position + pos_offset
-	ray_cast_2d.enabled = true
-	ray_cast_2d.target_position = ray_cast_2d.to_local(goal_pos)
-	ray_cast_2d.force_raycast_update()
-	if ray_cast_2d.is_colliding():
-		goal_pos = ray_cast_2d.get_collision_point()
-	ray_cast_2d.enabled = false
-	
-	var offset = goal_pos.direction_to(global_position) * blood_wall_offset
-	blood_splatter.fling_blood(global_position, goal_pos + offset, play_splatter_sound)
+func splatterExtraBlood(dir: Vector2 = Vector2.DOWN, shouldPlaySound: bool = true) -> void:
+	var splatterCount: int = randi_range(minSplatterCount, maxSplatterCount) * 2
+	for i in splatterCount:
+		spawnBlood(getSplatterOffset(dir) * 1.5, i % 3 == 0 and shouldPlaySound)
 
-func spawn_blood_cloud():
-	var blood_cloud = blood_cloud_scene.instantiate()
-	blood_cloud.global_position = global_position
-	get_tree().get_root().add_child(blood_cloud)
+
+func getSplatterOffset(dir: Vector2 = Vector2.DOWN) -> Vector2:
+	var splatterDir: Vector2 = dir.rotated(deg_to_rad(randf_range(-bloodSprayArc, bloodSprayArc) / 2.0))
+	var splatterDist: float = randf_range(0.0, maxSplatterDist)
+	return splatterDir * splatterDist
+
+
+func spawnBlood(posOffset: Vector2 = Vector2.ZERO, playSplatterSound: bool = false) -> void:
+	var bloodSplatter: BloodSplatter = bloodSplatterScene.instantiate()
+	get_tree().get_root().add_child(bloodSplatter)
+
+	var goalPos: Vector2 = global_position + posOffset
+	rayCast2d.enabled = true
+	rayCast2d.target_position = rayCast2d.to_local(goalPos)
+	rayCast2d.force_raycast_update()
+
+	if rayCast2d.is_colliding():
+		goalPos = rayCast2d.get_collision_point()
+
+	rayCast2d.enabled = false
+
+	var offset: Vector2 = goalPos.direction_to(global_position) * bloodWallOffset
+	bloodSplatter.flingBlood(global_position, goalPos + offset, playSplatterSound)
+
+
+func spawnBloodCloud() -> void:
+	var bloodCloud: Node2D = bloodCloudScene.instantiate()
+	bloodCloud.global_position = global_position
+	get_tree().get_root().add_child(bloodCloud)
