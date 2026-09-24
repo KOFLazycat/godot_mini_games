@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ListSoundResource" format=3 uid="uid://2jlkrk0gwai2"]
+
+[ext_resource type="Script" uid="uid://dd3gdpo8eqdh3" path="res://Game/Scripts/Resources/Sounds/ListSoundResource.gd" id="1_arlnn"]
+[ext_resource type="AudioStream" uid="uid://d0p57qvbkuj7w" path="res://Game/Assets/Audios/SFXs/Bloods/pc_bullet_impact_flesh_01.wav" id="2_f1tfh"]
+[ext_resource type="AudioStream" uid="uid://dqo6kghwkcs8s" path="res://Game/Assets/Audios/SFXs/Bloods/pc_bullet_impact_flesh_02.wav" id="3_arlnn"]
+
+[resource]
+script = ExtResource("1_arlnn")
+sound_list = Array[AudioStream]([ExtResource("2_f1tfh"), ExtResource("3_arlnn")])
+random_order = true
+pitch_min = 0.9000000000087311
+pitch_max = 1.1000000000058208
+volume = -15.0
