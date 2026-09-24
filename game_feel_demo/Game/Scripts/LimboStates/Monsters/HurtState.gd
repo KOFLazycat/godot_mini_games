@@ -12,7 +12,7 @@ func _enter() -> void:
 		var hitResults: Array[Dictionary] = targetData.get_hits_for_node(agent)
 		
 		for res: Dictionary in hitResults:
-			bloodSpawner.spawnBloodFromData(res["position"], res["normal"], res["damage_direction"], false, false, false)
+			bloodSpawner.spawnBloodFromData(res["position"], res["normal"], res["damage_direction"], true, true, true)
 			if (res["position"].x < agent.sprite.global_position.x):
 				animationPlayer.play("BackHit")
 				animationPlayer.clear_queue()
