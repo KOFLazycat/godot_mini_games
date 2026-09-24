@@ -86,6 +86,20 @@ var geffects: Array[GameplayEffect]
 #endregion
 
 
+#region Signal
+## 攻击进入前摇阶段
+signal didAnticipateEnter(attack: Attack2D)
+## 攻击进入充能阶段
+signal didChargeEnter(attack: Attack2D)
+## 攻击进入发射阶段
+signal didMainEnter(attack: Attack2D)
+## 攻击进入后摇阶段
+signal didRecoveryEnter(attack: Attack2D)
+## 攻击进入完成阶段
+signal didComplete(attack: Attack2D)
+#endregion
+
+
 @warning_ignore_start("unused_parameter")
 #region Projectile Callbacks
 ## ============================================================================
@@ -268,6 +282,7 @@ func onExpired(proj: Projectile2D) -> void:
 ##
 ## @param attack - 攻击实例
 func onChargeEnter(attack: Attack2D) -> void:
+	didChargeEnter.emit(attack)
 	attack.charge_enter()
 	## 播放蓄力音效
 	var chargeAudio: ListSoundResource = attack.global_properties.get(GLOBAL_PROPERTIES_KEY_CHARGE_AUDIO, null)
@@ -292,6 +307,7 @@ func onChargeExit(attack: Attack2D) -> void:
 ##
 ## @param attack - 攻击实例
 func onAnticipateEnter(attack: Attack2D) -> void:
+	didAnticipateEnter.emit(attack)
 	attack.anticipate_enter()
 
 
@@ -305,6 +321,7 @@ func onAnticipateEnter(attack: Attack2D) -> void:
 ##
 ## @param attack - 攻击实例
 func onMainEnter(attack: Attack2D) -> void:
+	didMainEnter.emit(attack)
 	## 应用攻击偏移并设置持续时间
 	attack.pi.position += attack.attack_offset
 	attack.current_state_lifetime = attack.attack_duration_time
@@ -323,6 +340,7 @@ func onMainEnter(attack: Attack2D) -> void:
 ##
 ## @param attack - 攻击实例
 func onRecoveryEnter(attack: Attack2D) -> void:
+	didRecoveryEnter.emit(attack)
 	attack.recovery_enter()
 
 
@@ -333,6 +351,6 @@ func onRecoveryEnter(attack: Attack2D) -> void:
 ##
 ## @param attack - 攻击实例
 func onCompleted(attack: Attack2D) -> void:
-	pass
+	didComplete.emit(attack)
 
 #endregion

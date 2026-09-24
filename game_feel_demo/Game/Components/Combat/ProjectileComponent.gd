@@ -50,6 +50,16 @@ var lastTargetNode: Node2D
 #region Signals
 ## 投射物发射请求信号
 signal didRequestProjectile(success: bool)
+## 攻击进入前摇阶段
+signal didAnticipateEnter(attack: Attack2D)
+## 攻击进入充能阶段
+signal didChargeEnter(attack: Attack2D)
+## 攻击进入发射阶段
+signal didMainEnter(attack: Attack2D)
+## 攻击进入后摇阶段
+signal didRecoveryEnter(attack: Attack2D)
+## 攻击进入完成阶段
+signal didComplete(attack: Attack2D)
 #endregion
 
 
@@ -69,14 +79,38 @@ func getRequiredComponents() -> Array[Script]:
 
 
 func _ready() -> void:
-	Tools.connectSignal(inputComponent.didUpdateInputActionsList,	self.onInputComponent_didUpdateInputActionsList)
+	_connectSignal()
 	self.set_process(isEnabled)
 	printDebug("ProjectileComponent 初始化完成 - attackIndex: %d, projectileIndex: %d" % [attackIndex, projectileIndex])
+
+
+func _exit_tree() -> void:
+	_disconnectSignal()
 
 
 func _physics_process(_delta: float) -> void:
 	#GlobalArbitraryArmory.projectileManager.global_position = startMarker.global_position
 	pass
+
+
+func _connectSignal() -> void:
+	Tools.connectSignal(inputComponent.didUpdateInputActionsList,	self.onInputComponent_didUpdateInputActionsList)
+	if callbackStrategy:
+		Tools.connectSignal(callbackStrategy.didAnticipateEnter, onProjectileCallbackStrategy_didAnticipateEnter)
+		Tools.connectSignal(callbackStrategy.didChargeEnter, onProjectileCallbackStrategy_didChargeEnter)
+		Tools.connectSignal(callbackStrategy.didMainEnter, onProjectileCallbackStrategy_didMainEnter)
+		Tools.connectSignal(callbackStrategy.didRecoveryEnter, onProjectileCallbackStrategy_didRecoveryEnter)
+		Tools.connectSignal(callbackStrategy.didComplete, onProjectileCallbackStrategy_didComplete)
+
+
+func _disconnectSignal() -> void:
+	Tools.disconnectSignal(inputComponent.didUpdateInputActionsList,	self.onInputComponent_didUpdateInputActionsList)
+	if callbackStrategy:
+		Tools.disconnectSignal(callbackStrategy.didAnticipateEnter, onProjectileCallbackStrategy_didAnticipateEnter)
+		Tools.disconnectSignal(callbackStrategy.didChargeEnter, onProjectileCallbackStrategy_didChargeEnter)
+		Tools.disconnectSignal(callbackStrategy.didMainEnter, onProjectileCallbackStrategy_didMainEnter)
+		Tools.disconnectSignal(callbackStrategy.didRecoveryEnter, onProjectileCallbackStrategy_didRecoveryEnter)
+		Tools.disconnectSignal(callbackStrategy.didComplete, onProjectileCallbackStrategy_didComplete)
 
 
 # ============================================================================
@@ -143,20 +177,20 @@ func requestProjectile(customTarget: Node2D = null, gability: GameplayAbility = 
 	# -------------------------------------------------------------------------
 	# Step 5: 获取回调策略
 	# -------------------------------------------------------------------------
-	var callbacks: ProjectileCallbackStrategy = callbackStrategy if callbackStrategy else null
-	callbacks.gability = gability
-	callbacks.geffects = geffects
+	if callbackStrategy:
+		callbackStrategy.gability = gability
+		callbackStrategy.geffects = geffects
 	# 如果没有设置策略，使用空 Callable
-	var moveMethod: Callable = Callable(callbacks, "onMove") if callbacks else Callable()
-	var startMethod: Callable = Callable(callbacks, "onStart") if callbacks else Callable()
-	var collisionMethod: Callable = Callable(callbacks, "onCollision") if callbacks else Callable()
-	var expiredMethod: Callable = Callable(callbacks, "onExpired") if callbacks else Callable()
-	var chargeEnterMethod: Callable = Callable(callbacks, "onChargeEnter") if callbacks else Callable()
-	var chargeExitMethod: Callable = Callable(callbacks, "onChargeExit") if callbacks else Callable()
-	var anticipateEnterMethod: Callable = Callable(callbacks, "onAnticipateEnter") if callbacks else Callable()
-	var mainEnterMethod: Callable = Callable(callbacks, "onMainEnter") if callbacks else Callable()
-	var recoveryEnterMethod: Callable = Callable(callbacks, "onRecoveryEnter") if callbacks else Callable()
-	var completedMethod: Callable = Callable(callbacks, "onCompleted") if callbacks else Callable()
+	var moveMethod: Callable = Callable(callbackStrategy, "onMove") if callbackStrategy else Callable()
+	var startMethod: Callable = Callable(callbackStrategy, "onStart") if callbackStrategy else Callable()
+	var collisionMethod: Callable = Callable(callbackStrategy, "onCollision") if callbackStrategy else Callable()
+	var expiredMethod: Callable = Callable(callbackStrategy, "onExpired") if callbackStrategy else Callable()
+	var chargeEnterMethod: Callable = Callable(callbackStrategy, "onChargeEnter") if callbackStrategy else Callable()
+	var chargeExitMethod: Callable = Callable(callbackStrategy, "onChargeExit") if callbackStrategy else Callable()
+	var anticipateEnterMethod: Callable = Callable(callbackStrategy, "onAnticipateEnter") if callbackStrategy else Callable()
+	var mainEnterMethod: Callable = Callable(callbackStrategy, "onMainEnter") if callbackStrategy else Callable()
+	var recoveryEnterMethod: Callable = Callable(callbackStrategy, "onRecoveryEnter") if callbackStrategy else Callable()
+	var completedMethod: Callable = Callable(callbackStrategy, "onCompleted") if callbackStrategy else Callable()
 	printDebug("开始发射 - attackIndex: %d, projectileIndex: %d, startPosition: %s, targetPosition: %s" % [attackIndex, projectileIndex, startPosition, targetPosition])
 
 	# -------------------------------------------------------------------------
@@ -194,10 +228,38 @@ func requestProjectile(customTarget: Node2D = null, gability: GameplayAbility = 
 
 
 #region Process Input
+@warning_ignore_start("unused_parameter")
 
 func onInputComponent_didUpdateInputActionsList(_event: InputEvent) -> void:
+	if not isEnabled: return
 	if Input.is_action_just_pressed(GlobalInput.Actions.fire):
 		#requestProjectile()
 		pass
+
+
+func onProjectileCallbackStrategy_didAnticipateEnter(attack: Attack2D) -> void:
+	if not isEnabled: return
+	didAnticipateEnter.emit(attack)
+
+
+func onProjectileCallbackStrategy_didChargeEnter(attack: Attack2D) -> void:
+	if not isEnabled: return
+	didChargeEnter.emit(attack)
+
+
+func onProjectileCallbackStrategy_didMainEnter(attack: Attack2D) -> void:
+	if not isEnabled: return
+	didMainEnter.emit(attack)
+
+
+func onProjectileCallbackStrategy_didRecoveryEnter(attack: Attack2D) -> void:
+	if not isEnabled: return
+	didRecoveryEnter.emit(attack)
+
+
+func onProjectileCallbackStrategy_didComplete(attack: Attack2D) -> void:
+	if not isEnabled: return
+	didComplete.emit(attack)
+
 
 #endregion
