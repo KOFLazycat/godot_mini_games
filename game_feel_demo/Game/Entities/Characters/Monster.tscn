@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" uid="uid://bv4nl55gi16vx" path="res://Components/Physics/PlatformerPhysicsComponent.tscn" id="8_yho47"]
 [ext_resource type="PackedScene" uid="uid://cktlk4chajbl5" path="res://Game/Components/AI/MonsterHSMComponent.tscn" id="11_gi7y2"]
 [ext_resource type="PackedScene" uid="uid://dn7cpj4u7w1jy" path="res://Components/Physics/CharacterBodyComponent.tscn" id="12_5q4w6"]
+[ext_resource type="PackedScene" uid="uid://b5cfld12110te" path="res://Game/Scenes/VFXs/Bloods/BloodSpawner.tscn" id="12_mu6ig"]
+[ext_resource type="Resource" uid="uid://2jlkrk0gwai2" path="res://Game/Resources/SFXs/BulletImpactListSoundResource.tres" id="13_85biu"]
 [ext_resource type="PackedScene" uid="uid://ettfulbm7ww8" path="res://Game/Components/Gameplay/ASCComponent.tscn" id="18_ysnw6"]
 [ext_resource type="PackedScene" uid="uid://cbcacmmmb42mo" path="res://Game/Components/Combat/HurtBoxComponent.tscn" id="19_nrpjp"]
 
@@ -698,6 +700,12 @@ animationPlayer = NodePath("../../../Animation/MainAnimationPlayer")
 
 [node name="HurtState" parent="MonsterHSMComponent/LimboHSM" parent_id_path=PackedInt32Array(182877559, 1399374478) index="1" unique_id=1603525524 node_paths=PackedStringArray("animationPlayer")]
 animationPlayer = NodePath("../../../Animation/MainAnimationPlayer")
+
+[node name="BloodSpawner" parent="MonsterHSMComponent/LimboHSM/HurtState" index="0" unique_id=1790916200 instance=ExtResource("12_mu6ig")]
+maxSplatterDist = 40.0
+maxSplatterCount = 2
+minSplatterCount = 1
+impactSoundResource = ExtResource("13_85biu")
 
 [node name="DieState" parent="MonsterHSMComponent/LimboHSM" parent_id_path=PackedInt32Array(182877559, 1399374478) index="2" unique_id=1678462464 node_paths=PackedStringArray("animationPlayer")]
 animationPlayer = NodePath("../../../Animation/MainAnimationPlayer")

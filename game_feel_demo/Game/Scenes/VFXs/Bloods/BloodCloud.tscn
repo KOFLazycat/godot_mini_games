@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://8vr41u8we2dq"]
 
-[ext_resource type="Texture2D" uid="uid://cjq7nfvewdn5a" path="res://Game/Assets/Images/VFXs/Bloods/blob_sprite_sheet.png" id="1_obtwa"]
+[ext_resource type="Texture2D" uid="uid://cjq7nfvewdn5a" path="res://Game/Assets/Images/VFXs/Bloods/blob_sprite_sheet.png" id="1_6dhgl"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_3ujoo"]
 particles_animation = true
@@ -18,11 +18,10 @@ curve = SubResource("Curve_6sou8")
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_op0la"]
 particle_flag_disable_z = true
 emission_shape = 1
-emission_sphere_radius = 60.0
+emission_sphere_radius = 43.44
 angle_max = 720.0
 gravity = Vector3(0, 0, 0)
-scale_min = 1.5
-scale_max = 2.0
+scale_min = 0.5
 color = Color(0.729412, 0.290196, 0.282353, 0.266667)
 alpha_curve = SubResource("CurveTexture_e15eo")
 anim_offset_max = 1.0
@@ -31,19 +30,19 @@ anim_offset_max = 1.0
 z_index = 600
 z_as_relative = false
 
-[node name="DeleteTimer" type="Timer" parent="." unique_id=233423103]
-wait_time = 4.0
-autostart = true
-
 [node name="BloodCloudParticles" type="GPUParticles2D" parent="." unique_id=1599260383]
 material = SubResource("CanvasItemMaterial_3ujoo")
 emitting = false
 amount = 3
-texture = ExtResource("1_obtwa")
+texture = ExtResource("1_6dhgl")
 one_shot = true
 explosiveness = 1.0
 visibility_rect = Rect2(-300, -300, 600, 600)
 process_material = SubResource("ParticleProcessMaterial_op0la")
 
-[connection signal="timeout" from="DeleteTimer" to="." method="queue_free"]
+[node name="DeleteTimer" type="Timer" parent="." unique_id=233423103]
+wait_time = 4.0
+autostart = true
+
 [connection signal="ready" from="BloodCloudParticles" to="BloodCloudParticles" method="restart"]
+[connection signal="timeout" from="DeleteTimer" to="." method="queue_free"]

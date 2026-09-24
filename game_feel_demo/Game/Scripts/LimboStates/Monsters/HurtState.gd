@@ -2,6 +2,9 @@ extends LimboState
 
 @export var animationPlayer: AnimationPlayer
 
+@onready var bloodSpawner: BloodSpawner = $BloodSpawner
+
+
 func _enter() -> void:
 	var effectSpec: GameplayEffectSpec = get_cargo() as GameplayEffectSpec
 	if effectSpec and animationPlayer:
@@ -9,6 +12,7 @@ func _enter() -> void:
 		var hitResults: Array[Dictionary] = targetData.get_hits_for_node(agent)
 		
 		for res: Dictionary in hitResults:
+			bloodSpawner.spawnBloodFromData(res["position"], res["normal"], res["damage_direction"], false, false, false)
 			if (res["position"].x < agent.sprite.global_position.x):
 				animationPlayer.play("BackHit")
 				animationPlayer.clear_queue()

@@ -210,6 +210,8 @@ func onCollision(proj: Projectile2D, areaRid: RID, areaNode: Node2D, targetNode:
 			if colliderEntity:
 				# 找到真正的collider实体
 				result["collider"] = colliderEntity
+				# 记录伤害方向
+				result["damage_direction"] = proj.direction
 				var targetData: GameplayAbilityTargetData = GameplayAbilityTargetData.new()
 				targetData.append_physics_hit(result)
 				proj.individual_properties.set(INDIVIDUAL_PROPERTIES_KEY_TARGETDATA, targetData)
