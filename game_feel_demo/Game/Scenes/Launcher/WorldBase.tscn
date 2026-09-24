@@ -250,7 +250,6 @@ tile_map_data = PackedByteArray("AAAAAAkAAAACAAEAAAABAAoAAAABAAAAAAACAAoAAAAJAAM
 tile_set = SubResource("TileSet_kipt4")
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="TileLayer" unique_id=83562310]
-visible = false
 position = Vector2(228, -10)
 amount = 200
 lifetime = 0.8
@@ -282,9 +281,17 @@ position = Vector2(146, 140)
 [node name="Monster" parent="EnemyLayer" unique_id=1245323086 instance=ExtResource("11_wnpya")]
 position = Vector2(275, 147)
 
+[node name="Monster2" parent="EnemyLayer" unique_id=1844589378 instance=ExtResource("11_wnpya")]
+position = Vector2(360, 255)
+
+[node name="Monster3" parent="EnemyLayer" unique_id=2096002156 instance=ExtResource("11_wnpya")]
+position = Vector2(453, 220)
+
 [node name="VFXLayer" type="Node2D" parent="." unique_id=2127757231]
 
 [node name="Projectiles" type="Node2D" parent="VFXLayer" unique_id=66610788 groups=["projectiles_layer"]]
+
+[node name="Visuals" type="Node2D" parent="VFXLayer" unique_id=951324333 groups=["visuals"]]
 
 [node name="HUDTemplate" parent="." unique_id=1336587380 instance=ExtResource("12_pebv2")]
 layer = 50

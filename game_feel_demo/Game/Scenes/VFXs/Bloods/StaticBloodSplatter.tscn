@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://du56fi5r13vlc"]
 
 [ext_resource type="Script" uid="uid://bxdypysaol2k7" path="res://Game/Scenes/VFXs/Bloods/BloodSplatter.gd" id="1_uog0t"]
+[ext_resource type="Resource" uid="uid://bn4x8tigg6c7k" path="res://Game/Resources/SFXs/SplashListSoundResource.tres" id="2_6fqpf"]
 [ext_resource type="Texture2D" uid="uid://uhv5uh0nma7" path="res://Game/Assets/Images/VFXs/Bloods/blood_splatters.png" id="2_8oa4o"]
 
 [node name="StaticBloodSplatter" type="Node2D" unique_id=1230012639]
@@ -9,6 +10,7 @@ modulate = Color(0.482353, 0.168627, 0.168627, 1)
 z_index = 200
 z_as_relative = false
 script = ExtResource("1_uog0t")
+splashListSoundResource = ExtResource("2_6fqpf")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=534363216]
 texture = ExtResource("2_8oa4o")
