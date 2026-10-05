@@ -3,7 +3,7 @@
 ## Displays a button in the inspector that opens a dedicated tag editor 
 ## popup window, allowing users to assign, create, or delete tags.
 ##
-## @meta_addon: GodotGAS Version 1 (See plugin version for exact version)
+## @meta_addon: GodotGAS
 ## @meta_author: YulRun (https://YulRun.Dev)
 ## @meta_license: MIT
 
@@ -13,6 +13,9 @@ extends EditorProperty
 
 ## Addon project settings.
 const GodotGasProjectSettings: = preload("res://addons/GodotGAS/utilities/project_settings.gd")
+
+## Property type.
+var property_type: = TYPE_STRING
 
 ## The main button displayed in the inspector row.
 var _button := Button.new()
@@ -46,7 +49,16 @@ var _is_updating_from_tree: bool = false
 
 
 #region Initialization & Lifecycle
-func _init() -> void:
+func _init(type: = TYPE_STRING) -> void:
+	assert(
+		type == TYPE_ARRAY
+		or type == TYPE_PACKED_STRING_ARRAY
+		or type == TYPE_STRING
+		or type == TYPE_STRING_NAME,
+		"Unsupported variant type.",
+	)
+	self.property_type = type
+
 	_registry = load(GodotGasProjectSettings.get_registry_tag_path()) as GameplayTagRegistry
 	
 	_button.text = "Edit Tags..."
@@ -107,7 +119,7 @@ func _on_registry_changed() -> void:
 			
 	# If this specific inspector row lost a tag, update its text instantly
 	if did_change:
-		_button.text = "Tags (%d selected)" % _current_tags.size()
+		_update_button_text()
 
 
 ## Synchronizes the UI with the inspected object's data.
@@ -119,10 +131,46 @@ func _update_property() -> void:
 	elif val is StringName or val is String:
 		_current_tags = [val] if not String(val).is_empty() else []
 	
-	_button.text = "Tags (%d selected)" % _current_tags.size()
+	_update_button_text()
 	
 	if is_instance_valid(_popup) and _popup.visible and not _is_updating_from_tree:
 		_refresh_tree()
+
+
+func _update_button_text() -> void:
+	var tooltip_text: = ""
+	var current_tags: = _current_tags.duplicate()
+	current_tags.sort_custom(
+		func(a: String, b: String):
+			return a.casecmp_to(b) < 0
+	)
+
+	match property_type:
+		TYPE_STRING, \
+		TYPE_STRING_NAME:
+			if _current_tags.is_empty():
+				_button.text = "No tag"
+				tooltip_text = "No tag selected."
+			else:
+				_button.text = current_tags[0]
+				tooltip_text = "Selected tag:"
+				tooltip_text += "\n  - %s" % current_tags[0]
+		TYPE_ARRAY, \
+		TYPE_PACKED_STRING_ARRAY:
+			if _current_tags.is_empty():
+				_button.text = "No tags"
+				tooltip_text = "No tags selected."
+			else:
+				_button.text = "Tags (%d selected)" % current_tags.size()
+				var plural: = ""
+				if _current_tags.size() >= 2:
+					plural = "s"
+				tooltip_text = "Selected tag%s:" % plural
+				for current_tag in current_tags:
+					tooltip_text += "\n  - %s" % current_tag
+
+	_button.tooltip_text = tooltip_text
+
 #endregion
 
 
@@ -141,9 +189,30 @@ func _on_button_pressed() -> void:
 	EditorInterface.get_base_control().add_child(_popup)
 	_popup.popup_centered()
 	
+	# Dynamically match the Editor's active background color
+	var editor_theme = EditorInterface.get_editor_theme()
+	var base_color = editor_theme.get_color("base_color", "Editor")
+	var bg_style = StyleBoxFlat.new()
+	bg_style.bg_color = base_color
+	
+	# Wrap the window content in a PanelContainer to enforce the theme color
+	var bg_panel = PanelContainer.new()
+	bg_panel.add_theme_stylebox_override("panel", bg_style)
+	bg_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_popup.add_child(bg_panel)
+	
+	# Add a MarginContainer for 10px breathing room around the popup bounds
+	var margin_container = MarginContainer.new()
+	margin_container.add_theme_constant_override("margin_left", 10)
+	margin_container.add_theme_constant_override("margin_right", 10)
+	margin_container.add_theme_constant_override("margin_top", 10)
+	margin_container.add_theme_constant_override("margin_bottom", 10)
+	margin_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg_panel.add_child(margin_container)
+	
 	var main_vbox := VBoxContainer.new()
 	main_vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, 8)
-	_popup.add_child(main_vbox)
+	margin_container.add_child(main_vbox)
 	
 	_search_bar = LineEdit.new()
 	_search_bar.placeholder_text = "Search tags..."
@@ -153,6 +222,7 @@ func _on_button_pressed() -> void:
 	_tree = Tree.new()
 	_tree.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_tree.hide_root = true
+	_tree.set_column_clip_content(0, true) # Ensures inline tree buttons are never pushed off-screen
 	_tree.item_edited.connect(_on_tree_item_edited)
 	_tree.button_clicked.connect(_on_tree_button_clicked)
 	main_vbox.add_child(_tree)
@@ -290,7 +360,7 @@ func _on_tree_button_clicked(item: TreeItem, column: int, id: int, mouse_button_
 		_current_tags.clear()
 		emit_changed(get_edited_property(), StringName(""))
 	
-	_button.text = "Tags (%d selected)" % _current_tags.size()
+	_update_button_text()
 	
 	_registry.remove_tag(tag_to_remove)
 	_set_status("Deleted tag: " + tag_to_remove, true)

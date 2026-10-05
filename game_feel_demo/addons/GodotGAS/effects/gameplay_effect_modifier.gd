@@ -1,88 +1,88 @@
-## GameplayEffectModifier - 效果修饰器
+## A mathematical rule detailing how a Gameplay Effect alters an Attribute.
 ##
-## 功能说明：
-## 定义游戏效果如何修改属性的数学规则
-## 支持固定值和基于等级的曲线缩放
+## Supports flat values, level-based curve scaling, SetByCaller injection, and Attribute-Based scaling.
 ##
-## 使用场景：
-## - 固定伤害：-50 生命值
-## - 百分比加成：攻击力 +50%
-## - 等级缩放：根据角色等级调整属性
-##
-## 数学运算示例：
-## - ADD: 基础值 + 修饰值
-## - MULTIPLY: 基础值 * 修饰值
-## - DIVIDE: 基础值 / 修饰值
-## - OVERRIDE: 完全替换为修饰值
-##
-## @meta_addon: GodotGAS Version 1 (See plugin version for exact version)
+## @meta_addon: GodotGAS
 ## @meta_author: YulRun (https://YulRun.Dev)
 ## @meta_license: MIT
 
 @icon("res://addons/GodotGAS/icons/godot_gas_asc.svg")
 class_name GameplayEffectModifier extends Resource
 
-## ============================================================================
-## 枚举定义
-## ============================================================================
-
-## 操作类型 - 定义应用于属性的数学运算
+## Defines the mathematical operation applied to the attribute.
+## Formula: Current = (Base + ADD) * (1.0 + PERCENT_ADD) * MULTIPLY / DIVIDE
 enum Operation {
-	ADD,       ## 加法：添加修饰值（使用负值进行伤害/减少）
-	MULTIPLY,  ## 乘法：乘以当前值（如 1.5 表示 +50%）
-	DIVIDE,    ## 除法：除以当前值
-	OVERRIDE   ## 覆盖：完全用修饰值替换当前值
+	ADD,         # Flat additions applied BEFORE percentages (+20 Ring of Health)
+	PERCENT_ADD, # Additive percentages scaling off (Base + ADD) (+0.5 and +0.2 = +0.7)
+	MULTIPLY,    # Multiplicative percentages applied to the running total (1.5 * 1.2 = 1.8)
+	DIVIDE,      # Division applied to the final calculated total
+	OVERRIDE     # Hard stat override, bypassing all other math
 }
 
-## ============================================================================
-## 导出参数
-## ============================================================================
+## Defines where the modifier gets its mathematical value from.
+enum MagnitudeCalculationType {
+	STATIC,         # Uses the flat magnitude or scaling curve defined in the inspector
+	SET_BY_CALLER,  # Ignores static values; pulls the number from the Spec at runtime using a tag
+	ATTRIBUTE_BASED # Scales directly off an existing attribute from the source or target
+}
 
-## 属性名称
-## AttributeSet 中属性的确切变量名（如 "health" 或 "mana"）
+## Defines which entity to pull the backing attribute from.
+enum AttributeSource {
+	SOURCE, # The entity that cast the effect
+	TARGET  # The entity receiving the effect
+}
+
+## Defines whether an Attribute-Based modifier reads the buffed total or the unbuffed base.
+enum AttributeCaptureType {
+	CURRENT_VALUE, # The running, buffed total
+	BASE_VALUE     # The permanent, unbuffed base stat
+}
+
+## The exact variable name of the attribute in the AttributeSet (e.g., "health" or "mana").
 @export var attribute_name: String = ""
 
-## 操作类型
-## 数学运算的应用方式
+## How the math should be applied.
 @export var operation: Operation = Operation.ADD
 
-@export_category("Magnitude Calculation")
-## ============================================================================
-## 数值计算
-## ============================================================================
+## Higher priority wins when several active OVERRIDE modifiers target one attribute.
+## Equal priorities choose the higher magnitude, independent of application order.
+@export var override_priority: int = 0
 
-## 修饰值
-## 如果没有提供曲线，则使用固定数值
-## 如果提供了曲线，此值作为曲线输出的乘数
+## The source of the mathematical value.
+@export var magnitude_calculation: MagnitudeCalculationType = MagnitudeCalculationType.STATIC
+
+@export_group("Static Calculation")
+## A flat number used if no curve is provided. 
+## If a curve IS provided, this acts as a Multiplier to the curve's output.
 @export var magnitude: float = 0.0
 
-## 缩放曲线（可选）
-## Godot Curve 资源
-## X 轴是角色等级，Y 轴是修饰器的基础值
+## Optional: A Godot Curve resource. The X-axis is the Character Level, 
+## and the Y-axis is the base value of the modifier.
 @export var scaling_curve: Curve
+
+@export_group("Set By Caller Calculation")
+## If magnitude_calculation is SET_BY_CALLER, this is the tag the ASC will look for
+## inside the Spec to find the dynamic value.
+@export_custom(PROPERTY_HINT_NONE, "gas::tag") var set_by_caller_tag: StringName = &""
+
+@export_group("Attribute Based Calculation")
+## Whether to pull the attribute from the entity casting the effect (SOURCE) or receiving the effect (TARGET).
+@export var attribute_source: AttributeSource = AttributeSource.SOURCE
+## The exact name of the attribute to scale off of (e.g., "attack_power").
+@export var backing_attribute_name: String = ""
+## Determines if the modifier scales off the target's currently buffed stat or unbuffed base stat.
+@export var attribute_capture_type: AttributeCaptureType = AttributeCaptureType.CURRENT_VALUE
+## A multiplier applied to the fetched attribute's current value (e.g., 1.5 * AttackPower).
+@export var attribute_multiplier: float = 1.0
 
 
 #region Math Evaluation
-## ============================================================================
-## 数学计算方法
-## ============================================================================
-
-## 计算修饰器的最终数值
-##
-## 根据角色等级计算修饰器的最终数值
-## 如果有曲线：对曲线采样并乘以基础值
-## 如果无曲线：返回固定值
-##
-## @param level - 角色等级
-## @return - 最终计算出的修饰值
+## Evaluates the final magnitude of this modifier based on the character's level.
+## NOTE: Only runs if the calculation type is STATIC.
 func calculate_magnitude(level: float = 1.0) -> float:
 	if scaling_curve:
-		## Godot 曲线默认在 X=0.0 到 X=1.0 之间评估
-		## 但如果曲线域设置正确，我们可以采样超过 1.0
-		## 我们对曲线采样，然后乘以基础值
 		var curve_value = scaling_curve.sample(level)
 		return curve_value * magnitude
-
-	## 如果没有曲线，返回固定的静态数值
+		
 	return magnitude
 #endregion

@@ -1,164 +1,126 @@
-## AbilitySystemComponent - 能力系统组件
+## The central brain of the GodotGAS framework.
 ##
-## 功能说明：
-## GodotGAS 框架的核心大脑
-## 管理实体的标签、属性和能力
+## Manages tags, attributes, and abilities for a specific entity.
 ##
-## 使用场景：
-## - 挂载在角色/敌人/任何需要游戏能力系统的实体上
-## - 管理技能激活、属性修改、效果应用
-## - 通过信号与 UI 系统通信（血条、Buff图标等）
-##
-## 核心系统：
-## - Tags (标签): 状态管理如眩晕、中毒等
-## - Attributes (属性): 生命值、魔法值、攻击力等
-## - Abilities (技能): 主动/被动技能
-## - Effects (效果): Buff、Debuff、伤害、治疗等
-##
-## @meta_addon: GodotGAS Version 1 (See plugin version for exact version)
+## @meta_addon: GodotGAS
 ## @meta_author: YulRun (https://YulRun.Dev)
 ## @meta_license: MIT
 
 @icon("res://addons/GodotGAS/icons/godot_gas_asc.svg")
 class_name AbilitySystemComponent extends Node
 
-## ============================================================================
-## 信号系统
-## ============================================================================
+const SHARED_ATTRIBUTE_GROUP: StringName = &"GodotGAS.SharedAttributeASCs"
 
-## 标签添加信号
-## 标签计数从 0 变为 1 时触发
+## Fired the moment a tag's count goes from 0 to 1.
 signal tag_added(tag: StringName)
 
-## 标签计数增加信号
-## 标签计数增加时触发
+## Fired when a tag's count increments
 signal tag_count_changed(tag: StringName, new_count: int)
 
-## 标签移除信号
-## 标签计数降为 0 完全移除时触发
+## Fired the moment a tag's count drops to 0 and is completely removed.
 signal tag_removed(tag: StringName)
 
-## 属性变化信号
-## 属性的 current_value 实际被修改时触发
-## 用途：连接 UI 血条或检测死亡（Health <= 0）
+## Fired whenever an attribute's current_value is actually modified.
+## Useful for connecting UI Health Bars or checking for Death (Health <= 0).
 signal attribute_changed(attribute_name: String, old_value: float, new_value: float, effect_spec: GameplayEffectSpec)
 
-## 效果应用到目标信号
-## 攻击者命中目标时触发，通知自己的系统
+## Fired by the ATTACKER to tell its own systems "I successfully hit someone"
 signal effect_applied_to_target(target_asc: AbilitySystemComponent, spec: GameplayEffectSpec)
 
-## 游戏事件接收信号
-## 收到游戏事件时触发
+## Fired anytime we receive a gameplay_event
 signal gameplay_event_received(event_tag: StringName, payload: Variant)
 
-## 活跃效果添加信号
-## 持续或无限效果成功应用时触发
-## UI 使用此信号开始冷却动画或显示 Buff/Debuff 图标
+## Fired when a Duration or Infinite effect is successfully applied to this ASC.
+## The UI uses this to start Cooldown Sweeps or display Buff/Debuff Icons.
 signal active_effect_added(active_effect: ActiveGameplayEffect)
 
-## 活跃效果移除信号
-## 效果自然过期或被强制清除时触发
-## UI 使用此信号提前清除冷却或移除 Buff/Debuff 图标
+## Fired when an effect expires naturally or is forcefully purged.
+## The UI uses this to clear Cooldowns early or remove Buff/Debuff Icons.
 signal active_effect_removed(active_effect: ActiveGameplayEffect)
 
-## 技能激活失败信号
-## 尝试激活技能物理失败时触发
-## payload 字典包含上下文（如 {"tags": [阻止的标签数组]}）
+## Fired when a physical attempt to activate an ability fails.
+## The payload dictionary contains context (e.g., {"tags": [array of blocking tags]}).
 signal ability_activation_failed(ability: GameplayAbility, reason: ActivationError, payload: Dictionary)
 
-## 效果接收信号
-## 当 ASC 从他人接收效果时触发
-## UI 监听此信号生成伤害数字、"Miss!"或"Blocked!"文本
+## Fired when THIS ASC receives an effect from someone else. 
+## UI listens to this to spawn Damage Numbers, "Miss!", or "Blocked!" text.
 signal effect_received(source_asc: AbilitySystemComponent, spec: GameplayEffectSpec)
 
-@export_category("State Management")
-## ============================================================================
-## 状态管理参数
-## ============================================================================
+## Fired when an ability is added to this ASC
+## Holds reference to the ability that was added..
+signal ability_granted(ability: GameplayAbility)
 
-## 属性集数组
-## 存储角色的所有属性（生命值、魔法值、攻击力等）
+## Fired when an ability is removed to this ASC.
+## Holds reference to the ability that was removed.
+signal ability_removed(ability: GameplayAbility)
+
+
+@export_category("State Management")
 @export var attribute_sets: Array[AttributeSet] = []
 
-## 是否共享属性
-## 如果为 false，ASC 启动时创建属性集的独特深拷贝
-## 如果为 true，与其他实体共享精确的资源内存（Unreal 默认值为 false）
+## If false, this ASC will create a unique deep copy of its attribute sets on start.
+## If true, it will share the exact resource memory with other entities (Unreal default is false).
 @export var share_attributes: bool = false
 
 @export_category("Networking")
-## ============================================================================
-## 网络参数
-## ============================================================================
-
-## 是否网络化
-## 如果为 true，ASC 将自动生成同步器处理属性和标签
-## 同时拦截并通过 RPC 路由输入/效果以实现服务器授权
+## If true, this ASC will automatically spawn a Synchronizer to handle Attributes and Tags,
+## while also intercepting and routing Inputs/Effects via RPCs for Server Authority.
 @export var is_networked: bool = false
 
 @export_category("Debugging")
-## ============================================================================
-## 调试参数
-## ============================================================================
-
-## 是否启用信号日志调试
-## 启用后将打印所有信号的详细日志
 @export var debug_signal_log: bool = false
 
-## ============================================================================
-## 内部状态变量
-## ============================================================================
+## If true, automatically spawns a GASRuntimeDebugger overlay bound to this ASC.
+@export var show_visual_debugger: bool = false
 
-## 当前按下的输入 ID 数组
+## Array of integer IDs representing currently held inputs.
 var _active_inputs: Array[int] = []
 
-## 已授予和管理的技能数组
+## Array of actively granted and managed abilities.
 var _active_abilities: Array[GameplayAbility] = []
 
-## 当前活跃标签及其引用计数的字典
+## Dictionary tracking all currently active tags and their reference counts.
 var _active_tags: Dictionary = {}
 
-## 当前应用到此组件的活跃游戏效果数组
+## Array tracking all active gameplay effects currently applied to this component.
 var _active_effects: Array[ActiveGameplayEffect] = []
 
-## ============================================================================
-## 枚举定义
-## ============================================================================
+## Recursion-guard flags to safely cascade suppression evaluations when tags change.
+var _is_evaluating_suppression: bool = false
+var _suppression_queued: bool = false
 
-## 激活错误 - 定义技能激活失败的确切原因
+## Defines the exact reason an ability failed to activate.
 enum ActivationError {
-	ALREADY_ACTIVE,          ## 技能已在执行
-	ON_COOLDOWN,            ## 技能在冷却中
-	BLOCKED_TAG,             ## 被标签阻止
-	MISSING_TAG,             ## 缺少必需标签
-	INSUFFICIENT_RESOURCES,  ## 资源不足
-	INTERNAL_ERROR           ## 内部错误
+	ALREADY_ACTIVE,
+	ON_COOLDOWN,
+	FAILED_QUERY,
+	INSUFFICIENT_RESOURCES,
+	BLOCKED_BY_OTHER_ABILITY,
+	INTERNAL_ERROR
 }
 
 
 #region Core Virtuals
-## ============================================================================
-## 核心虚函数
-## ============================================================================
-
 func _ready() -> void:
-	## 强制内存隔离（Unreal GAS 标准）
-	## 如果不共享属性，创建属性集的深拷贝
+	# Enforce Memory Isolation (Unreal GAS Standard)
 	if not share_attributes:
 		for i in range(attribute_sets.size()):
 			if attribute_sets[i]:
-				## duplicate(true) 确保内部的 AttributeData 节点也被克隆
+				# duplicate(true) ensures the internal AttributeData nodes are also cloned
 				attribute_sets[i] = attribute_sets[i].duplicate(true)
-
-	## 自动网络同步设置
+	else:
+		add_to_group(SHARED_ATTRIBUTE_GROUP)
+	
+	# Auto-Networking Synchronization Setup
 	if is_networked:
 		var sync = MultiplayerSynchronizer.new()
 		sync.name = "GASSynchronizer"
 		var rep_config = SceneReplicationConfig.new()
-
-		## 1. 同步活跃标签数组
+		
+		# 1. Sync Active Tags Array
 		rep_config.add_property(NodePath(".:_active_tags"))
-
-		## 2. 动态映射和同步所有实例化的属性！
+		
+		# 2. Dynamically map and sync all instanced Attributes!
 		for i in range(attribute_sets.size()):
 			if attribute_sets[i]:
 				var set_path = ".:attribute_sets:" + str(i)
@@ -166,11 +128,11 @@ func _ready() -> void:
 					if prop.class_name == &"AttributeData":
 						rep_config.add_property(NodePath(set_path + ":" + prop.name + ":current_value"))
 						rep_config.add_property(NodePath(set_path + ":" + prop.name + ":base_value"))
-
+		
 		sync.replication_config = rep_config
 		add_child(sync)
-
-	## 调试绑定
+	
+	# Debug Binding
 	if debug_signal_log:
 		tag_added.connect(_debug_tag_added)
 		tag_count_changed.connect(_debug_tag_count_changed)
@@ -180,86 +142,91 @@ func _ready() -> void:
 		gameplay_event_received.connect(_debug_gameplay_event_received)
 		active_effect_added.connect(_debug_active_effect_added)
 		active_effect_removed.connect(_debug_active_effect_removed)
+		
+	# Visual Runtime Debugger Integration
+	if show_visual_debugger:
+		var debugger := GASRuntimeDebugger.new()
+		debugger.name = "GASRuntimeDebugger"
+		add_child(debugger)
 
 
-## 每帧处理
-## 处理持续效果的周期性触发和过期
 func _process(delta: float) -> void:
 	for i in range(_active_effects.size() - 1, -1, -1):
 		var active_effect = _active_effects[i]
-
-		## 处理周期性触发（回合制除外）
+		
+		# Handle Periodic Ticks (Skip if Turn-Based)
 		if active_effect.spec.period > 0.0 and active_effect.spec.effect_def.policy != GameplayEffect.DurationPolicy.TURN_BASED:
 			active_effect.time_until_next_tick -= delta
 			if active_effect.time_until_next_tick <= 0.0:
-
-				## 1. 触发周期性 Cue
-				for cue_tag in active_effect.spec.effect_def.periodic_cue_tags:
-					execute_cue(cue_tag, {"target": get_parent()})
-
-				## 2. 广播周期性事件（唤醒被动技能！）
-				_trigger_effect_events(active_effect.spec)
-
-				## 3. 重新评估并应用数学计算
-				## 每 tick 执行允许 DoT 在攻击者属性变化时动态更新！
-				_evaluate_spec(active_effect.spec)
-				_commit_spec_math(active_effect.spec)
-
-				## 重置下一次触发的计时器
+				
+				# Skip tick outputs if suppressed, but continue tracking tick interval
+				if not active_effect.is_suppressed:
+					# 1. Trigger Periodic Cues
+					for cue_tag in active_effect.spec.effect_def.periodic_cue_tags:
+						execute_cue(cue_tag, {"target": get_parent()})
+					
+					# 2. Broadcast Periodic Events (Wakes up passives!)
+					_trigger_effect_events(active_effect.spec)
+						
+					# 3. Re-Evaluate and Apply the math natively
+					# Doing this per tick allows DoTs to dynamically update if attacker stats change!
+					_evaluate_spec(active_effect.spec) 
+					_commit_spec_math(active_effect.spec)
+				
+				# Reset the clock for the next tick
 				active_effect.time_until_next_tick += active_effect.spec.period
-
-		## 处理过期
+		
+		# Handle Expiration
 		if active_effect.spec.effect_def.policy == GameplayEffect.DurationPolicy.DURATION:
 			active_effect.time_remaining -= delta
-
+			
 			if active_effect.time_remaining <= 0.0:
 				remove_active_effect(active_effect)
 
 
-## 推进回合
-## 由外部回合管理器调用以处理回合制效果
+## Called by your external Turn Manager to process turn-based effects.
 func advance_turn() -> void:
 	for i in range(_active_effects.size() - 1, -1, -1):
 		var active_effect = _active_effects[i]
 		var spec = active_effect.spec
-
+		
 		if spec.effect_def.policy == GameplayEffect.DurationPolicy.TURN_BASED:
-
-			## 1. 处理回合制周期性触发（DoT/HoT）
+			
+			# 1. Handle Turn-Based Periodic Ticks (DoTs / HoTs)
 			if spec.period > 0.0 and spec.effect_def.tick_on_turn_start:
-				## 1a. 触发 Cue
-				for cue_tag in spec.effect_def.periodic_cue_tags:
-					execute_cue(cue_tag, {"target": get_parent()})
-
-				## 1b. 广播事件
-				_trigger_effect_events(spec)
-
-				## 1c. 重新评估并应用计算
-				_evaluate_spec(spec)
-				_commit_spec_math(spec)
-
-			## 2. 减少回合计数器
+				if not active_effect.is_suppressed:
+					# 1a. Trigger Cues
+					for cue_tag in spec.effect_def.periodic_cue_tags:
+						execute_cue(cue_tag, {"target": get_parent()})
+					
+					# 1b. Broadcast Events
+					_trigger_effect_events(spec)
+					
+					# 1c. Re-evaluate and apply math
+					_evaluate_spec(spec)
+					_commit_spec_math(spec)
+			
+			# 2. Decrement the turn counter
 			spec.remaining_turns -= 1
-
-			## 3. 检查过期
+			
+			# 3. Check for expiration
 			if spec.remaining_turns <= 0:
 				remove_active_effect(active_effect)
 
 
-## 清理
-## 安全停止所有技能，移除所有活跃效果，并清除内部状态
-## 在拥有实体调用 queue_free() 前立即调用此方法以防止内存泄漏和孤立的 Cue
+## Safely halts all abilities, removes all active effects, and clears internal state.
+## Call this immediately before queue_free()'ing the owning Entity to prevent memory leaks and orphaned cues.
 func cleanup() -> void:
-	## 1. 强制中止所有授予的技能
+	# 1. Forcefully abort all granted abilities
 	for ability in _active_abilities:
 		if ability.is_active:
 			ability.abort_ability()
-
-	## 2. 反向计算数学并移除标签，但跳过昂贵的数组擦除
+			
+	# 2. Remove effects and reaggregate after each removal.
 	for i in range(_active_effects.size() - 1, -1, -1):
-		remove_active_effect(_active_effects[i], true)
-
-	## 3. 原子化清除所有跟踪数组（O(1)时间）
+		remove_active_effect(_active_effects[i])
+		
+	# 3. Clear remaining tracking state.
 	_active_inputs.clear()
 	_active_abilities.clear()
 	_active_tags.clear()
@@ -268,23 +235,21 @@ func cleanup() -> void:
 
 
 #region General Networking
-## ============================================================================
-## 通用网络
-## ============================================================================
-
-## 服务端接收客户端输入按下
+## Server executes inputs sent from the network Client.
 @rpc("any_peer", "call_remote", "reliable")
 func _server_receive_input_pressed(input_id: int) -> void:
 	if is_multiplayer_authority():
 		_ability_local_input_pressed(input_id)
 
-## 服务端接收客户端输入释放
+
+## Server executes inputs sent from the network Client.
 @rpc("any_peer", "call_remote", "reliable")
 func _server_receive_input_released(input_id: int) -> void:
 	if is_multiplayer_authority():
 		_ability_local_input_released(input_id)
 
-## 客户端执行由服务端广播的 Cue
+
+## Clients execute cues broadcasted by the Server.
 @rpc("authority", "call_remote", "reliable")
 func _client_execute_cue(tag: StringName, payload: Dictionary = {}) -> void:
 	_execute_local_cue(tag, payload)
@@ -292,74 +257,63 @@ func _client_execute_cue(tag: StringName, payload: Dictionary = {}) -> void:
 
 
 #region Cues
-## ============================================================================
-## Cue 视觉/音效系统
-## ============================================================================
-
-## 执行 Cue
-## 通过将请求转发到全局管理器来触发视觉/音频 Cue
-## 如果在服务端上运行，拦截并向客户端广播请求
+## Triggers a visual/audio cue by forwarding the request to the global manager.
+## Intercepts and blasts the request to clients if running on the Server.
 func execute_cue(tag: StringName, payload: Dictionary = {}) -> void:
 	if is_networked and multiplayer.has_multiplayer_peer() and is_multiplayer_authority():
 		rpc("_client_execute_cue", tag, payload)
-
+		
 	_execute_local_cue(tag, payload)
 
 
-## 本地执行 Cue
+## Physically executes the cue locally.
 func _execute_local_cue(tag: StringName, payload: Dictionary = {}) -> void:
-	## 我们传递 get_parent() 作为目标
-	## 这确保视觉 Cue 附加到角色/敌人，而非 ASC 节点本身
+	# We pass get_parent() as the target. 
+	# This ensures the visual cue attaches to the Character/Enemy, not the ASC node itself.
 	GameplayCueManager.execute_cue(tag, get_parent(), payload)
 #endregion
 
 
 #region Ability Management
-## ============================================================================
-## 技能管理
-## ============================================================================
-
-## 授予技能
-##
-## 将技能节点添加为 ASC 的子节点并注册到技能列表中
-## 被授予的技能将能够通过 ASC 进行激活和管理
-##
-## @param ability_node - 要授予的技能节点
+## Grants an ability to this ASC.
 func grant_ability(ability_node: GameplayAbility) -> void:
 	if not ability_node.is_inside_tree():
 		add_child(ability_node)
 	
 	ability_node.owner_asc = self
 	_add_active_ability(ability_node)
+	ability_granted.emit(ability_node)
 
 
-## 移除技能
-##
-## 从 ASC 中移除指定的技能
-## 会从技能列表中移除并销毁技能节点
-##
-## @param ability - 要移除的技能
+## Grants an ability directly from a GDScript resource (Code-First approach).
+## Instantiates the node, attaches it to the ASC, and returns the reference for dynamic configuration.
+func grant_ability_from_script(ability_script: Script) -> GameplayAbility:
+	if not ability_script:
+		push_error("GodotGAS: Cannot grant ability. Provided script is null.")
+		return null
+		
+	var ability_instance = ability_script.new()
+	
+	if not ability_instance is GameplayAbility:
+		push_error("GodotGAS: Script must extend GameplayAbility to be granted.")
+		ability_instance.free()
+		return null
+		
+	# Funnel it through our standard grant logic (which handles tree insertion and tracking)
+	grant_ability(ability_instance)
+	ability_granted.emit(ability_instance)
+	
+	return ability_instance
+
+
+## Removes an ability from this ASC.
 func remove_ability(ability: GameplayAbility) -> void:
 	_remove_active_ability(ability)
+	ability_removed.emit(ability)
 	ability.queue_free()
 
 
-## 门神检查 - 验证技能是否可以激活
-##
-## ASC 的核心验证方法，检查技能是否满足所有激活条件
-## 这是技能激活流程的第一道门槛，确保只有符合条件的技能才能执行
-##
-## 检查项目：
-## 1. 技能是否为空
-## 2. 技能是否已在执行
-## 3. 激活阻止标签（Status.Stunned 等）
-## 4. 冷却（个人冷却 + 共享冷却）
-## 5. 激活必需标签（Stance.Stealth 等）
-## 6. 资源消耗是否足够
-##
-## @param ability - 要检查的技能
-## @param emit_failure - 是否在失败时发出信号
-## @return - 允许激活返回 true
+## The Gatekeeper: ASC checks if the ability is allowed to run.
 func can_activate_ability(ability: GameplayAbility, emit_failure: bool = false) -> bool:
 	if ability == null:
 		if emit_failure:
@@ -370,70 +324,66 @@ func can_activate_ability(ability: GameplayAbility, emit_failure: bool = false) 
 		if emit_failure:
 			ability_activation_failed.emit(ability, ActivationError.ALREADY_ACTIVE, {})
 		return false
+		
+	# 1. Check Tag Relationship Blocking (Is another active ability blocking this one?)
+	for active_ability in _active_abilities:
+		if active_ability.is_active and active_ability != ability:
+			for blocked_tag in active_ability.block_abilities_with_tags:
+				# Support hierarchical blocking (e.g. blocking "Ability.Action" also blocks "Ability.Action.Melee")
+				if ability.ability_tag == blocked_tag or String(ability.ability_tag).begins_with(String(blocked_tag) + "."):
+					if emit_failure:
+						ability_activation_failed.emit(ability, ActivationError.BLOCKED_BY_OTHER_ABILITY, {"blocking_ability": active_ability})
+					return false
 	
-	# 1. Check Blocked Tags (e.g., Status.Stunned)
-	if has_any_tags(ability.activation_blocked_tags):
+	# 2. Check Activation Query
+	if ability.activation_query and not ability.activation_query.matches(self):
 		if emit_failure: 
-			ability_activation_failed.emit(ability, ActivationError.BLOCKED_TAG, {"tags": ability.activation_blocked_tags})
+			ability_activation_failed.emit(ability, ActivationError.FAILED_QUERY, {"query": ability.activation_query})
 		return false
 	
-	# 2. Check Cooldowns (Personal + Shared)
-	if ability.has_method("get_cooldown_tags"):
-		var cooldown_tags = ability.get_cooldown_tags()
-		if has_any_tags(cooldown_tags):
-			if emit_failure: 
-				ability_activation_failed.emit(ability, ActivationError.ON_COOLDOWN, {"tags": cooldown_tags})
-			return false
-	
-	# 3. Check Required Tags (e.g., Stance.Stealth)
-	if not ability.activation_required_tags.is_empty() and not has_all_tags(ability.activation_required_tags):
-		if emit_failure: 
-			ability_activation_failed.emit(ability, ActivationError.MISSING_TAG, {"tags": ability.activation_required_tags})
+	# 3. Check Cooldowns (Personal + Shared)
+	if not check_ability_cooldown(ability, emit_failure):
 		return false
 	
 	# 4. Check Resource Costs, Fully supports ExecCalcs predicting math
-	if ability.cost_effect and not can_afford_cost(ability.cost_effect, ability.ability_level):
-		if emit_failure: 
-			ability_activation_failed.emit(ability, ActivationError.INSUFFICIENT_RESOURCES, {"effect": ability.cost_effect})
+	if not check_ability_cost(ability, emit_failure):
 		return false
 		
 	return true
 
 
-## 添加活跃技能
-##
-## 内部方法，将技能添加到活跃技能列表中
-## 用于跟踪当前已授予的技能，支持取消引导中的技能等功能
-##
-## @param ability - 要添加的技能
+## Evaluates only the cooldown requirement of a given ability against this ASC.
+func check_ability_cooldown(ability: GameplayAbility, emit_failure: bool = false) -> bool:
+	if ability and ability.has_method("get_cooldown_tags"):
+		var cooldown_tags = ability.get_cooldown_tags()
+		if has_any_tags(cooldown_tags):
+			if emit_failure: 
+				ability_activation_failed.emit(ability, ActivationError.ON_COOLDOWN, {"tags": cooldown_tags})
+			return false
+	return true
+
+
+## Evaluates only the resource cost requirement of a given ability against this ASC.
+func check_ability_cost(ability: GameplayAbility, emit_failure: bool = false) -> bool:
+	if ability and ability.cost_effect and not can_afford_cost(ability.cost_effect, ability.ability_level):
+		if emit_failure: 
+			ability_activation_failed.emit(ability, ActivationError.INSUFFICIENT_RESOURCES, {"effect": ability.cost_effect})
+		return false
+	return true
+
+
+## Tracks an active ability (e.g., for canceling channeled spells).
 func _add_active_ability(ability: GameplayAbility) -> void:
 	if not _active_abilities.has(ability):
 		_active_abilities.append(ability)
 
 
-## 移除活跃技能引用
-##
-## 内部方法，从活跃技能列表中移除技能引用
-## 注意：此方法只是移除引用，不会销毁技能节点
-##
-## @param ability - 要移除的技能
+## Cleans up an ability reference.
 func _remove_active_ability(ability: GameplayAbility) -> void:
 	_active_abilities.erase(ability)
 
 
-## 检查是否可以支付资源消耗
-##
-## 检查实体是否有足够的资源来支付技能消耗
-## 创建临时的效果规格来模拟计算，支持预测性数学计算
-##
-## 流程：
-## 1. 创建模拟规格用于计算
-## 2. 评估规格（运行 ExecCalcs 进行数学计算）
-## 3. 验证预测数学与实际属性的对比
-##
-## @param effect - 消耗效果
-## @param effect_level - 效果等级
-## @return - 资源足够返回 true
+## Checks if the entity has enough resources to pay for a GameplayEffect cost.
 func can_afford_cost(effect: GameplayEffect, effect_level: float = 1.0) -> bool:
 	if not effect:
 		return true
@@ -444,6 +394,10 @@ func can_afford_cost(effect: GameplayEffect, effect_level: float = 1.0) -> bool:
 	
 	# 2. Evaluate the Spec (This runs the ExecCalcs to mutate magnitudes safely!)
 	_evaluate_spec(spec)
+	if effect.policy == GameplayEffect.DurationPolicy.INSTANT:
+		for base_target in _calculate_base_targets(spec).values():
+			if float(base_target) < 0.0:
+				return false
 	
 	# 3. Verify the predicted math against our actual attributes
 	for attr_name in spec.calculated_deltas:
@@ -457,32 +411,44 @@ func can_afford_cost(effect: GameplayEffect, effect_level: float = 1.0) -> bool:
 	return true
 
 
-## 取消具有指定标签的技能
-##
-## 中止所有正在执行的、拥有给定标签或被给定标签阻止的技能
-## 用于：当获得眩晕标签时，取消所有正在引导的技能
-##
-## @param tags - 要检查的标签数组
+## Cancels any currently running abilities that possess the given tags, 
+## or are blocked by the given tags.
 func cancel_abilities_with_tags(tags: Array[StringName]) -> void:
 	for ability in _active_abilities:
 		if not ability.is_active:
 			continue
 			
 		for tag in tags:
-			if ability.ability_tag == tag or tag in ability.activation_blocked_tags:
+			# Support hierarchical cancellation 
+			if ability.ability_tag == tag or String(ability.ability_tag).begins_with(String(tag) + "."):
 				ability.abort_ability()
 				break 
+				
+			if ability.activation_query:
+				if tag in ability.activation_query.ignore_tags or tag in ability.activation_query.ignore_exact_tags:
+					ability.abort_ability()
+					break 
+
+
+## Attempts to activate all granted abilities that match the given tag.
+## Returns true if at least one ability successfully activated (concurrently).
+func try_activate_abilities_by_tag(tag: StringName, event_payload: Variant = null) -> bool:
+	var activated_any: bool = false
+	
+	for ability in _active_abilities:
+		if ability.ability_tag == tag:
+			# Check the gatekeeper manually so we get an instant true/false
+			if can_activate_ability(ability):
+				# Fire and forget! Do not await, let it run concurrently in the background.
+				ability.try_activate(event_payload)
+				activated_any = true
+				
+	return activated_any
 #endregion
 
 
 #region Attributes
-## 获取属性数据
-##
-## 通过属性名称字符串获取 AttributeData 资源
-## 在所有属性集中搜索匹配的属性
-##
-## @param attribute_name - 属性名称（如 "Health"）
-## @return - 找到的 AttributeData 或 null
+## Retrieves an AttributeData resource by its string name.
 func get_attribute(attribute_name: String) -> AttributeData:
 	for set in attribute_sets:
 		if attribute_name in set: 
@@ -493,11 +459,7 @@ func get_attribute(attribute_name: String) -> AttributeData:
 	return null
 
 
-## 检查属性是否存在
-##
-## 判断 ASC 是否拥有指定名称的属性
-## @param attribute_name - 属性名称
-## @return - 存在返回 true
+## Helper function to determine if a AttributeData resource exists.
 func has_attribute(attribute_name: String) -> bool:
 	for set in attribute_sets:
 		if attribute_name in set:
@@ -506,55 +468,123 @@ func has_attribute(attribute_name: String) -> bool:
 	return false
 
 
-## 应用属性变化（内部方法）
-##
-## 安全地修改属性的 current_value
-## 此方法不应该在类外部直接调用，应该通过效果系统来修改属性
-##
-## 处理流程：
-## 1. 获取旧的属性值
-## 2. 计算建议值（旧值 + 变化量）
-## 3. 调用 pre_attribute_change 允许属性集进行预处理（如 Clamp）
-## 4. 实际修改属性值
-## 5. 发出 attribute_changed 信号
-## 6. 调用 post_attribute_change 允许属性集进行后处理
-##
-## @param attribute_name - 属性名称
-## @param amount - 变化量（可以为负数）
-## @param spec - 关联的效果规格（用于事件传递）
-## @return - 实际应用的变化量
+## Change the permanent base and then derive current from active effects.
 func _apply_attribute_change(attribute_name: String, amount: float, spec: GameplayEffectSpec = null) -> float:
 	for set in attribute_sets:
 		if attribute_name in set: 
 			var attr = set.get(attribute_name)
 			if attr is AttributeData:
-				var old_value = attr.current_value 
-				var proposed_value = old_value + amount
-				
-				var final_value = set.pre_attribute_change(attribute_name, proposed_value)
-				var actual_delta = final_value - old_value
-				
-				if final_value != old_value:
-					attr.current_value = final_value
-					attribute_changed.emit(attribute_name, old_value, final_value, spec)
-					
-					set.post_attribute_change(self, attribute_name, old_value, final_value)
-					
-				return actual_delta
+				var old_value: float = attr.current_value
+				attr.base_value = set.pre_attribute_change(attribute_name, attr.base_value + amount)
+				_recalculate_attribute(attribute_name, spec, old_value)
+				return attr.current_value - old_value
 				
 	push_warning("GodotGAS: Attempted to modify '%s', but the ASC does not possess that attribute." % attribute_name)
 	return 0.0
 
 
-## 初始化属性覆盖
-##
-## 接收强类型字典 {"attribute_name": override_value}
-## 动态生成一个即时效果来通过 GAS 管道安全地应用属性值
-##
-## 用途：初始化角色属性、设置初始属性值
-## 优势：通过效果系统应用，确保触发信号和 Clamp
-##
-## @param overrides - 属性名称到覆盖值的字典
+func _affected_attributes(spec: GameplayEffectSpec) -> Array[String]:
+	var names: Array[String] = []
+	if spec == null or spec.period > 0.0:
+		return names
+	for name in spec.execution_deltas:
+		if not names.has(String(name)):
+			names.append(String(name))
+	for modifier in spec.evaluated_modifiers:
+		var name := String(modifier["attribute"])
+		if not names.has(name):
+			names.append(name)
+	return names
+
+
+func _aggregate_attribute_value(attribute_name: String, base_value: float, extra_spec: GameplayEffectSpec = null) -> float:
+	var addition := 0.0
+	var percent_addition := 0.0
+	var multiplication := 1.0
+	var division := 1.0
+	var has_override := false
+	var override_priority := -2147483648
+	var override_value := -INF
+	var specs: Array[GameplayEffectSpec] = []
+	var owners: Array[AbilitySystemComponent] = [self]
+	if share_attributes and is_inside_tree():
+		var shared_attribute := get_attribute(attribute_name)
+		for candidate in get_tree().get_nodes_in_group(SHARED_ATTRIBUTE_GROUP):
+			if candidate != self and candidate is AbilitySystemComponent and candidate.get_attribute(attribute_name) == shared_attribute:
+				owners.append(candidate)
+	for owner in owners:
+		for active_effect in owner._active_effects:
+			if active_effect.is_suppressed:
+				continue
+			for stack_spec in active_effect.stack_specs:
+				specs.append(stack_spec)
+	if extra_spec != null:
+		specs.append(extra_spec)
+	for stack_spec in specs:
+		if stack_spec.period > 0.0:
+			continue
+		addition += float(stack_spec.execution_deltas.get(attribute_name, 0.0))
+		for modifier in stack_spec.evaluated_modifiers:
+			if modifier["attribute"] != attribute_name:
+				continue
+			var magnitude: float = modifier["magnitude"]
+			match modifier["operation"]:
+				GameplayEffectModifier.Operation.ADD:
+					addition += magnitude
+				GameplayEffectModifier.Operation.PERCENT_ADD:
+					percent_addition += magnitude
+				GameplayEffectModifier.Operation.MULTIPLY:
+					multiplication *= magnitude
+				GameplayEffectModifier.Operation.DIVIDE:
+					if not is_zero_approx(magnitude):
+						division *= magnitude
+				GameplayEffectModifier.Operation.OVERRIDE:
+					var priority: int = modifier["priority"]
+					if not has_override or priority > override_priority or (priority == override_priority and magnitude > override_value):
+						has_override = true
+						override_priority = priority
+						override_value = magnitude
+	return override_value if has_override else (base_value + addition) * (1.0 + percent_addition) * multiplication / division
+
+
+func _recalculate_attribute(attribute_name: String, spec: GameplayEffectSpec = null, old_value_override: Variant = null) -> float:
+	var attr := get_attribute(attribute_name)
+	if attr == null:
+		return 0.0
+	var attribute_set: AttributeSet = null
+	for candidate in attribute_sets:
+		if attribute_name in candidate and candidate.get(attribute_name) == attr:
+			attribute_set = candidate
+			break
+	if attribute_set == null:
+		return 0.0
+
+	var old_value: float = attr.current_value if old_value_override == null else float(old_value_override)
+	var aggregate := _aggregate_attribute_value(attribute_name, attr.base_value)
+	var final_value := attribute_set.pre_attribute_change(attribute_name, aggregate)
+	attr.current_value = final_value
+	if not is_equal_approx(old_value, final_value):
+		attribute_changed.emit(attribute_name, old_value, final_value, spec)
+		attribute_set.post_attribute_change(self, attribute_name, old_value, final_value)
+	return final_value - old_value
+
+
+func _recalculate_effect(active_effect: ActiveGameplayEffect, spec: GameplayEffectSpec = null) -> Dictionary:
+	var deltas: Dictionary = {}
+	var names: Array[String] = []
+	for stack_spec in active_effect.stack_specs:
+		for name in _affected_attributes(stack_spec):
+			if not names.has(name):
+				names.append(name)
+	for name in names:
+		var delta := _recalculate_attribute(name, spec)
+		if not is_zero_approx(delta):
+			deltas[name] = delta
+	return deltas
+
+
+## Takes a strongly-typed dictionary of {"attribute_name": override_value} and dynamically
+## generates an Initialization Effect to safely apply them through the GAS pipeline.
 func initialize_attribute_overrides(overrides: Dictionary[String, float]) -> void:
 	if overrides.is_empty():
 		return
@@ -581,18 +611,8 @@ func initialize_attribute_overrides(overrides: Dictionary[String, float]) -> voi
 
 
 #region Gameplay Effects Execution
-## 应用效果到目标 ASC
-##
-## 将效果应用到目标 ASC，并广播成功信号到本地 UI 和被动技能
-## 这是攻击者视角的应用方法，会触发 effect_applied_to_target 信号
-##
-## 流程：
-## 1. 调用目标 ASC 的 apply_effect_spec
-## 2. 如果目标成功接收效果，发出 effect_applied_to_target 信号
-##
-## @param spec - 效果规格
-## @param target_asc - 目标 ASC
-## @return - 成功返回 ActiveGameplayEffect，失败返回 null
+## Applies an effect to a target ASC and broadcasts the success to our local UI/Passives.
+## Returns the resulting ActiveGameplayEffect on success, or null on failure.
 func apply_effect_spec_to_target(spec: GameplayEffectSpec, target_asc: AbilitySystemComponent) -> ActiveGameplayEffect:
 	if target_asc == null:
 		return null
@@ -608,21 +628,8 @@ func apply_effect_spec_to_target(spec: GameplayEffectSpec, target_asc: AbilitySy
 	return resulting_effect
 
 
-## 应用游戏效果（便捷包装器）
-##
-## 自动将原始 GameplayEffect 打包为规格进行执行
-## 开发者无需手动创建 Context 和 Spec
-##
-## 流程：
-## 1. 获取引发者（instigator）
-## 2. 创建 GameplayEffectContext
-## 3. 创建 GameplayEffectSpec
-## 4. 调用 apply_effect_spec 执行
-##
-## @param effect - 游戏效果资源
-## @param source_asc - 源 ASC（默认为 self）
-## @param effect_level - 效果等级
-## @return - 成功返回 ActiveGameplayEffect，失败返回 null
+## QoL Wrapper: Automatically packages a raw GameplayEffect into a Spec for execution.
+## Returns the resulting ActiveGameplayEffect on success, or null on failure.
 func apply_gameplay_effect(effect: GameplayEffect, source_asc: AbilitySystemComponent = self, effect_level: float = 1.0) -> ActiveGameplayEffect:
 	if not effect:
 		return null
@@ -635,18 +642,8 @@ func apply_gameplay_effect(effect: GameplayEffect, source_asc: AbilitySystemComp
 	return apply_effect_spec(spec)
 
 
-## 应用效果规格（主入口点）
-##
-## 技能应用即时效果到 ASC 的主要引擎入口点
-## 如果是网络客户端且不是服务器授权，则拦截并拒绝数学计算
-##
-## 网络逻辑：
-## - 如果启用了网络且存在多人对等端
-## - 如果不是多人授权（服务器），返回 null
-## - 否则调用内部方法 _apply_effect_spec
-##
-## @param spec - 效果规格
-## @return - 成功返回 ActiveGameplayEffect，失败返回 null
+## The main engine entry point for an Ability to apply a live effect (Spec) to this ASC.
+## Intercepts and denies math calculation if executed by a network Client.
 func apply_effect_spec(spec: GameplayEffectSpec) -> ActiveGameplayEffect:
 	if is_networked and multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return null
@@ -654,37 +651,16 @@ func apply_effect_spec(spec: GameplayEffectSpec) -> ActiveGameplayEffect:
 	return _apply_effect_spec(spec)
 
 
-## 内部方法 - 处理实际的数学应用和状态变化
-##
-## 实际执行效果规格的内部方法
-## 处理免疫检查、条件检查、清除、堆叠、数学计算等
-##
-## 处理流程：
-## 1. 检查免疫标签（忽略标签）
-## 2. 检查应用条件（必需标签）
-## 3. 清除模式（移除带有特定标签的效果）
-## 4. 评估规格（执行计算）
-## 5. 处理堆叠和刷新
-## 6. 根据策略执行即时或持续效果
-## 7. 触发事件唤醒被动技能
-##
-## @param spec - 效果规格
-## @return - 成功返回 ActiveGameplayEffect，失败返回 null
+## Internal function that processes the actual mathematical application and state changes.
 func _apply_effect_spec(spec: GameplayEffectSpec) -> ActiveGameplayEffect:
 	if not spec or not spec.effect_def:
 		return null
 		
 	var effect = spec.effect_def
 	
-	# 1. Check for Immunities (Ignored Tags)
-	for tag in effect.application_ignore_tags:
-		if has_tag(tag):
-			return null
-	
-	# 2. Check for Conditions (Required Tags)
-	for tag in effect.application_required_tags:
-		if not has_tag(tag):
-			return null
+	# 1 & 2. Check Application Query
+	if effect.application_query and not effect.application_query.matches(self):
+		return null
 	
 	# 3. The Cleanser Pattern (Purge targeted effects BEFORE evaluating new math)
 	for purge_tag in effect.remove_effects_with_tags:
@@ -693,34 +669,70 @@ func _apply_effect_spec(spec: GameplayEffectSpec) -> ActiveGameplayEffect:
 	_evaluate_spec(spec)
 	
 	# 4. Handle Stacking & Refreshing
-	if effect.policy == GameplayEffect.DurationPolicy.DURATION or effect.policy == GameplayEffect.DurationPolicy.TURN_BASED:
+	if effect.policy != GameplayEffect.DurationPolicy.INSTANT:
 		if effect.stacking_policy == GameplayEffect.StackingPolicy.REFRESH_DURATION:
 			# Search to see if we already have this exact effect definition running
 			for active_effect in _active_effects:
 				if active_effect.spec.effect_def == effect:
+					
+					# Check Instigator Isolation
+					if effect.instigator_stacking_policy == GameplayEffect.InstigatorStackingPolicy.INDEPENDENT_BY_INSTIGATOR:
+						var incoming_instigator = spec.context.instigator if spec.context else null
+						var existing_instigator = active_effect.get_instigator()
+						if incoming_instigator != existing_instigator:
+							continue # Skip this active wrapper; they belong to different instigators!
+					
+					if effect.max_stacks > 0 and active_effect.stack_count >= effect.max_stacks:
+						# OVERFLOW
+						var source_asc = self
+						if spec.context and spec.context.instigator:
+							var instigator_asc = spec.context.instigator as AbilitySystemComponent
+							if not instigator_asc:
+								instigator_asc = spec.context.instigator.get_node_or_null("AbilitySystemComponent")
+							if instigator_asc:
+								source_asc = instigator_asc
+								
+						# FIX: Remove the stack BEFORE applying the overflow, so OVERRIDE evaluates against the clean base stat
+						if effect.clear_stack_on_overflow:
+							remove_active_effect(active_effect)
+								
+						for overflow_effect in effect.overflow_effects:
+							if overflow_effect:
+								apply_gameplay_effect(overflow_effect, source_asc, spec.level)
+								
+						if effect.clear_stack_on_overflow:
+							return null # Bypasses refresh and application
+					else:
+						# Add a new stack and accumulate math!
+						active_effect.stack_count += 1
+						
+						if spec.period <= 0.0:
+							active_effect.stack_specs.append(spec)
+							active_effect.applied_deltas = _recalculate_effect(active_effect, spec)
+							spec.calculated_deltas = active_effect.applied_deltas.duplicate()
+						else:
+							active_effect.stack_specs.append(spec)
+					
 					# We found it! Reset its clock back to full based on the dynamically altered Spec!
 					if effect.policy == GameplayEffect.DurationPolicy.DURATION:
 						active_effect.time_remaining = spec.duration 
 					elif effect.policy == GameplayEffect.DurationPolicy.TURN_BASED:
 						active_effect.spec.remaining_turns = spec.remaining_turns
 					
-					# Re-trigger application cues so the player knows it refreshed!
-					for cue_tag in effect.application_cue_tags:
-						execute_cue(cue_tag, {"target": get_parent()})
-					
-					# Determine the source for the UI signals
-					var source_asc = null
-					if spec.context and spec.context.instigator:
-						source_asc = spec.context.instigator.get_node_or_null("AbilitySystemComponent")
+					# REFRESH EDGE CASE: Do not fire application cues or events if suppressed!
+					if not active_effect.is_suppressed:
+						for cue_tag in effect.application_cue_tags:
+							execute_cue(cue_tag, {"target": get_parent()})
 						
-					# Notify the Defender's UI that it was "received" again
-					effect_received.emit(source_asc, spec)
+						var source_asc = null
+						if spec.context and spec.context.instigator:
+							source_asc = spec.context.instigator as AbilitySystemComponent
+							if not source_asc:
+								source_asc = spec.context.instigator.get_node_or_null("AbilitySystemComponent")
+							
+						effect_received.emit(source_asc, spec)
+						_trigger_effect_events(spec)
 					
-					# Wake up any passives for the refresh!
-					_trigger_effect_events(spec)
-					
-					# EXIT EARLY: We refreshed the old one, do not add the new one!
-					# Return the refreshed effect reference
 					return active_effect
 	
 	# 5. Create a variable to hold the newly generated effect
@@ -735,7 +747,9 @@ func _apply_effect_spec(spec: GameplayEffectSpec) -> ActiveGameplayEffect:
 	# 6. Notify the Defender's UI that an effect was fully processed
 	var source_asc = null
 	if spec.context and spec.context.instigator:
-		source_asc = spec.context.instigator.get_node_or_null("AbilitySystemComponent") # Adjust based on your node path
+		source_asc = spec.context.instigator as AbilitySystemComponent
+		if not source_asc:
+			source_asc = spec.context.instigator.get_node_or_null("AbilitySystemComponent")
 		
 	effect_received.emit(source_asc, spec)
 	
@@ -746,19 +760,8 @@ func _apply_effect_spec(spec: GameplayEffectSpec) -> ActiveGameplayEffect:
 	return resulting_effect
 
 
-## 执行即时效果
-##
-## 处理立即发生且永久的效果（如受到伤害）
-## 返回临时的 ActiveGameplayEffect 以便框架注册成功（truthy）
-## 但不会保存到内存中
-##
-## 处理流程：
-## 1. 触发应用 Cue
-## 2. 创建临时容器
-## 3. 实际应用数学伤害/治疗
-##
-## @param spec - 效果规格
-## @return - 临时的 ActiveGameplayEffect
+## Processes effects that happen immediately and permanently (like taking damage).
+## Returns a temporary ActiveGameplayEffect so the framework registers a success (truthy), but it is NOT saved to memory.
 func _execute_instant_spec(spec: GameplayEffectSpec) -> ActiveGameplayEffect:
 	# 1. Trigger Application Cues
 	for cue_tag in spec.effect_def.application_cue_tags:
@@ -774,21 +777,8 @@ func _execute_instant_spec(spec: GameplayEffectSpec) -> ActiveGameplayEffect:
 	return active_effect
 
 
-## 执行持续效果
-##
-## 处理在角色身上持续存在的效果（如 Buff/Debuff）
-## 返回保存在内存中的持久 ActiveGameplayEffect
-##
-## 处理流程：
-## 1. 使用动态 spec 变量初始化（不是静态 effect_def）
-## 2. 触发应用 Cue
-## 3. 授予标签
-## 4. 应用数学计算（仅非周期性效果）
-## 5. 添加到活跃效果数组
-## 6. 广播到 UI 和被动监听器
-##
-## @param spec - 效果规格
-## @return - 持久的 ActiveGameplayEffect
+## Processes effects that stay on the character over time.
+## Returns the persistent ActiveGameplayEffect stored in memory.
 func _execute_active_spec(spec: GameplayEffectSpec) -> ActiveGameplayEffect:
 	# Note: Initializes using the dynamic 'spec' variable, not the static 'effect_def' variable!
 	var active_effect = ActiveGameplayEffect.new(spec) 
@@ -798,58 +788,62 @@ func _execute_active_spec(spec: GameplayEffectSpec) -> ActiveGameplayEffect:
 	for cue_tag in effect.application_cue_tags:
 		execute_cue(cue_tag, {"target": get_parent()})
 	
-	# 2. Grant Tags
-	for tag in effect.granted_tags:
-		add_tag(tag)
-		
-	# 3. Apply Math and record it to reverse later (ONLY if not periodic)
-	if spec.period <= 0.0:
-		active_effect.applied_deltas = _commit_spec_math(spec)
+	# Decide initial suppression before granting tags or broadcasting math.
+	active_effect.is_suppressed = effect.ongoing_suppression_query != null and effect.ongoing_suppression_query.matches(self)
+	if not active_effect.is_suppressed:
+		for tag in effect.granted_tags:
+			add_tag(tag)
 			
+	# Persistent cues are spawned regardless of suppression so they are tracked, but we pause them if suppressed
+	for cue_tag in effect.persistent_cue_tags:
+		var spawned_cue = GameplayCueManager.add_persistent_cue(cue_tag, get_parent(), {"target": get_parent()})
+		if spawned_cue:
+			if active_effect.is_suppressed:
+				GameplayCueManager.set_cue_state(spawned_cue, false)
+			active_effect.active_cues.append(spawned_cue)
+
 	_active_effects.append(active_effect)
+	# Persistent math is derived from the active set. Periodic math is committed
+	# only when the tick occurs.
+	if spec.period <= 0.0:
+		active_effect.applied_deltas = _recalculate_effect(active_effect, spec)
+		spec.calculated_deltas = active_effect.applied_deltas.duplicate()
 	
 	# Broadcast to the UI and passive listeners
 	active_effect_added.emit(active_effect)
+	
+	# Explicitly check if it should be immediately suppressed upon application
+	_reevaluate_suppression_state()
 	
 	# Return the persistent effect so the inventory/ability can store the reference!
 	return active_effect
 
 
-## 移除活跃效果
-##
-## 完全撤销活跃效果的数学变化和标签，并从内存中清除
-## 用于效果过期、被打断或被驱散
-##
-## 处理流程：
-## 1. 移除效果授予的所有标签
-## 2. 撤销所有属性变化（取反）
-## 3. 从活跃效果数组中移除（除非 skip_array_erase）
-## 4. 发出 active_effect_removed 信号
-##
-## @param active_effect - 要移除的活跃效果
-## @param skip_array_erase - 是否跳过数组擦除（用于批量清除）
-func remove_active_effect(active_effect: ActiveGameplayEffect, skip_array_erase: bool = false) -> void:
-	for tag in active_effect.get_effect_def().granted_tags:
-		remove_tag(tag)
+## Removes an active effect, then derives current from the remaining effects.
+## The legacy skip flag remains accepted for callers, but removal must erase
+## the effect immediately so aggregation sees the correct active set.
+func remove_active_effect(active_effect: ActiveGameplayEffect, _skip_array_erase: bool = false) -> void:
+	if active_effect == null or not _active_effects.has(active_effect):
+		return
+	_active_effects.erase(active_effect)
+	_recalculate_effect(active_effect, active_effect.spec)
+	if not active_effect.is_suppressed:
+		for tag in active_effect.get_effect_def().granted_tags:
+			remove_tag(tag)
+			
+	# Cleanup persistent cues
+	for cue in active_effect.active_cues:
+		GameplayCueManager.remove_persistent_cue(cue)
+	active_effect.active_cues.clear()
+
+	# Trigger Removal Cues
+	for cue_tag in active_effect.get_effect_def().removal_cue_tags:
+		execute_cue(cue_tag, {"target": get_parent()})
 		
-	for attr_name in active_effect.applied_deltas.keys():
-		var reverse_delta = -active_effect.applied_deltas[attr_name]
-		_apply_attribute_change(attr_name, reverse_delta)
-		
-	if not skip_array_erase and _active_effects.has(active_effect):
-		active_effect_removed.emit(active_effect)
-		_active_effects.erase(active_effect)
-	elif skip_array_erase:
-		# Still emit the signal for UI cleanup during a bulk wipe
-		active_effect_removed.emit(active_effect)
+	active_effect_removed.emit(active_effect)
 
 
-## 移除具有指定标签的所有活跃效果
-##
-## 查找所有授予指定标签的活跃效果并移除它们
-## 常用于驱散效果：如驱散所有毒液效果
-##
-## @param tag - 要检查的标签
+## Removes ALL active Gameplay Effects that are currently granting the specified tag.
 func remove_effects_with_tag(tag: StringName) -> void:
 	for i in range(_active_effects.size() - 1, -1, -1):
 		var active_effect = _active_effects[i]
@@ -857,12 +851,7 @@ func remove_effects_with_tag(tag: StringName) -> void:
 			remove_active_effect(active_effect)
 
 
-## 移除来自特定来源的所有活跃效果
-##
-## 移除所有由指定引发者（源节点）应用的效果
-## 常用于：当敌人死亡时，移除其施加的所有效果
-##
-## @param source_node - 源节点（引发者）
+## Removes ALL active Gameplay Effects that were applied by a specific Instigator (source node).
 func remove_effects_from_source(source_node: Node) -> void:
 	if not source_node:
 		return
@@ -877,26 +866,78 @@ func remove_effects_from_source(source_node: Node) -> void:
 #endregion
 
 
+#region Effect Inhibition (Tag Suppression)
+## Evaluates all active gameplay effects against their suppression queries.
+## Safely handles cascading tag changes using an evaluation lock and queue flag.
+func _reevaluate_suppression_state() -> void:
+	if _is_evaluating_suppression:
+		_suppression_queued = true
+		return
+		
+	_is_evaluating_suppression = true
+	_suppression_queued = false
+	
+	for active_effect in _active_effects:
+		var effect = active_effect.get_effect_def()
+		if effect and effect.ongoing_suppression_query:
+			var should_be_suppressed = effect.ongoing_suppression_query.matches(self)
+			
+			if should_be_suppressed and not active_effect.is_suppressed:
+				_suppress_effect(active_effect)
+			elif not should_be_suppressed and active_effect.is_suppressed:
+				_unsuppress_effect(active_effect)
+				
+	_is_evaluating_suppression = false
+	
+	# If any granted tags added/removed during this sweep cascaded another request, evaluate it now safely.
+	if _suppression_queued:
+		_reevaluate_suppression_state()
+
+
+## Temporarily excludes an active effect's modifiers and granted tags.
+func _suppress_effect(active_effect: ActiveGameplayEffect) -> void:
+	active_effect.is_suppressed = true
+	_recalculate_effect(active_effect, active_effect.spec)
+		
+	for tag in active_effect.get_effect_def().granted_tags:
+		remove_tag(tag)
+		
+	for cue in active_effect.active_cues:
+		GameplayCueManager.set_cue_state(cue, false)
+
+
+## Restores a previously suppressed active effect's modifiers and granted tags.
+func _unsuppress_effect(active_effect: ActiveGameplayEffect) -> void:
+	active_effect.is_suppressed = false
+	_recalculate_effect(active_effect, active_effect.spec)
+		
+	for tag in active_effect.get_effect_def().granted_tags:
+		add_tag(tag)
+		
+	for cue in active_effect.active_cues:
+		GameplayCueManager.set_cue_state(cue, true)
+#endregion
+
+
 #region Math & Modifiers
 
-## STEP 1: Evaluates all Executions and Modifiers to predict the final mathematical changes.
-## This populates `spec.calculated_deltas` and allows ExecCalcs to mutate duration/magnitudes safely.
+## Evaluate executions and capture modifier magnitudes once for this application.
 func _evaluate_spec(spec: GameplayEffectSpec) -> void:
-	var projected_deltas: Dictionary = {}
-	
 	if not spec or not spec.effect_def:
 		return
+	spec.execution_deltas.clear()
+	spec.evaluated_modifiers.clear()
+	spec.calculated_deltas.clear()
 		
 	var effect = spec.effect_def
 	
 	# 1. Process Execution Calculations (Dynamic Math & Spec Mutation)
 	for execution in effect.executions:
 		if execution:
-			# Executions can edit spec.duration, spec.period, spec.mutated_magnitudes, OR return flat deltas
 			var exec_deltas = execution.execute(spec, self)
 			
 			for attr_name in exec_deltas:
-				projected_deltas[attr_name] = projected_deltas.get(attr_name, 0.0) + exec_deltas[attr_name]
+				spec.execution_deltas[attr_name] = spec.execution_deltas.get(attr_name, 0.0) + exec_deltas[attr_name]
 
 	# 2. Process Standard Modifiers
 	for mod in effect.modifiers:
@@ -904,43 +945,102 @@ func _evaluate_spec(spec: GameplayEffectSpec) -> void:
 			continue
 			
 		var attr_name = mod.attribute_name
-		# IMPORTANT: Pull magnitude from the mutated dictionary, NOT the base definition!
-		var magnitude = spec.mutated_magnitudes.get(attr_name, 0.0) 
+		var magnitude = 0.0
 		
-		var current_val = 0.0
-		var attr_data = get_attribute(attr_name)
-		if attr_data:
-			current_val = attr_data.current_value
-			
-		var delta = 0.0
-		match mod.operation:
-			GameplayEffectModifier.Operation.ADD:
-				delta = magnitude
-			GameplayEffectModifier.Operation.MULTIPLY:
-				delta = (current_val * magnitude) - current_val
-			GameplayEffectModifier.Operation.DIVIDE:
-				if magnitude != 0:
-					delta = (current_val / magnitude) - current_val
-			GameplayEffectModifier.Operation.OVERRIDE:
-				delta = magnitude - current_val
+		# Intercept the calculation type!
+		match mod.magnitude_calculation:
+			GameplayEffectModifier.MagnitudeCalculationType.STATIC:
+				magnitude = mod.calculate_magnitude(spec.level)
+				if spec.mutated_magnitudes.get(attr_name, null) != spec.initial_mutated_magnitudes.get(attr_name, null):
+					magnitude = spec.mutated_magnitudes[attr_name]
+			GameplayEffectModifier.MagnitudeCalculationType.SET_BY_CALLER:
+				magnitude = spec.get_set_by_caller_magnitude(mod.set_by_caller_tag)
+			GameplayEffectModifier.MagnitudeCalculationType.ATTRIBUTE_BASED:
+				var backing_val: float = 0.0
+				var source_asc: AbilitySystemComponent = self
 				
-		projected_deltas[attr_name] = projected_deltas.get(attr_name, 0.0) + delta
-			
-	# Save the final projections directly into the spec
-	spec.calculated_deltas = projected_deltas
+				if mod.attribute_source == GameplayEffectModifier.AttributeSource.SOURCE:
+					if spec.context and spec.context.instigator:
+						source_asc = spec.context.instigator as AbilitySystemComponent
+						if not source_asc:
+							source_asc = spec.context.instigator.get_node_or_null("AbilitySystemComponent")
+							
+				if source_asc:
+					var attr_data = source_asc.get_attribute(mod.backing_attribute_name)
+					if attr_data:
+						# Capture Type Engine Integration
+						backing_val = attr_data.current_value if mod.attribute_capture_type == GameplayEffectModifier.AttributeCaptureType.CURRENT_VALUE else attr_data.base_value
+						
+				magnitude = backing_val * mod.attribute_multiplier
+				
+		spec.evaluated_modifiers.append({
+			"attribute": attr_name,
+			"operation": mod.operation,
+			"magnitude": magnitude,
+			"priority": mod.override_priority,
+		})
+		
+	# Cost checks need the same prospective current value that commit would
+	# produce from the changed base. Persistent effects fill this after insertion.
+	if effect.policy == GameplayEffect.DurationPolicy.INSTANT or spec.period > 0.0:
+		var base_targets := _calculate_base_targets(spec)
+		for attr_name in base_targets:
+			var attr := get_attribute(attr_name)
+			if attr != null:
+				var target_base: float = base_targets[attr_name]
+				spec.calculated_deltas[attr_name] = _aggregate_attribute_value(attr_name, target_base) - attr.current_value
+	else:
+		for attr_name in _affected_attributes(spec):
+			var attr := get_attribute(attr_name)
+			if attr != null:
+				spec.calculated_deltas[attr_name] = _aggregate_attribute_value(attr_name, attr.base_value, spec) - attr.current_value
 
 
-## STEP 2: Actually applies the pre-calculated deltas to the ASC's attributes.
+func _calculate_base_targets(spec: GameplayEffectSpec) -> Dictionary:
+	var base_targets: Dictionary = {}
+	for attr_name in spec.execution_deltas:
+		var attr := get_attribute(attr_name)
+		if attr != null:
+			base_targets[attr_name] = attr.base_value + float(spec.execution_deltas[attr_name])
+	for modifier in spec.evaluated_modifiers:
+		var attr_name: String = modifier["attribute"]
+		var attr := get_attribute(attr_name)
+		if attr == null:
+			continue
+		var value: float = base_targets.get(attr_name, attr.base_value)
+		var magnitude: float = modifier["magnitude"]
+		match modifier["operation"]:
+			GameplayEffectModifier.Operation.ADD:
+				value += magnitude
+			GameplayEffectModifier.Operation.PERCENT_ADD:
+				value += value * magnitude
+			GameplayEffectModifier.Operation.MULTIPLY:
+				value *= magnitude
+			GameplayEffectModifier.Operation.DIVIDE:
+				if not is_zero_approx(magnitude):
+					value /= magnitude
+			GameplayEffectModifier.Operation.OVERRIDE:
+				value = magnitude
+		base_targets[attr_name] = value
+	return base_targets
+
+
+## Commit instant or periodic math to the permanent base, then reaggregate.
 func _commit_spec_math(spec: GameplayEffectSpec) -> Dictionary:
 	var final_clamped_deltas: Dictionary = {}
-	
-	if not spec or spec.calculated_deltas.is_empty():
+	if not spec:
 		return final_clamped_deltas
-	
-	# Physically modify the stats
-	for attr_name in spec.calculated_deltas:
-		var actual_change = _apply_attribute_change(attr_name, spec.calculated_deltas[attr_name], spec)
-		if actual_change != 0.0:
+	var base_targets := _calculate_base_targets(spec)
+	for attr_name in base_targets:
+		var attr := get_attribute(attr_name)
+		var old_value: float = attr.current_value
+		for attribute_set in attribute_sets:
+			if attr_name in attribute_set and attribute_set.get(attr_name) == attr:
+				base_targets[attr_name] = attribute_set.pre_attribute_change(attr_name, float(base_targets[attr_name]))
+				break
+		attr.base_value = float(base_targets[attr_name])
+		var actual_change := _recalculate_attribute(attr_name, spec, old_value)
+		if not is_zero_approx(actual_change):
 			final_clamped_deltas[attr_name] = actual_change
 	
 	# Update the spec to reflect the true reality of what happened (after stats clamped)
@@ -951,13 +1051,7 @@ func _commit_spec_math(spec: GameplayEffectSpec) -> Dictionary:
 
 
 #region Tag Management
-## 添加标签
-##
-## 增加给定标签的引用计数
-## 如果标签不存在，则创建新标签并发出 tag_added 信号
-## 总是发出 tag_count_changed 信号
-##
-## @param tag - 要添加的标签
+## Increments the reference count of a given tag.
 func add_tag(tag: StringName) -> void:
 	if _active_tags.has(tag):
 		_active_tags[tag] += 1
@@ -966,15 +1060,10 @@ func add_tag(tag: StringName) -> void:
 		tag_added.emit(tag)
 	
 	tag_count_changed.emit(tag, _active_tags[tag])
+	_reevaluate_suppression_state()
 
 
-## 移除标签
-##
-## 减少给定标签的引用计数
-## 如果引用计数降为 0，则完全移除标签并发出 tag_removed 信号
-## 否则发出 tag_count_changed 信号
-##
-## @param tag - 要移除的标签
+## Decrements the reference count of a given tag, removing it if it reaches 0.
 func remove_tag(tag: StringName) -> void:
 	if not _active_tags.has(tag): 
 		return
@@ -986,29 +1075,21 @@ func remove_tag(tag: StringName) -> void:
 		tag_removed.emit(tag)
 	else:
 		tag_count_changed.emit(tag, _active_tags[tag])
+		
+	_reevaluate_suppression_state()
 
 
-## 强制清除标签
-##
-## 强制移除标签，无视当前的引用计数
-## 用于需要立即清除标签的紧急情况
-##
-## @param tag - 要清除的标签
+## Forcefully removes a tag regardless of its current reference count.
 func clear_tag(tag: StringName) -> void:
 	if _active_tags.has(tag):
 		_active_tags.erase(tag)
 		tag_removed.emit(tag)
+		_reevaluate_suppression_state()
 #endregion
 
 
 #region Tag Queries
-## 获取标签剩余持续时间
-##
-## 返回授予此标签的任何活跃效果的最大剩余持续时间
-## 用于 UI 显示 Debuff 剩余时间
-##
-## @param tag - 要查询的标签
-## @return - 最大剩余持续时间（秒）
+## Returns the maximum remaining duration of any active effect granting this tag.
 func get_tag_duration_remaining(tag: StringName) -> float:
 	var max_time: float = 0.0
 	for active_effect in _active_effects:
@@ -1018,23 +1099,12 @@ func get_tag_duration_remaining(tag: StringName) -> float:
 	return max_time
 
 
-## 检查是否存在精确标签
-##
-## 检查 ASC 是否拥有完全匹配的标签（不检查子标签）
-##
-## @param tag - 要检查的标签
-## @return - 存在返回 true
+## Checks if the ASC has the exact given tag.
 func has_tag_exact(tag: StringName) -> bool:
 	return _active_tags.has(tag)
 
 
-## 检查标签是否存在（包含子标签）
-##
-## 检查 ASC 是否拥有给定标签或其任何子标签
-## 例如：has_tag("Status") 对 "Status.Stunned" 也返回 true
-##
-## @param tag - 要检查的标签
-## @return - 存在返回 true
+## Checks if the ASC has the given tag or any of its children.
 func has_tag(tag: StringName) -> bool:
 	if _active_tags.has(tag):
 		return true
@@ -1048,13 +1118,7 @@ func has_tag(tag: StringName) -> bool:
 	return false
 
 
-## 检查是否有任意标签
-##
-## 检查 ASC 是否拥有数组中至少一个标签
-## 用于检查是否被任意一种状态阻止
-##
-## @param tags - 要检查的标签数组
-## @return - 至少有一个返回 true
+## Returns true if the ASC has at least one of the tags in the array.
 func has_any_tags(tags: Array[StringName]) -> bool:
 	for t in tags:
 		if has_tag(t):
@@ -1062,13 +1126,7 @@ func has_any_tags(tags: Array[StringName]) -> bool:
 	return false
 
 
-## 检查是否拥有所有标签
-##
-## 检查 ASC 是否拥有数组中的每一个标签
-## 用于检查是否满足所有激活条件
-##
-## @param tags - 要检查的标签数组
-## @return - 全部拥有返回 true
+## Returns true only if the ASC has every tag in the array.
 func has_all_tags(tags: Array[StringName]) -> bool:
 	if tags.is_empty():
 		return false
@@ -1080,14 +1138,8 @@ func has_all_tags(tags: Array[StringName]) -> bool:
 
 
 #region Input Routing
-## 绑定技能到输入
-##
-## 将活跃技能安全绑定到输入槽
-## 如果 unbind_others 为 true，则解除其他使用相同 ID 的技能的绑定
-##
-## @param ability - 要绑定的技能
-## @param new_input_id - 新的输入 ID
-## @param unbind_others - 是否解除其他技能的绑定
+## Safely binds an active ability to an input slot.
+## If unbind_others is true, it kicks out any other ability using that ID.
 func bind_ability_to_input(ability: GameplayAbility, new_input_id: int, unbind_others: bool = true) -> void:
 	if not _active_abilities.has(ability):
 		push_error("GodotGAS: Cannot bind ability to input. It has not been granted to this ASC.")
@@ -1101,13 +1153,8 @@ func bind_ability_to_input(ability: GameplayAbility, new_input_id: int, unbind_o
 	ability.input_id = new_input_id
 
 
-## 本地输入按下
-##
-## 由玩家控制器在输入按下时调用
-## 路由到匹配的技能
-## 如果玩家是网络客户端，则转发到服务器
-##
-## @param input_id - 按下的输入 ID
+## Called by a Player Controller when an input is PRESSED. Routes to the matching ability.
+## Forwards input to the Server if the player is a networked client.
 func ability_local_input_pressed(input_id: int) -> void:
 	if is_networked and multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		rpc_id(1, "_server_receive_input_pressed", input_id)
@@ -1116,12 +1163,6 @@ func ability_local_input_pressed(input_id: int) -> void:
 	_ability_local_input_pressed(input_id)
 
 
-## 内部方法 - 本地输入按下处理
-##
-## 实际处理输入按下的内部方法
-## 将输入 ID 添加到活动输入列表，然后路由到匹配的技能
-##
-## @param input_id - 按下的输入 ID
 func _ability_local_input_pressed(input_id: int) -> void:
 	if not _active_inputs.has(input_id):
 		_active_inputs.append(input_id)
@@ -1131,13 +1172,8 @@ func _ability_local_input_pressed(input_id: int) -> void:
 			ability._input_pressed(self)
 
 
-## 本地输入释放
-##
-## 由玩家控制器在输入释放时调用
-## 路由到匹配的技能
-## 如果玩家是网络客户端，则转发到服务器
-##
-## @param input_id - 释放的输入 ID
+## Called by a Player Controller when an input is RELEASED. Routes to the matching ability.
+## Forwards input to the Server if the player is a networked client.
 func ability_local_input_released(input_id: int) -> void:
 	if is_networked and multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		rpc_id(1, "_server_receive_input_released", input_id)
@@ -1146,12 +1182,6 @@ func ability_local_input_released(input_id: int) -> void:
 	_ability_local_input_released(input_id)
 
 
-## 内部方法 - 本地输入释放处理
-##
-## 实际处理输入释放的内部方法
-## 将输入 ID 从活动输入列表中移除，然后路由到匹配的技能
-##
-## @param input_id - 释放的输入 ID
 func _ability_local_input_released(input_id: int) -> void:
 	if _active_inputs.has(input_id):
 		_active_inputs.erase(input_id)
@@ -1163,13 +1193,7 @@ func _ability_local_input_released(input_id: int) -> void:
 
 
 #region Gameplay Events
-## 触发效果事件
-##
-## 扫描效果规格并触发所有静态和动态事件
-## 1. 触发设计师在检视器中定义的静态事件标签
-## 2. 触发执行计算注入的动态事件标签
-##
-## @param spec - 效果规格
+## Sweeps a spec and fires all static and dynamic events.
 func _trigger_effect_events(spec: GameplayEffectSpec) -> void:
 	# 1. Trigger static events defined by the designer in the Inspector
 	for event_tag in spec.effect_def.event_tags:
@@ -1180,19 +1204,8 @@ func _trigger_effect_events(spec: GameplayEffectSpec) -> void:
 		send_gameplay_event(dynamic_tag, spec)
 
 
-## 发送游戏事件
-##
-## 向此 ASC 发送全局事件
-## 如果任何已授予的技能正在监听此标签，它们将尝试激活并接收负载
-## 用于：被动技能响应游戏事件自动触发
-##
-## 处理流程：
-## 1. 发出 gameplay_event_received 信号通知外部世界
-## 2. 遍历已授予的技能，检查触发事件标签
-## 3. 如果匹配，尝试激活技能并传递负载
-##
-## @param event_tag - 事件标签
-## @param payload - 可选的负载数据
+## Sends a global event to this ASC. If any granted abilities are listening for this tag, 
+## they will attempt to activate and receive the payload.
 func send_gameplay_event(event_tag: StringName, payload: Variant = null) -> void:
 	if event_tag == "":
 		return
@@ -1218,45 +1231,29 @@ func _notification(what: int) -> void:
 #endregion
 
 
-#region 调试信号日志函数
-## ============================================================================
-## 调试信号日志
-## ============================================================================
-
-## 调试：标签添加
-## 当 debug_signal_log 启用时，记录标签添加事件
+#region Debug Signal Logging Functions
 func _debug_tag_added(tag: StringName) -> void:
 	print_rich("[color=gray]> (DEBUG)[/color] [color=cyan]<%s>[/color] signal [color=orange][tag_added][/color] added [color=green]'%s'[/color] Tag to %s's ASC" % [self.get_parent().name, tag, self.get_parent().name])
 
 
-## 调试：标签计数变化
-## 当 debug_signal_log 启用时，记录标签计数变化事件
 func _debug_tag_count_changed(tag: StringName, new_count: int) -> void:
 	print_rich("[color=gray]> (DEBUG)[/color] [color=cyan]<%s>[/color] signal [color=orange][tag_count_changed][/color] changed [color=green]'%s'[/color] stack count to [color=yellow]%d[/color] on %s's ASC" % [self.get_parent().name, tag, new_count, self.get_parent().name])
 
 
-## 调试：标签移除
-## 当 debug_signal_log 启用时，记录标签移除事件
 func _debug_tag_removed(tag: StringName) -> void:
 	print_rich("[color=gray]> (DEBUG)[/color] [color=cyan]<%s>[/color] signal [color=orange][tag_removed][/color] removed [color=green]'%s'[/color] Tag from %s's ASC" % [self.get_parent().name, tag, self.get_parent().name])
 
 
-## 调试：属性变化
-## 当 debug_signal_log 启用时，记录属性变化事件
 func _debug_attribute_changed(attribute_name: String, old_value: float, new_value: float, effect_spec: GameplayEffectSpec) -> void:
 	var effect_name = _get_debug_spec_name(effect_spec)
 	print_rich("[color=gray]> (DEBUG)[/color] [color=cyan]<%s>[/color] signal [color=orange][attribute_changed][/color] changed attribute [color=green]'%s'[/color] from [color=yellow]%s[/color] to [color=yellow]%s[/color] via [color=green]'%s'[/color]" % [self.get_parent().name, attribute_name, old_value, new_value, effect_name])
 
 
-## 调试：效果应用到目标
-## 当 debug_signal_log 启用时，记录效果应用到目标事件
 func _debug_effect_applied_to_target(target_asc: AbilitySystemComponent, spec: GameplayEffectSpec) -> void:
 	var effect_name = _get_debug_spec_name(spec)
 	print_rich("[color=gray]> (DEBUG)[/color] [color=cyan]<%s>[/color] signal [color=orange][effect_applied_to_target][/color] %s's ASC applied [color=green]'%s'[/color] to [color=cyan]%s's[/color] ASC" % [self.get_parent().name, self.get_parent().name, effect_name, target_asc.get_parent().name])
 
 
-## 调试：接收游戏事件
-## 当 debug_signal_log 启用时，记录接收游戏事件
 func _debug_gameplay_event_received(event_tag: StringName, payload: Variant) -> void:
 	var payload_desc = "[color=red]Null Payload[/color]"
 
@@ -1274,23 +1271,17 @@ func _debug_gameplay_event_received(event_tag: StringName, payload: Variant) -> 
 	print_rich("[color=gray]> (DEBUG)[/color] [color=cyan]<%s>[/color] signal [color=orange][gameplay_event_received][/color] %s's ASC received [color=green]'%s'[/color] event with %s" % [self.get_parent().name, self.get_parent().name, event_tag, payload_desc])
 
 
-## 调试：活跃效果添加
-## 当 debug_signal_log 启用时，记录活跃效果添加事件
 func _debug_active_effect_added(active_effect: ActiveGameplayEffect) -> void:
 	var effect_name = _get_debug_spec_name(active_effect.spec)
 	var duration = active_effect.spec.duration if active_effect.spec.duration > 0.0 else "Infinite"
 	print_rich("[color=gray]> (DEBUG)[/color] [color=cyan]<%s>[/color] signal [color=orange][active_effect_added][/color] added [color=green]'%s'[/color] with duration [color=yellow]%s[/color]s" % [self.get_parent().name, effect_name, duration])
 
-## 调试：活跃效果移除
-## 当 debug_signal_log 启用时，记录活跃效果移除事件
 func _debug_active_effect_removed(active_effect: ActiveGameplayEffect) -> void:
 	var effect_name = _get_debug_spec_name(active_effect.spec)
 	print_rich("[color=gray]> (DEBUG)[/color] [color=cyan]<%s>[/color] signal [color=orange][active_effect_removed][/color] removed [color=green]'%s'[/color]" % [self.get_parent().name, effect_name])
 
 
-## --- 内部调试辅助函数 ---
-## 获取效果规格的调试名称
-## 用于调试日志中显示效果名称
+## --- Internal Debug Helper ---
 func _get_debug_spec_name(spec: GameplayEffectSpec) -> String:
 	if spec == null or spec.effect_def == null:
 		return "[color=red]Manual/Unknown Effect[/color]"

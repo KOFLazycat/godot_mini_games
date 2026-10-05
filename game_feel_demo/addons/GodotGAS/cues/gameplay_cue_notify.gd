@@ -3,7 +3,7 @@
 ## Attach this script to the root of a scene containing your particles or 
 ## AudioStreamPlayers to manage their lifecycle and object pooling.
 ##
-## @meta_addon: GodotGAS Version 1 (See plugin version for exact version)
+## @meta_addon: GodotGAS
 ## @meta_author: YulRun (https://YulRun.Dev)
 ## @meta_license: MIT
 
@@ -35,6 +35,12 @@ func execute_cue(target: Node, payload: Dictionary = {}) -> void:
 	if auto_destroy:
 		# We use a safe Godot 4 timer connection to finish the cue instead of queue_free
 		get_tree().create_timer(destroy_delay).timeout.connect(finish_cue)
+
+
+## For persistent cues, called by the Manager when the effect is removed.
+## Override this in inherited scripts to play fade-out animations, then call finish_cue() when done.
+func end_cue() -> void:
+	finish_cue()
 
 
 ## Call this from your inherited scripts when the visual/audio effect is 100% done.

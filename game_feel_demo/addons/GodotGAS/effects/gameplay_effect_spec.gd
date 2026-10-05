@@ -1,146 +1,116 @@
-## GameplayEffectSpec - 游戏效果规格（运行时）
+## A runtime payload that combines a static GameplayEffect definition
+## with the specific context (instigator, targets, level) of its application.
 ##
-## 功能说明：
-## 将静态的 GameplayEffect 定义与应用的特定上下文（发起者、目标、等级）结合的运行时负载
-##
-## 数据流：
-## GameplayEffect (静态定义) → GameplayEffectSpec (运行时包装) → 应用到 ASC
-##
-## 使用场景：
-## - 技能释放时创建效果规格
-## - 效果执行时传递上下文信息
-## - 允许 ExecCalcs 修改效果参数
-##
-## 特点：
-## - 是 RefCounted，无需手动释放
-## - 可以在应用前修改 duration、period、magnitudes
-## - 存储计算后的数值变化 (calculated_deltas)
-##
-## @meta_addon: GodotGAS Version 1 (See plugin version for exact version)
+## @meta_addon: GodotGAS
 ## @meta_author: YulRun (https://YulRun.Dev)
 ## @meta_license: MIT
 
 @icon("res://addons/GodotGAS/icons/godot_gas_asc.svg")
 class_name GameplayEffectSpec extends RefCounted
 
-## ============================================================================
-## 核心属性
-## ============================================================================
-
-## 效果定义
-## 静态的数据定义（已有的资源）
+## The static data definition (your existing Resource).
 var effect_def: GameplayEffect
 
-## 上下文
-## 运行时负载，包含发起者、施加者和目标数据
+## The runtime payload containing the instigator, causer, and target data.
 var context: GameplayEffectContext
 
-## 等级
-## 技能/效果的等级，用于后续缩放数学修饰器
+## The level of the ability/effect, used later to scale mathematical modifiers.
 var level: float = 1.0
 
-## 应用时间
-## 效果应用的确切时间（用于持续时间计算）
+## The exact time this effect was applied (useful for durations).
 var application_time: float = 0.0
 
-## 动态标签
-## 由 ExecCalcs 或 Abilities 在运行时动态注入的标签
-## 用于：在计算过程中注入 'Critical'、'Dodge' 等标签
+## Tags injected dynamically at runtime by ExecCalcs or Abilities
 var dynamic_tags: Array[StringName] = []
 
-## 计算后的数值变化
-## ASC 应用修饰器后填充的字典，存储精确的最终夹紧变化
-## 格式：{ "Health": -50.0, "Mana": -10.0 }
+## Previewed attribute changes during evaluation; updated to actual clamped
+## changes after the effect is committed (e.g., {"Health": -50.0}).
 var calculated_deltas: Dictionary = {}
 
-# ============================================================================
-## 可变状态（真实数据源）
-# ============================================================================
+## Evaluated on application and captured for active effects. Periodic effects
+## update these values again on each tick.
+var execution_deltas: Dictionary = {}
+var evaluated_modifiers: Array[Dictionary] = []
 
-## 运行时持续时间
-## 效果的运行时持续时间，在应用前由 ExecCalcs 变异
+# ==========================================
+# MUTABLE STATE (The Source of Truth)
+# ==========================================
+## The runtime duration of the effect. Mutated by ExecCalcs before application.
 var duration: float = 0.0
 
-## 运行时回合持续时间
-## 效果的回合制持续时间，在应用前由 ExecCalcs 变异
+## The runtime duration in turns of the effect. Mutated by ExecCalcs before application.
 var remaining_turns: int = 0
 
-## 运行时周期
-## 效果的运行时周期，在应用前由 ExecCalcs 变异
+## The runtime period of the effect. Mutated by ExecCalcs before application.
 var period: float = 0.0
 
-## 变异的修饰器数值
-## 字典跟踪每个修饰器的运行时数值
-## 键：属性名（String），值：修饰值（float）
+## Dictionary tracking the runtime magnitude of each STATIC modifier.
+## Key: Attribute Name (String), Value: Magnitude (float)
 var mutated_magnitudes: Dictionary = {}
-# ============================================================================
+
+## Initial dictionary values let the ASC distinguish an execution's override
+## from the individual static magnitudes of modifiers sharing an attribute.
+var initial_mutated_magnitudes: Dictionary = {}
+
+## Dictionary holding dynamic values injected by the Ability at runtime.
+## Key: Tag (StringName), Value: Magnitude (float)
+var set_by_caller_magnitudes: Dictionary = {}
+# ==========================================
 
 
 #region Initialization
-## ============================================================================
-## 初始化
-## ============================================================================
-
-## 构造函数
-##
-## 初始化活跃效果实例并快照可变状态
-##
-## @param in_effect - GameplayEffect 静态定义
-## @param in_context - GameplayEffectContext 运行时上下文
-## @param in_level - 技能/效果等级
+## Initializes the live effect instance and snapshots the mutable state.
 func _init(in_effect: GameplayEffect, in_context: GameplayEffectContext, in_level: float = 1.0) -> void:
-	## 设置基础属性
 	effect_def = in_effect
 	context = in_context
 	level = in_level
-
-	## 记录应用时间（毫秒转秒）
 	application_time = Time.get_ticks_msec() / 1000.0
-
-	## 将基础资源数据快照到可变变量
+	
+	# Snapshot the base resource data into our mutable variables
 	duration = in_effect.duration
 	period = in_effect.period
 	remaining_turns = in_effect.duration_turns
-
-	## 预计算并快照基础修饰器数值，以便 ExecCalcs 可以变异它们
+	
+	# Pre-calculate and snapshot the base magnitudes so ExecCalcs can mutate them
 	for mod in in_effect.modifiers:
 		if mod and mod.attribute_name != "":
-			mutated_magnitudes[mod.attribute_name] = mod.calculate_magnitude(level)
+			if mod.magnitude_calculation == GameplayEffectModifier.MagnitudeCalculationType.STATIC:
+				mutated_magnitudes[mod.attribute_name] = mod.calculate_magnitude(level)
+	initial_mutated_magnitudes = mutated_magnitudes.duplicate()
 #endregion
 
 
 #region Context Helpers
-## ============================================================================
-## 上下文辅助方法
-## ============================================================================
-
-## 获取目标节点
-##
-## 快速从附加的上下文获取唯一目标节点
-## @return - 目标节点数组
+## Helper to quickly grab the unique target nodes from the attached context.
 func get_target_nodes() -> Array[Node]:
 	if context and context.target_data:
 		return context.target_data.get_target_nodes()
-
+		
 	return []
 
-## 检查是否有标签
-##
-## 便捷方法：检查规格是否原生或动态拥有某个标签
-## @param tag - 要检查的标签
-## @return - 如果有标签返回 true
+
+## QoL Helper: Checks if the spec has a tag natively OR dynamically
 func has_tag(tag: StringName) -> bool:
-	## 假设基础效果有一个标识符标签数组如 'asset_tags' 或 'granted_tags'
+	# Assuming your base effect has an array of identifier tags like 'asset_tags' or 'granted_tags'
 	if effect_def.granted_tags.has(tag):
 		return true
 	return dynamic_tags.has(tag)
 
-## 注入标签
-##
-## 便捷方法：将标签注入我们的动态标签数组
-## 用于：在执行计算期间应用 'Critical'、'Dodge' 等标签
-## @param tag - 要注入的标签
+
+## QoL Helper: Injects a tag into our Dynamic Tag Array (Useful for applying 'Critical' 'Dodge' etc. During Exec. Calculations
 func inject_tag(tag: StringName) -> void:
 	if not dynamic_tags.has(tag):
 		dynamic_tags.append(tag)
+#endregion
+
+
+#region SetByCaller Routing
+## Injects a dynamic mathematical value into the Spec, keyed by a gameplay tag.
+func set_set_by_caller_magnitude(tag: StringName, magnitude: float) -> void:
+	set_by_caller_magnitudes[tag] = magnitude
+
+
+## Retrieves an injected dynamic value by its tag.
+func get_set_by_caller_magnitude(tag: StringName, default_value: float = 0.0) -> float:
+	return set_by_caller_magnitudes.get(tag, default_value)
 #endregion
