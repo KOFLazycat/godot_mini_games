@@ -1,9 +1,24 @@
 [gd_scene format=3 uid="uid://dfd2rww8n067c"]
 
 [ext_resource type="Script" uid="uid://cbuvl1wjg3h7u" path="res://Game/Scenes/GAS/GameplayAbilities/GAbilityFireball.gd" id="1_fqkn6"]
+[ext_resource type="Script" uid="uid://c81papidngxvg" path="res://addons/GodotGAS/effects/gameplay_effect.gd" id="2_fqkn6"]
+[ext_resource type="Script" uid="uid://b7ovihaaijli7" path="res://addons/GodotGAS/effects/gameplay_execution_calculation.gd" id="3_fd4nu"]
+[ext_resource type="Script" uid="uid://bcow77l0bnh0s" path="res://addons/GodotGAS/effects/gameplay_effect_modifier.gd" id="4_nflwv"]
+
+[sub_resource type="Resource" id="Resource_xhgo0"]
+script = ExtResource("4_nflwv")
+attribute_name = "health"
+magnitude = -1.0
+metadata/_custom_type_script = "uid://bcow77l0bnh0s"
+
+[sub_resource type="Resource" id="Resource_nkbvq"]
+script = ExtResource("2_fqkn6")
+modifiers = Array[ExtResource("4_nflwv")]([SubResource("Resource_xhgo0")])
+metadata/_custom_type_script = "uid://c81papidngxvg"
 
 [node name="GAbilityFireball" type="Node" unique_id=1956526492]
 script = ExtResource("1_fqkn6")
+targetEffects = Array[ExtResource("2_fqkn6")]([SubResource("Resource_nkbvq")])
 ability_name = "Fireball"
-ability_tag = &"Ability.Attack.Fireball"
+ability_tag = &"Ability.Basic.Damage"
 metadata/_custom_type_script = "uid://cbuvl1wjg3h7u"

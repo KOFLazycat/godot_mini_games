@@ -15,6 +15,8 @@
 [ext_resource type="Script" uid="uid://bajonrpdw3vub" path="res://addons/juicee/effects/stretch_effect.gd" id="7_p4g8e"]
 [ext_resource type="PackedScene" uid="uid://bgfxxe60d72c0" path="res://Components/Visual/HealthVisualComponent.tscn" id="7_vwwba"]
 [ext_resource type="PackedScene" uid="uid://5tvqunkoa4l7" path="res://Components/Combat/FactionComponent.tscn" id="8_c1fih"]
+[ext_resource type="Script" uid="uid://bhr4dsrpc4jw8" path="res://addons/GodotGAS/attributes/attribute_set.gd" id="11_p4g8e"]
+[ext_resource type="Script" uid="uid://cs4mweehq6jg4" path="res://Game/Resources/godot_gas/attributes/demo_attribute_set.gd" id="12_5cjxc"]
 [ext_resource type="PackedScene" uid="uid://ettfulbm7ww8" path="res://Game/Components/Gameplay/ASCComponent.tscn" id="12_u114y"]
 [ext_resource type="PackedScene" uid="uid://bck0vjn8mg1aw" path="res://Components/Control/JumpComponent.tscn" id="13_768mk"]
 [ext_resource type="PackedScene" uid="uid://bv4nl55gi16vx" path="res://Components/Physics/PlatformerPhysicsComponent.tscn" id="14_5j705"]
@@ -54,6 +56,10 @@ effects = Array[ExtResource("4_83hcy")]([SubResource("Resource_5cjxc"), SubResou
 parallel = true
 graph_connections = PackedStringArray()
 metadata/_custom_type_script = "uid://v73jghomx6uw"
+
+[sub_resource type="Resource" id="Resource_nkbvq"]
+script = ExtResource("12_5cjxc")
+metadata/_custom_type_script = "uid://cs4mweehq6jg4"
 
 [sub_resource type="Resource" id="Resource_cei4g"]
 resource_name = "health"
@@ -120,6 +126,7 @@ metadata/_custom_type_script = "uid://dmtb8hlmmqlvt"
 
 [node name="AbilitySystemComponent" type="Node" parent="." unique_id=1265606891]
 script = ExtResource("14_o788n")
+attribute_sets = Array[ExtResource("11_p4g8e")]([SubResource("Resource_nkbvq")])
 debug_signal_log = true
 metadata/_custom_type_script = "uid://cbrvrpcenj2cn"
 
